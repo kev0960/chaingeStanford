@@ -1,0 +1,23 @@
+{
+  "name": "chaingeStanford",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "node main.js"
+  },
+  "dependencies": {
+    "big-integer": "latest",
+    "body-parser": "^1.17.1",
+    "express": "~4.11.2",
+    "node-rsa": "latest",
+    "ws": "^1.1.0",
+    "xhr2": "0.1.4",
+    "request": "latest",
+    "redis" : "latest",
+    "json-stable-stringify" : "1.0.1",
+    "zmq" : "latest"
+  },
+  "engines": {
+    "node": ">=6.10.0"
+  }
+}
