@@ -1,0 +1,24 @@
+<html>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+    crossorigin="anonymous"></script>
+
+<label for="user-email">Your Stanford Email</label>
+<input type="email" id="user-email" name="email">
+<input type="submit" id='submit-email' value="Submit!">
+<script>
+    $('#submit-email').click(function() {
+        $.post({
+            url : 'add-me',
+            type : 'post',
+            dataType : 'json',
+            data : {
+                email : $('#user-email').val()
+            },
+            success : function(data) {
+               console.log(data);
+            }
+        })
+    });
+</script>
+
+</html>

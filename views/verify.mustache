@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<html>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+    crossorigin="anonymous"></script>
+    <head>
+        <title>Welcome to Chainge!</title>
+    </head>
+    <body>
+        <p>Are you {{name}}? </p>
+        <p> If you click Yes, then we will create your Data on the block chain </p>
+        <button id="Yes">Yes I am.</button>
+        <button id="No">No</button>
+        <p id="result"></p>
+    </body>
+    <script>
+        $('#Yes').click(function() {
+            $('#result').text("Please wait few seconds to generate your record on the blockchain");
+            $.post({
+                url : window.location.href,
+                type : 'post',
+                dataType : 'json',
+                data : {
+                    answer : "Yes",
+                    // We should NEVER send name from the client
+                    // For production, we should save name in the db somehow.
+                    name : "{{ name }}"
+                },
+                success : function(data) {
+                    console.log(data);
+                    $('#result').text("Your DATA record is sent to your mail!");
+                }
+            })
+        })
+    </script>
+</html>

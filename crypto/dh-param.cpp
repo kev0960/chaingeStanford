@@ -15,19 +15,19 @@ using std::runtime_error;
 #include <sstream>
 using std::istringstream;
 
-#include "osrng.h"
+#include "cryptopp/osrng.h"
 using CryptoPP::AutoSeededRandomPool;
 
-#include "integer.h"
+#include "cryptopp/integer.h"
 using CryptoPP::Integer;
 
-#include "nbtheory.h"
+#include "cryptopp/nbtheory.h"
 using CryptoPP::ModularExponentiation;
 
-#include "dh.h"
+#include "cryptopp/dh.h"
 using CryptoPP::DH;
 
-#include "secblock.h"
+#include "cryptopp/secblock.h"
 using CryptoPP::SecByteBlock;
 
 int main(int argc, char** argv)

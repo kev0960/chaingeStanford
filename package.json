@@ -15,7 +15,13 @@
     "request": "latest",
     "redis" : "latest",
     "json-stable-stringify" : "1.0.1",
-    "zmq" : "latest"
+    "zmq" : "latest",
+    "nodemailer": "latest",
+    "stable-stringify": "latest",
+    "uuid" : "latest",
+    "jsdom" : "latest",
+    "mu2" : "latest",
+    "hashmap" : "latest"
   },
   "engines": {
     "node": ">=6.10.0"
