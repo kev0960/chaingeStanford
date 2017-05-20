@@ -9,6 +9,7 @@ module.exports = function (dependencies) {
 	const node_email = dependencies['email'];
 	const zmq = dependencies['zmq'];
 	const util = dependencies['util'];
+	const connect_node = dependencies['connect_node'];
 
 	app.get('/', function (req, res) {
 		res.sendFile(path.join(__dirname + '/index.html'));
@@ -30,7 +31,7 @@ module.exports = function (dependencies) {
 					'Thank you for registering Chainge',
 					'',
 					`<p>Thank you for registering Chainge</p>
-        <p>Your activation link is <a href="http://localhost:3000/verify/` + result +
+        <p>Your activation link is <a href="http://localhost:3333/verify/` + result +
 					`">Here</a></p>`
 				);
 				res.setHeader('Content-Type', 'application/json');
@@ -76,7 +77,8 @@ module.exports = function (dependencies) {
 					identity: name,
 					rsa_key_size: 2048,
 					dh_key_size: 1024,
-					token: token
+					token: token,
+          type : 0
 				};
 
 				console.log("set :: ", token);
@@ -99,6 +101,13 @@ module.exports = function (dependencies) {
 					);
 
 					res.send(JSON.stringify(data_txn));
+
+					// Send created data txn to the nodes
+					connect_node.send_txn(data_txn.serialize_data_txn);
+					console.log("Serialized :: ", data_txn.serialize_data_txn);
+
+					// Save created user's data txn
+					db.save_user_txn(email, data_txn.serialize_data_txn);
 					zmq.remove_token_callback (token);
 				});
 

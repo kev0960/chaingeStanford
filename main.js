@@ -14,6 +14,7 @@ const cheerio = require('cheerio');
 const mu2 = require('mu2');
 mu2.root = __dirname + '/views';
 
+const connect_node = require('./connect_node')();
 const db = require('./db.js')({ uuid });
 const email = require('./email.js')({ config });
 const util = require('./util.js')({ protocol });
@@ -25,7 +26,7 @@ app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
 }));
 
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3333;
 
 app.listen(port, function () {
   console.log('Server is listening on port ', port);
@@ -33,4 +34,4 @@ app.listen(port, function () {
 
 const router = require('./router.js')({
   app, db, request, cheerio, mu2,
-  sock, email, zmq, util});
+  sock, email, zmq, util, connect_node});

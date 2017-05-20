@@ -11,6 +11,7 @@ module.exports = function (dependencies) {
     console.log('Redis is dead .. ' + err);
   })
   const USER_EMAIL = 'USER_EMAIL_';
+  const USER_TXN = 'USER_TXN_LIST_';
   const VERIFY_LINK = 'TOKEN_';
 
   const save_email_validation_token = function (email) {
@@ -60,8 +61,31 @@ module.exports = function (dependencies) {
     redis.get(VERIFY_LINK + token, cb);
   }
 
+  // User txn is classified by the user's email
+  const save_user_txn = function (email, txn) {
+    redis.lpush(email, txn, function (err, reply) {
+      if (err) {
+        console.log("something is seriously wrong with ", err);
+      }
+    });
+  };
+
+  /**
+   * @returns {Promise}
+   * @param {String} email
+   */
+  const get_user_txn = function (email) {
+    return new Promise(function (resolve, reject) {
+      redis.lrange(email, 0, -1, function (err, list) {
+        resolve(list);
+      });
+    });
+  };
+
   return {
     save_email_validation_token,
-    get_token
+    get_token,
+    save_user_txn,
+    get_user_txn
   }
 }

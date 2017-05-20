@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <vector>
 #include <sstream>
+#include <bitset>
 #include "cryptopp/osrng.h"
 #include "cryptopp/integer.h"
 #include "cryptopp/nbtheory.h"
@@ -175,19 +176,26 @@ class RequestTxn
   Integer integer_with_hex(string hex)
   {
     // Insert '0x' at front
-    hex.insert("0x", 0);
+    hex.insert(0, "0x");
 
-    return Integer(hex);
+    return Integer(hex.c_str());
   }
 
+  string str_b;
+  string str_g_b;
+  string str_g_g_ab_p_r;
+  string req_str;
+
 public:
-  RequestTxn(string &data_txn_json_str)
+  RequestTxn(string data_txn_json_str, string hashed_request_identity)
   {
     auto data_txn_json = json::parse(data_txn_json_str);
 
     Integer G = integer_with_hex(data_txn_json["txn_payload"]["G"]);
-    Integer g = integer_with_hex(data_txn_json["txn_payload"["g"]]);
+    Integer g = integer_with_hex(data_txn_json["txn_payload"]["g"]);
     Integer g_a = integer_with_hex(data_txn_json["txn_payload"]["g_a"]);
+    Integer secret = integer_with_hex(data_txn_json["txn_payload"]["secret"]);
+    int K = data_txn_json["txn_payload"]["K"];
 
     // Initialize DH structure with G and g of data_txn
     DH dh_req;
@@ -196,18 +204,52 @@ public:
     // Generate b and g^b for request txn
     AutoSeededRandomPool rng;
     Integer b, g_b;
-    create_key_pair(rng, dh, b, g_b);
+    create_key_pair(rng, dh_req, b, g_b);
 
     // Calculate the shared secret g^ab
     SecByteBlock shared (dh_req.AgreedValueLength());
-    dh_req.Agree(shared, b, g_a);
+    SecByteBlock sec_b (dh_req.PrivateKeyLength()), sec_g_a(dh_req.PublicKeyLength());
+
+    b.Encode(sec_b, dh_req.PrivateKeyLength());
+    g_a.Encode(sec_g_a, dh_req.PublicKeyLength());
+
+    dh_req.Agree(shared, sec_b, sec_g_a);
 
     Integer g_ab;
     g_ab.Decode(shared, dh_req.AgreedValueLength());
 
-    
-    Integer g_g_ab_p_r = ModularExponentiation(g, g_ab, G);
+    Integer identity_hash = integer_with_hex(hashed_request_identity);
+    Integer g_g_ab_p_r = ModularExponentiation(g, g_ab, G) * (secret - identity_hash);
 
+    string req_str = "";
+
+    for (int i = 0; i < K; i ++) {
+      Integer req (rng, 1);
+      if (req == 1) {
+        req_str.push_back('1');
+      }
+      else {
+        req_str.push_back('0');
+      }
+    }
+
+    str_b = integer_to_string(b);
+    str_g_b = integer_to_string(g_b);
+    str_g_g_ab_p_r = integer_to_string(g_g_ab_p_r);
+  }
+
+  string serialize_data(string token)
+  {
+    json j = {
+      {"g_b", str_g_b},
+      {"g_g_ab_p_r", str_g_g_ab_p_r},
+      {"req", req_str},
+      {"b", str_b},
+      {"token", token}
+    };
+
+    cout << j << std::endl;
+    return j.dump();
   }
 };
 
@@ -222,6 +264,8 @@ int main()
   zmq::socket_t socket(context, ZMQ_REP);
   socket.bind("tcp://*:5555");
 
+  cout << "---------- TXN Calculator is started ---------------" << std::endl;
+
   while (true)
   {
     zmq::message_t request;
@@ -231,13 +275,21 @@ int main()
 
     std::cout << "Request :: " << (char *)request.data() << std::endl;
     auto json_data = json::parse(string((char *)request.data()));
+    string serial = "";
 
-    std::cout << "Received Hello" << std::endl;
+    // Request for generating DATA TXN
+    if (json_data["type"] == 0) {
+      //  Do some 'work'
+      DataTxn txn(1024, 10, json_data["identity"]);
 
-    //  Do some 'work'
-    DataTxn txn(1024, 10, json_data["identity"]);
-    RSAPair pair(2048);
-    string serial = txn.serialize_data(json_data["token"]);
+      cout << "Generating Key pairs..." << std::endl;
+      serial = txn.serialize_data(json_data["token"]);
+    }
+    // Request for generating REQUEST TXN
+    else if (json_data["type"] == 1) {
+      RequestTxn txn(json_data["data_txn"], json_data["identity"]);
+      serial = txn.serialize_data(json_data["token"]);
+    }
 
     //  Send reply back to client
     zmq::message_t reply(serial.length() + 1);
