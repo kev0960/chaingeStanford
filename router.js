@@ -74,7 +74,7 @@ module.exports = function (dependencies) {
 
 		db.get_token(token, function (err, email) {
 			if (answer == "Yes") {
-				data = {
+				let data = {
 					K: 20,
 					identity: name,
 					rsa_key_size: 2048,
@@ -109,9 +109,13 @@ module.exports = function (dependencies) {
 					console.log("Serialized :: ", data_txn.serialize_data_txn);
 
 					// Save created user's data txn
-					db.save_user_txn(email, data_txn.serialize_data_txn);
-					db.save_pending_user_txn(email, data_txn.serialize_data_txn);
+					db.save_user_txn(email, JSON.stringify({
+						"serial" : data_txn.serialize_data_txn,
+						"sig" : data_txn.signature,
+						"state" : "Pending"
+					}));
 					db.save_user_password(email, password);
+					db.save_txn_to_username(data_txn.signature, email);
 
 					zmq.remove_token_callback(token);
 				});
@@ -144,13 +148,13 @@ module.exports = function (dependencies) {
 				txn_list.push(JSON.parse(list[i]));
 			}
 
-			let sig_list = []
+			let content_list = []
 			for (let i = 0; i < txn_list.length; i ++) {
-				sig_list.push({ sig : txn_list[i].signature});
+				content_list.push({ content : txn_list[i].serial, state : txn_list[i].state});
 			}
 
 			let html_stream = mu2.compileAndRender('profile.mustache', {
-				"txn" : sig_list,
+				"txn" : content_list,
 				"pending_txn" : 0
 			});
 

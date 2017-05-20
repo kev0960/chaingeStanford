@@ -1,6 +1,7 @@
+// cSpell:ignore txn, merkle, txns, deserialized
 const express = require('express');
 const ZMQ = require('zmq');
-sock = ZMQ.socket('req');
+const sock = ZMQ.socket('req');
 const passport = require('passport');
 const session = require('express-session');
 const redis_session = require('connect-redis')(session);
@@ -8,7 +9,6 @@ const redis_session = require('connect-redis')(session);
 const app = express();
 const config = require('./config');
 const crypto = require('crypto');
-const sign = crypto.createSign('RSA-SHA256');
 const protocol = require('./protocol.js');
 const request = require('request');
 const bodyParser = require('body-parser');
@@ -16,7 +16,7 @@ const cookieParser = require('cookie-parser');
 const uuid = require('uuid/v4');
 const cheerio = require('cheerio');
 const bcrypt = require('bcrypt');
-const stable_stringify = require('stable_stringify');
+const stable_stringify = require('json-stable-stringify');
 
 const mu2 = require('mu2');
 mu2.root = __dirname + '/views';

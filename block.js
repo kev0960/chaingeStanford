@@ -1,7 +1,7 @@
+// cSpell:ignore txn, merkle, txns, deserialized
 "use strict";
-
 module.exports = function (dependencies) {
-    const MerkleTree = dependencies['merkle_tree']; // this is the MerkleTree class
+    const merkle_tree = dependencies['merkle_tree']; // this is the merkle_tree class
     const crypto = dependencies['crypto'];
     const stable_stringify = dependencies['stable_stringify'];
 
@@ -98,11 +98,11 @@ module.exports = function (dependencies) {
             // If the data already has merkle_tree, then we don't need to
             // create one
             if (data_obj['merkle_tree']) {
-                this.merkle_tree = MerkleTree.create_merkle_tree_from_str(data_obj['merkle_tree']);
+                this.merkle_tree = merkle_tree.create_merkle_tree_from_str(data_obj['merkle_tree']);
             } else {
-                //this.merkle_tree = MerkleTree.create_merkle_tree_from_list(data_obj['block']);
+                //this.merkle_tree = merkle_tree.create_merkle_tree_from_list(data_obj['block']);
                 // TODO : this is a quick fix. I need to make sure where 'merkle_tree' is being made
-                this.merkle_tree = MerkleTree.create_merkle_tree_from_str(data_obj['block'])
+                this.merkle_tree = merkle_tree.create_merkle_tree_from_str(data_obj['block'])
             }
         }
 
@@ -155,21 +155,6 @@ module.exports = function (dependencies) {
         }
 
         /**
-         * Make Transactions into Merkle Tree
-         * DEPRECATED : DON"T USE THIS METHOD FOR NOW
-         * @param {Transactions} txns
-         */
-        create_merkle_tree(txns) {
-            const txn_num = txns.length;
-            let serialized_txns = [];
-            for (var i = 0; i < txn_num; i++) {
-                serialized_txns.push(txn[i].serialize());
-            }
-
-            this.merkle_tree = merkle_tree.create_tree(txn_num, serialized_txns);
-        }
-
-        /**
          * checks if a given block is the same as this one.
          * this function not only checks the block hash, but also checks that
          * the two blocks are exactly same in its contents as well
@@ -187,7 +172,7 @@ module.exports = function (dependencies) {
 
         /**
          * serializes the given block instance into a long JSON string.
-         * The json string consists of 2 parts ('["header" : somethign, "block": somethign]'
+         * The json string consists of 2 parts ('["header" : something, "block": something]'
          * @returns {String}
          */
         serialize() {
@@ -235,7 +220,7 @@ module.exports = function (dependencies) {
      * @param {Number} difficulty
      */
     const create_block_from_txn_list = function (list, prev_hash, nonce, difficulty, blk_height, time_stamp) {
-        const merkle_tree = MerkleTree.create_merkle_tree_from_list(list);
+        const merkle_tree = merkle_tree.create_merkle_tree_from_list(list);
 
         if (time_stamp === undefined) time_stamp = Date.now()
 
@@ -273,12 +258,12 @@ module.exports = function (dependencies) {
      * @param {Array} list of Txns
      */
     const get_root_hash_from_txns = function (list) {
-        const merkle_tree = MerkleTree.create_merkle_tree_from_list(list);
+        const merkle_tree = merkle_tree.create_merkle_tree_from_list(list);
         return merkle_tree.get_root_hash();
     }
 
     /**
-     * Chech whether hash satsfies the difficulty of the block
+     * Check whether hash satisfies the difficulty of the block
      * @param {String} hash
      * @param {String} nonce
      * @param {Number} difficulty

@@ -5,8 +5,8 @@ module.exports = function (dependencies) {
   const protocol = dependencies['protocol'];
 
   const create_data_txn_from_obj = function (txn_data) {
-    str_pub_key = txn_data.pub_key;
-    str_prv_key = txn_data.prv_key;
+    let str_pub_key = txn_data.pub_key;
+    let str_prv_key = txn_data.prv_key;
 
     let prv_key = new rsa();
     prv_key.importKey(str_prv_key, 'pkcs1-private');
@@ -38,7 +38,6 @@ module.exports = function (dependencies) {
       payload: txn_payload_str
     };
 
-    const data_txn = protocol.create_data_txn_from_obj(data_txn_obj);
     const serialize_data_txn = stable_stringify(data_txn_obj);
 
     return {
@@ -47,7 +46,8 @@ module.exports = function (dependencies) {
       r_i: txn_data.r_i,
       serialize_data_txn,
       pub_key: str_pub_key,
-      prv_key: str_prv_key
+      prv_key: str_prv_key,
+      signature : data_txn_obj.signature
     };
   }
 

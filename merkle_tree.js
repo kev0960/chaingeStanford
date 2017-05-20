@@ -1,3 +1,4 @@
+// cSpell:ignore txn, merkle, txns, deserialized
 'use strict'
 
 /*
@@ -25,10 +26,6 @@ module.exports = function (dependencies) {
     const transaction = dependencies['transaction'];
 
     const stable_stringify = dependencies['stable_stringify'];
-
-    /* Constants. Should be imported from utils file later */
-    const SHA_LEN = 8 //in hex
-    const TXN_LEN = 256 // in hex. assume fixed txn size of 1024 bytes for now
 
     class MerkleTree {
         // leaves :: serialized transaction (string)
@@ -92,7 +89,7 @@ module.exports = function (dependencies) {
                 num_leaves = num_leaves - 2;
             }
 
-            // If there's one leafe remaining, bring it to next lev
+            // If there's one leaf remaining, bring it to next lev
             if (num_leaves == 1) {
                 row.push(leaves[leaves.length - 1])
             }

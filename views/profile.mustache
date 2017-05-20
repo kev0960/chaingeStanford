@@ -10,7 +10,10 @@
         <div>
             <p>Your transaction list</p>
             {{#txn}}
-                <p> {{ sig }}</p>
+                <div>
+                    <p> {{ content }}</p>
+                    <p> {{ state }}</p>
+                </div>
             {{/txn}}
         </div>
         <div>

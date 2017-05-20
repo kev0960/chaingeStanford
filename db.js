@@ -17,6 +17,7 @@ module.exports = function (dependencies) {
   const USER_DATA = 'USER_DATA_';
   const VERIFY_LINK = 'TOKEN_';
   const PENDING_USER_TXN = 'PENDING_USER_TXN_LIST_';
+  const TXN_TO_USER = 'TXN_TO_USER_'
 
   const save_email_validation_token = function (email) {
     let p1 = new Promise(function (resolve, reject) {
@@ -25,8 +26,8 @@ module.exports = function (dependencies) {
         // Token is saved in a following format
         // USER_EMAIL_<user email> ==> (Time it is saved):(uuid token)
         if (data) {
-          date = data.substring(0, data.indexOf(':'));
-          token = data.substring(data.indexOf(':') + 1);
+          let date = data.substring(0, data.indexOf(':'));
+          let token = data.substring(data.indexOf(':') + 1);
 
           // If registered token is old, then we issue a new token
           // (old here means 7 days ago)
@@ -74,6 +75,11 @@ module.exports = function (dependencies) {
     });
   };
 
+  const save_txn_to_username = function (sig, email) {
+    // Save emails using txn signature as a key.
+    redis.set(TXN_TO_USER + sig, email);
+  };
+
   // User txn is classified by the user's email
   const save_pending_user_txn = function (email, txn) {
     redis.lpush(PENDING_USER_TXN + email, txn, function (err, reply) {
@@ -98,13 +104,13 @@ module.exports = function (dependencies) {
     return new Promise(function (resolve, reject) {
       redis.get(USER_DATA + email, function (err, hashed_password) {
         if (err || !hashed_password) {
-          resolve (false);
+          resolve(false);
           return;
         }
 
-        bcrypt.compare(password, hashed_password, function(err, res) {
+        bcrypt.compare(password, hashed_password, function (err, res) {
           if (err) reject(err);
-          resolve (res);
+          resolve(res);
         });
       });
     });
@@ -113,11 +119,21 @@ module.exports = function (dependencies) {
   /**
    * @returns {Promise}
    * @param {String} email
+   * Note that returned list of strings are stringified version of
+   * {serial, sig, state}
    */
   const get_user_txn = function (email) {
     return new Promise(function (resolve, reject) {
       redis.lrange(USER_TXN + email, 0, -1, function (err, list) {
         resolve(list);
+      });
+    });
+  };
+
+  const get_username_from_txn = function (sig) {
+    return new Promise(function (resolve, reject) {
+      redis.get(TXN_TO_USER + sig, function (err, username) {
+        resolve(username);
       });
     });
   };
@@ -142,6 +158,8 @@ module.exports = function (dependencies) {
     save_user_password,
     check_user_password,
     save_pending_user_txn,
-    get_pending_user_txn
+    get_pending_user_txn,
+    save_txn_to_username,
+    get_username_from_txn
   }
 }
