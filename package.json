@@ -21,7 +21,13 @@
     "uuid" : "latest",
     "jsdom" : "latest",
     "mu2" : "latest",
-    "hashmap" : "latest"
+    "hashmap" : "latest",
+    "passport" : "0.3.2",
+    "express-session": "latest",
+    "connect-redis" :"^3.3.0",
+    "passport-local" : "^1.0.0",
+    "bcrypt": "latest",
+    "cookie-parser" : "^1.4.3"
   },
   "engines": {
     "node": ">=6.10.0"

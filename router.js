@@ -5,11 +5,11 @@ module.exports = function (dependencies) {
 	const request = dependencies['request'];
 	const cheerio = dependencies['cheerio'];
 	const mu2 = dependencies['mu2'];
-	const sock = dependencies['sock'];
 	const node_email = dependencies['email'];
 	const zmq = dependencies['zmq'];
 	const util = dependencies['util'];
 	const connect_node = dependencies['connect_node'];
+	const auth = dependencies['auth'];
 
 	app.get('/', function (req, res) {
 		res.sendFile(path.join(__dirname + '/index.html'));
@@ -70,6 +70,8 @@ module.exports = function (dependencies) {
 		let token = req.params.token;
 		let answer = req.body.answer;
 		let name = req.body.name;
+		let password = req.body.password;
+
 		db.get_token(token, function (err, email) {
 			if (answer == "Yes") {
 				data = {
@@ -78,7 +80,7 @@ module.exports = function (dependencies) {
 					rsa_key_size: 2048,
 					dh_key_size: 1024,
 					token: token,
-          type : 0
+					type: 0
 				};
 
 				console.log("set :: ", token);
@@ -86,10 +88,10 @@ module.exports = function (dependencies) {
 				// Add a callback to execute when the specific response from
 				// TXN generator comes back
 				zmq.add_callback_for_token(token, function (data) {
-					data_txn = util.create_data_txn_from_obj(data);
+					let data_txn = util.create_data_txn_from_obj(data);
 					node_email.send_email(
 						"jaebumlee94@gmail.com",
-            email,
+						email,
 						"Your Data Record is successfully created!",
 						"",
 						`<p>Your Secret infos are as follows</p>
@@ -108,13 +110,57 @@ module.exports = function (dependencies) {
 
 					// Save created user's data txn
 					db.save_user_txn(email, data_txn.serialize_data_txn);
-					zmq.remove_token_callback (token);
+					db.save_pending_user_txn(email, data_txn.serialize_data_txn);
+					db.save_user_password(email, password);
+
+					zmq.remove_token_callback(token);
 				});
 
 				console.log("Sock sent!");
 				zmq.send_data(JSON.stringify(data));
 			}
 		});
+	});
+
+	app.get('/login', auth.already_logged_in(), function (req, res) {
+		res.sendFile(path.join(__dirname + '/views/login.html'));
+	});
+
+	app.get('/loginFailed', auth.already_logged_in(), function (req, res) {
+		res.sendFile(path.join(__dirname + '/views/loginFailed.html'));
+	});
+
+	app.post('/login', auth.login('/loginFailed'),
+		function (req, res) {
+			res.redirect('/profile');
+		}
+	);
+
+	app.get('/profile', auth.is_logged_in(), function (req, res) {
+		let username = req.user;
+		db.get_user_txn(username).then(function (list) {
+			let txn_list = [];
+			for (let i = 0; i < list.length; i ++) {
+				txn_list.push(JSON.parse(list[i]));
+			}
+
+			let sig_list = []
+			for (let i = 0; i < txn_list.length; i ++) {
+				sig_list.push({ sig : txn_list[i].signature});
+			}
+
+			let html_stream = mu2.compileAndRender('profile.mustache', {
+				"txn" : sig_list,
+				"pending_txn" : 0
+			});
+
+			html_stream.pipe(res);
+		});
+	});
+
+	// Receive newly created "GOOD" block from the node
+	app.post('/receive-block', function (req, res) {
+
 	});
 
 	return {

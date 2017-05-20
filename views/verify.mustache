@@ -8,12 +8,25 @@
     <body>
         <p>Are you {{name}}? </p>
         <p> If you click Yes, then we will create your Data on the block chain </p>
-        <button id="Yes">Yes I am.</button>
-        <button id="No">No</button>
+        <p> Please provide your account's password here </p>
+        <label for="password">Password</input>
+        <input type="password" id="password"></input>
+        <label for="password">Re-type password</input>
+        <input type="password" id="re-password"></input>
+        <button id="Yes">Go create my account</button>
+        <button id="No">Nope</button>
         <p id="result"></p>
     </body>
     <script>
         $('#Yes').click(function() {
+            var password = $('#password').val();
+            var re_pass = $('#re-password').val();
+
+            if (password != re_pass) {
+                $('#result').text("Your password does not match!");
+                return ;
+            }
+
             $('#result').text("Please wait few seconds to generate your record on the blockchain");
             $.post({
                 url : window.location.href,
@@ -23,7 +36,8 @@
                     answer : "Yes",
                     // We should NEVER send name from the client
                     // For production, we should save name in the db somehow.
-                    name : "{{ name }}"
+                    name : "{{ name }}",
+                    password : $('#password').val()
                 },
                 success : function(data) {
                     console.log(data);

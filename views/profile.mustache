@@ -1,0 +1,21 @@
+<!DOCTYPE HTML>
+<html>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+    crossorigin="anonymous"></script>
+    <head>
+        <title>Welcome to Chainge!</title>
+    </head>
+    <body>
+        <p>You currently have {{ pending_txn }} pending requests!</p>
+        <div>
+            <p>Your transaction list</p>
+            {{#txn}}
+                <p> {{ sig }}</p>
+            {{/txn}}
+        </div>
+        <div>
+            <button id='create-request'>Create Request</button>
+            <button id='create-answer'>Create Answer</button>
+        </div>
+    </body>
+</html>
