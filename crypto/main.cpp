@@ -27,171 +27,223 @@ using CryptoPP::DH;
 using CryptoPP::SecByteBlock;
 using CryptoPP::RSA;
 
-
 using std::cout;
 using std::stringstream;
 using std::string;
 
-struct RSAPair {
-    string str_prv;
-    string str_pub;
+struct RSAPair
+{
+  string str_prv;
+  string str_pub;
 
-    public:
-    RSAPair (int key_size) {
-        CryptoPP::InvertibleRSAFunction rsa;
-        AutoSeededRandomPool rnd;
+public:
+  RSAPair(int key_size)
+  {
+    CryptoPP::InvertibleRSAFunction rsa;
+    AutoSeededRandomPool rnd;
 
-        rsa.GenerateRandomWithKeySize(rnd, key_size);
-        RSA::PrivateKey priv (rsa);
-        RSA::PublicKey pub (rsa);
+    rsa.GenerateRandomWithKeySize(rnd, key_size);
+    RSA::PrivateKey priv(rsa);
+    RSA::PublicKey pub(rsa);
 
-        CryptoPP::StringSink fs(str_prv);
-        CryptoPP::PEM_Save(fs, priv);
+    CryptoPP::StringSink fs(str_prv);
+    CryptoPP::PEM_Save(fs, priv);
 
-        CryptoPP::StringSink fs2(str_pub);
-        CryptoPP::PEM_Save(fs2, pub);
-    }
+    CryptoPP::StringSink fs2(str_pub);
+    CryptoPP::PEM_Save(fs2, pub);
+  }
 };
 
-class DataTxn {
-    std::vector<string> str_g_r_i;
-    std::vector<string> str_r_i;
-    string str_G;
-    string str_g;
-    string str_a;
-    string str_g_a;
-    string str_r;
-    string str_g_r;
-    string str_secret;
-    int K;
+// g^{priv} == pub mod G
+void create_key_pair(AutoSeededRandomPool &rnd, DH &dh, Integer &priv, Integer &pub)
+{
+  SecByteBlock block_priv(dh.PrivateKeyLength());
+  SecByteBlock block_pub(dh.PublicKeyLength());
 
-    // convert Integer object to string (in hex format!)
-    string integer_to_string(Integer num) {
-        stringstream ss;
-        ss << std::hex << num;
+  dh.GenerateKeyPair(rnd, block_priv, block_pub);
+  priv.Decode(block_priv, dh.PrivateKeyLength());
+  pub.Decode(block_pub, dh.PublicKeyLength());
 
-        string s = ss.str();
+  return;
+}
 
-        // std::hex prints the number in HEX but it appends 'h'
-        // at the end of the string
-        if (s[s.length() - 1] == 'h') {
-            s.erase(s.begin() + s.length() - 1);
-        }
+// convert Integer object to string (in hex format!)
+string integer_to_string(Integer num)
+{
+  stringstream ss;
+  ss << std::hex << num;
 
-        return s;
+  string s = ss.str();
+
+  // std::hex prints the number in HEX but it appends 'h'
+  // at the end of the string
+  if (s[s.length() - 1] == 'h')
+  {
+    s.erase(s.begin() + s.length() - 1);
+  }
+
+  return s;
+}
+
+class DataTxn
+{
+  std::vector<string> str_g_r_i;
+  std::vector<string> str_r_i;
+  string str_G;
+  string str_g;
+  string str_a;
+  string str_g_a;
+  string str_r;
+  string str_g_r;
+  string str_secret;
+  int K;
+
+public:
+  // Create a data txn with given info.
+  DataTxn(int bit_size, int K, string hashed_identity) : K(K)
+  {
+    AutoSeededRandomPool rnd;
+    DH dh;
+
+    // Generates safe prime G and its generator g.
+    // "Safe prime" for DH structure is the prime p that is in form
+    // 2q + 1 where q is an another prime.
+    dh.AccessGroupParameters().GenerateRandomWithKeySize(rnd, bit_size);
+
+    // Get G and g
+    const Integer &G = dh.GetGroupParameters().GetModulus();
+    const Integer &g = dh.GetGroupParameters().GetGenerator();
+
+    // Key pairs for DH communication with Request TXN
+    Integer g_a, a;
+    create_key_pair(rnd, dh, a, g_a);
+
+    // For encrypting secret key
+    Integer r, g_r;
+    create_key_pair(rnd, dh, r, g_r);
+
+    // Create secret secret = g^r + hashed_identity
+    Integer secret = g_r + Integer(hashed_identity.c_str());
+
+    // Create 'tryouts' for ZKP
+    for (int i = 0; i < K; i++)
+    {
+      Integer zkp_r, zkp_g_r;
+      create_key_pair(rnd, dh, zkp_r, zkp_g_r);
+
+      str_r_i.push_back(integer_to_string(zkp_r));
+      str_g_r_i.push_back(integer_to_string(zkp_g_r));
     }
 
-    // g^{priv} == pub mod G
-    void create_key_pair(AutoSeededRandomPool& rnd, DH& dh, Integer& priv, Integer& pub) {
-        SecByteBlock block_priv (dh.PrivateKeyLength());
-        SecByteBlock block_pub (dh.PublicKeyLength());
+    str_G = integer_to_string(G);
+    str_g = integer_to_string(g);
+    str_r = integer_to_string(r);
+    str_g_r = integer_to_string(g_r);
+    str_a = integer_to_string(a);
+    str_g_a = integer_to_string(g_a);
+    str_secret = integer_to_string(secret);
+  }
 
-        dh.GenerateKeyPair(rnd, block_priv, block_pub);
-        priv.Decode (block_priv, dh.PrivateKeyLength());
-        pub.Decode (block_pub, dh.PublicKeyLength());
+  string serialize_data(string token)
+  {
+    cout << "Finding RSA pairs ... " << std::endl;
+    RSAPair pair(2048);
 
-        return ;
-    }
+    json j = {
+        {"G", str_G},
+        {"g", str_g},
+        {"r", str_r},
+        {"g_r", str_g_r},
+        {"a", str_a},
+        {"g_a", str_g_a},
+        {"secret", str_secret},
+        {"g_r_i", str_g_r_i},
+        {"r_i", str_r_i},
+        {"pub_key", pair.str_pub},
+        {"prv_key", pair.str_prv},
+        {"K", K},
+        {"token", token}};
 
-    public:
-
-    // Create a data txn with given info.
-    DataTxn(int bit_size, int K, string hashed_identity) : K(K) {
-        AutoSeededRandomPool rnd;
-        DH dh;
-
-        // Generates safe prime G and its generator g.
-        // "Safe prime" for DH structure is the prime p that is in form
-        // 2q + 1 where q is an another prime.
-        dh.AccessGroupParameters().GenerateRandomWithKeySize(rnd, bit_size);
-
-        // Get G and g
-        const Integer &G = dh.GetGroupParameters().GetModulus();
-        const Integer &g = dh.GetGroupParameters().GetGenerator();
-
-        // Key pairs for DH communication with Request TXN
-        Integer g_a, a;
-        create_key_pair (rnd, dh, a, g_a);
-
-        // For encrypting secret key
-        Integer r, g_r;
-        create_key_pair(rnd, dh, r, g_r);
-
-        // Create secret secret = g^r + hashed_identity
-        Integer secret = g_r + Integer(hashed_identity.c_str());
-
-        // Create 'tryouts' for ZKP
-        for (int i = 0; i < K; i ++) {
-            Integer zkp_r, zkp_g_r;
-            create_key_pair(rnd, dh, zkp_r, zkp_g_r);
-
-            str_r_i.push_back(integer_to_string(zkp_r));
-            str_g_r_i.push_back(integer_to_string(zkp_g_r));
-        }
-
-        str_G = integer_to_string(G);
-        str_g = integer_to_string(g);
-        str_r = integer_to_string(r);
-        str_g_r = integer_to_string(g_r);
-        str_a = integer_to_string(a);
-        str_g_a = integer_to_string(g_a);
-        str_secret = integer_to_string(secret);
-    }
-
-    string serialize_data(string token) {
-        cout << "Finding RSA pairs ... " << std::endl;
-        RSAPair pair(2048);
-
-        json j = {
-            {"G" , str_G},
-            {"g", str_g},
-            {"r", str_r},
-            {"g_r", str_g_r},
-            {"a", str_a},
-            {"g_a", str_g_a},
-            {"secret", str_secret},
-            {"g_r_i", str_g_r_i},
-            {"r_i", str_r_i},
-            {"pub_key", pair.str_pub},
-            {"prv_key", pair.str_prv},
-            {"K", K},
-            {"token", token}
-        };
-
-        cout << j << std::endl;
-        // Return the serialized JSON object
-        return j.dump();
-    }
+    cout << j << std::endl;
+    // Return the serialized JSON object
+    return j.dump();
+  }
 };
 
-int main () {
-    //  Prepare our context and socket
-    zmq::context_t context (1);
-    zmq::socket_t socket (context, ZMQ_REP);
-    socket.bind ("tcp://*:5555");
+class RequestTxn
+{
+  Integer integer_with_hex(string hex)
+  {
+    // Insert '0x' at front
+    hex.insert("0x", 0);
 
-    while (true) {
-        zmq::message_t request;
+    return Integer(hex);
+  }
 
-        //  Wait for next request from client
-        socket.recv (&request);
+public:
+  RequestTxn(string &data_txn_json_str)
+  {
+    auto data_txn_json = json::parse(data_txn_json_str);
 
+    Integer G = integer_with_hex(data_txn_json["txn_payload"]["G"]);
+    Integer g = integer_with_hex(data_txn_json["txn_payload"["g"]]);
+    Integer g_a = integer_with_hex(data_txn_json["txn_payload"]["g_a"]);
 
-        std::cout << "Request :: " << (char *)request.data() << std::endl;
-        auto json_data = json::parse(string((char *)request.data()));
+    // Initialize DH structure with G and g of data_txn
+    DH dh_req;
+    dh_req.AccessGroupParameters().Initialize(G, g);
 
-        std::cout << "Received Hello" << std::endl;
+    // Generate b and g^b for request txn
+    AutoSeededRandomPool rng;
+    Integer b, g_b;
+    create_key_pair(rng, dh, b, g_b);
 
-        //  Do some 'work'
-        DataTxn txn(1024, 10, json_data["identity"]);
-        RSAPair pair (2048);
-        string serial = txn.serialize_data(json_data["token"]);
+    // Calculate the shared secret g^ab
+    SecByteBlock shared (dh_req.AgreedValueLength());
+    dh_req.Agree(shared, b, g_a);
 
-        //  Send reply back to client
-        zmq::message_t reply (serial.length() + 1);
-        memcpy ((void *) reply.data (), serial.c_str(), serial.length() + 1);
-        socket.send (reply);
-        cout << "Data is sent!" << std::endl;
-    }
-    return 0;
+    Integer g_ab;
+    g_ab.Decode(shared, dh_req.AgreedValueLength());
+
+    
+    Integer g_g_ab_p_r = ModularExponentiation(g, g_ab, G);
+
+  }
+};
+
+class AnswerTxn
+{
+};
+
+int main()
+{
+  //  Prepare our context and socket
+  zmq::context_t context(1);
+  zmq::socket_t socket(context, ZMQ_REP);
+  socket.bind("tcp://*:5555");
+
+  while (true)
+  {
+    zmq::message_t request;
+
+    //  Wait for next request from client
+    socket.recv(&request);
+
+    std::cout << "Request :: " << (char *)request.data() << std::endl;
+    auto json_data = json::parse(string((char *)request.data()));
+
+    std::cout << "Received Hello" << std::endl;
+
+    //  Do some 'work'
+    DataTxn txn(1024, 10, json_data["identity"]);
+    RSAPair pair(2048);
+    string serial = txn.serialize_data(json_data["token"]);
+
+    //  Send reply back to client
+    zmq::message_t reply(serial.length() + 1);
+    memcpy((void *)reply.data(), serial.c_str(), serial.length() + 1);
+    socket.send(reply);
+    cout << "Data is sent!" << std::endl;
+  }
+  return 0;
 }
