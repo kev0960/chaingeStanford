@@ -102,8 +102,7 @@ module.exports = function (dependencies) {
         		 <li>a :: ` + data_txn.a + `</li>
         		 <li>r :: ` + data_txn.r + `</li>
        			 <li>r_i :: ` + data_txn.r_i + `</li>
-						 <li>public key :: ` + data.pub_key + `</li>
-						 <li>private key :: ` + data.prv_key + `</li>
+						 <li>key pairs :: ` + JSON.stringify({pb : data.pub_key, pv : data.prv_key}) + `</li>
       			 </ul>`
 					);
 
@@ -180,11 +179,6 @@ module.exports = function (dependencies) {
 
 			html_stream.pipe(res);
 		});
-	});
-
-	// Receive newly created "GOOD" block from the node
-	app.post('/receive-block', function (req, res) {
-
 	});
 
 	return {

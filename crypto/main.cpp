@@ -52,6 +52,14 @@ public:
 
     CryptoPP::StringSink fs2(str_pub);
     CryptoPP::PEM_Save(fs2, pub);
+
+    // Remove trailing newline character
+    if (str_pub[str_pub.length() - 1] == '\n') {
+      str_pub.erase(str_pub.length() - 1);
+    }
+    if (str_prv[str_prv.length() - 1] == '\n') {
+      str_prv.erase(str_prv.length() - 1);
+    }
   }
 };
 

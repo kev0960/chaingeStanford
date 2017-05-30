@@ -9,7 +9,7 @@ module.exports = function (dependencies) {
     console.log("Redis is now connected!");
   });
 
-  redis.on('error', function () {
+  redis.on('error', function (err) {
     console.log('Redis is dead .. ' + err);
   })
   const USER_EMAIL = 'USER_EMAIL_';
@@ -77,7 +77,9 @@ module.exports = function (dependencies) {
   };
 
   const change_user_txn_at = function (email, txn, at) {
-    redis.lset(USER_TXN + email, txn, at);
+    redis.lset(USER_TXN + email, at, txn, function (err) {
+      if (err) console.log("Error :: ", err);
+    });
   }
 
   const save_txn_to_username = function (sig, email) {
