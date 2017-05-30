@@ -51,6 +51,11 @@ const block = require('./block.js')({
   stable_stringify
 });
 
+const chain = require('./chain.js')({
+  block,
+  db,
+});
+
 app.use(cookieParser());
 app.use(bodyParser.json()); // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
@@ -89,5 +94,6 @@ const router = require('./router.js')({
   util,
   connect_node,
   auth,
-  config
+  config,
+  chain
 });

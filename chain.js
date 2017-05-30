@@ -17,8 +17,9 @@ module.exports = function (dependencies) {
 
     // Search through the block's included transactions
     new_block.merkle_tree.create_deserialized_leaves();
-    let included_txns = new_block.merkle_tree.create_deserialized_leaves;
+    let included_txns = new_block.merkle_tree.deserialized_leaves;
 
+    console.log("Check start ", included_txns);
     // included_txns are now list of Transaction objects
     check_each_txn(included_txns, 0);
   }
@@ -30,19 +31,36 @@ module.exports = function (dependencies) {
 
     let current_txn = included_txns[current];
     let txn_signature = current_txn.get_signature();
+    let txn_pub_key = current_txn.get_public_key();
 
     // Check whether TXN is accepted to the chain
-    db.get_username_from_txn(txn_signature).then(
+    db.get_username_from_pubkey(txn_pub_key).then(
       function (username) {
         // If this transaction belongs to one of users
         if (username) {
           db.get_user_txn(username).then(function (list) {
+            let found = false;
             for (let i = 0; i < list.length; i++) {
               let data = JSON.parse(list[i]);
+              console.log("Comparing :: ", data.sig);
+              console.log("with  ", txn_signature);
               if (data.sig == txn_signature) {
                 data.state += '|ACCEPTED';
-                db.save_user_txn(username, JSON.stringify(data));
+                db.change_user_txn_at(username, JSON.stringify(data), i);
+
+                found = true;
+                break;
               }
+            }
+
+            // Then this transaction is created from somewhere else
+            // Add it to my transactions list
+            if (!found) {
+              db.save_user_txn(username, JSON.stringify({
+                "serial": current_txn.serialize(),
+                "sig": txn_signature,
+                "state": "ACCEPTED"
+              }));
             }
           });
         }
@@ -89,7 +107,7 @@ module.exports = function (dependencies) {
     }
 
     setTimeout(function () {
-      check_each_txn(included_txns, current + 1, level);
+      check_each_txn(included_txns, current + 1);
     }, 0);
   };
 

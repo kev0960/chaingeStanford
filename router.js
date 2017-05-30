@@ -10,6 +10,7 @@ module.exports = function (dependencies) {
 	const util = dependencies['util'];
 	const connect_node = dependencies['connect_node'];
 	const auth = dependencies['auth'];
+	const chain = dependencies['chain'];
 
 	app.get('/', function (req, res) {
 		res.sendFile(path.join(__dirname + '/index.html'));
@@ -89,6 +90,8 @@ module.exports = function (dependencies) {
 				// TXN generator comes back
 				zmq.add_callback_for_token(token, function (data) {
 					let data_txn = util.create_data_txn_from_obj(data);
+					console.log(data)
+
 					node_email.send_email(
 						"jaebumlee94@gmail.com",
 						email,
@@ -99,6 +102,8 @@ module.exports = function (dependencies) {
         		 <li>a :: ` + data_txn.a + `</li>
         		 <li>r :: ` + data_txn.r + `</li>
        			 <li>r_i :: ` + data_txn.r_i + `</li>
+						 <li>public key :: ` + data.pub_key + `</li>
+						 <li>private key :: ` + data.prv_key + `</li>
       			 </ul>`
 					);
 
@@ -110,12 +115,13 @@ module.exports = function (dependencies) {
 
 					// Save created user's data txn
 					db.save_user_txn(email, JSON.stringify({
-						"serial" : data_txn.serialize_data_txn,
-						"sig" : data_txn.signature,
-						"state" : "Pending"
+						"serial": data_txn.serialize_data_txn,
+						"sig": data_txn.signature,
+						"state": "Pending"
 					}));
 					db.save_user_password(email, password);
 					db.save_txn_to_username(data_txn.signature, email);
+					db.save_pubkey_to_user_name(data.pub_key, email);
 
 					zmq.remove_token_callback(token);
 				});
@@ -140,22 +146,36 @@ module.exports = function (dependencies) {
 		}
 	);
 
+	app.post('/block/good-block', function (req, res) {
+			// Received a good block
+			// it must notify it to the chain
+			console.log("POST REQUEST RECEIVED :: ", req.body.block);
+			chain.receive_good_block(req.body.block);
+
+			res.setHeader('Content-Type', 'application/json');
+    	res.send(JSON.stringify({ result: "good" }));
+		}
+	);
+
 	app.get('/profile', auth.is_logged_in(), function (req, res) {
 		let username = req.user;
 		db.get_user_txn(username).then(function (list) {
 			let txn_list = [];
-			for (let i = 0; i < list.length; i ++) {
+			for (let i = 0; i < list.length; i++) {
 				txn_list.push(JSON.parse(list[i]));
 			}
 
 			let content_list = []
-			for (let i = 0; i < txn_list.length; i ++) {
-				content_list.push({ content : txn_list[i].serial, state : txn_list[i].state});
+			for (let i = 0; i < txn_list.length; i++) {
+				content_list.push({
+					content: txn_list[i].serial,
+					state: txn_list[i].state
+				});
 			}
 
 			let html_stream = mu2.compileAndRender('profile.mustache', {
-				"txn" : content_list,
-				"pending_txn" : 0
+				"txn": content_list,
+				"pending_txn": 0
 			});
 
 			html_stream.pipe(res);

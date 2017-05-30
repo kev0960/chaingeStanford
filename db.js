@@ -17,7 +17,8 @@ module.exports = function (dependencies) {
   const USER_DATA = 'USER_DATA_';
   const VERIFY_LINK = 'TOKEN_';
   const PENDING_USER_TXN = 'PENDING_USER_TXN_LIST_';
-  const TXN_TO_USER = 'TXN_TO_USER_'
+  const TXN_TO_USER = 'TXN_TO_USER_';
+  const PUBKEY_TO_USER = 'PUBKEY_TO_USER_'
 
   const save_email_validation_token = function (email) {
     let p1 = new Promise(function (resolve, reject) {
@@ -75,6 +76,10 @@ module.exports = function (dependencies) {
     });
   };
 
+  const change_user_txn_at = function (email, txn, at) {
+    redis.lset(USER_TXN + email, txn, at);
+  }
+
   const save_txn_to_username = function (sig, email) {
     // Save emails using txn signature as a key.
     redis.set(TXN_TO_USER + sig, email);
@@ -88,6 +93,11 @@ module.exports = function (dependencies) {
       }
     });
   };
+
+  // Save public key - username pair
+  const save_pubkey_to_user_name = function (public_key, user_name) {
+    redis.set(PUBKEY_TO_USER + public_key, user_name);
+  }
 
   const save_user_password = function (email, password) {
     // Save hashed password to the db.
@@ -138,6 +148,14 @@ module.exports = function (dependencies) {
     });
   };
 
+  const get_username_from_pubkey = function (public_key) {
+    return new Promise(function (resolve, reject) {
+      redis.get(PUBKEY_TO_USER + public_key, function (err, username) {
+        resolve (username);
+      })
+    });
+  }
+
   /**
    * @returns {Promise}
    * @param {String} email
@@ -160,6 +178,9 @@ module.exports = function (dependencies) {
     save_pending_user_txn,
     get_pending_user_txn,
     save_txn_to_username,
-    get_username_from_txn
+    get_username_from_txn,
+    get_username_from_pubkey,
+    save_pubkey_to_user_name,
+    change_user_txn_at
   }
 }

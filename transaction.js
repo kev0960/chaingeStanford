@@ -1,5 +1,5 @@
 'use strict'
-
+const stable_stringify = require('stable-stringify');
 module.exports = function (dependencies) {
     const crypto = dependencies['crypto'];
 
