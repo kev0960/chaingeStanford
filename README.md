@@ -11,7 +11,7 @@ Onboard Stanford students to Chainge
     ```
 1. Run the docker image by 
     ```
-      docker run -p 3333:3333 -it jblee94/chainge:1 /bin/bash
+      docker run -p 3333:3333 --add-host="localhost:<YOUR HOST IP ADDRESS>" -it jblee94/chainge:1 /bin/bash
     ```
     This binds the host's port 3333 to container's 3333. This will log you into the docker image as root.
 1. Run the redis server
