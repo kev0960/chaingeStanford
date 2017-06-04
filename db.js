@@ -12,6 +12,8 @@ module.exports = function (dependencies) {
   redis.on('ready', function () {
     console.log("Redis is now connected!");
     if (!INITIALIZED) {
+        console.log("Creating default user for testing...");
+
         let email = "swjang@stanford.edu";
         save_email_validation_token(email).then(function(token) {
             let name = "swjang";
@@ -44,7 +46,11 @@ module.exports = function (dependencies) {
 
                 zmq.remove_token_callback(token);
                 console.log("Default user inserted into the db");
+
+                INITIALIZED = true;
             });
+
+            zmq.send_data(JSON.stringify(data))
 
         });
     }
