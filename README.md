@@ -15,9 +15,9 @@ Onboard Stanford students to Chainge
     ```
     This binds the host's port 3333 to container's 3333. This will log you into the docker image as root.
 1. Run the redis server
-  ```
-    service redis-server start
-  ```
+      ```
+        service redis-server start
+      ```
 1. Run our txn calculator
     ```
       /home/chaingeStanford/crypto/main
