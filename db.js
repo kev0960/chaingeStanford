@@ -19,6 +19,8 @@ module.exports = function (dependencies) {
             let name = "swjang";
             let pw = "123";
 
+            const token = "1234";
+
             let data = {
                 K : 20,
                 identity : name,
