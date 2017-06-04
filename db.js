@@ -1,12 +1,53 @@
 const redis = require('redis').createClient();
+const INITIALIZED = false;
+
 
 module.exports = function (dependencies) {
   const uuid = dependencies['uuid'];
   const bcrypt = dependencies['bcrypt'];
   const config = dependencies['config'];
+  const zmq = dependencies['zmq'];
+  const util = dependencies['util'];
 
   redis.on('ready', function () {
     console.log("Redis is now connected!");
+    if (!INITIALIZED) {
+        let email = "swjang@stanford.edu";
+        save_email_validation_token(email).then(function(token) {
+            let name = "swjang";
+            let pw = "123";
+
+            let data = {
+                K : 20,
+                identity : name,
+                rsa_key_size: 2048,
+                dh_key_size: 1024,
+                token : token,
+                type : 0,
+            };
+
+            console.log("Creating a default user : swjang / 123");
+
+            zmq.add_callback_for_token(token, function(data) {
+                let data_txn = util.create_data_txn_from_obj(data);
+                console.log(data_txn);
+
+                save_user_txn(email, JSON.stringify({
+                    "serial": data_txn.serialize_data_txn,
+                    "sig" : data_txn.signature,
+                    "state" : "Pending",
+                }));
+
+                save_user_password(email, password);
+                save_txn_to_username(data_txn.signature, email);
+                save_pubkey_to_user_name(data.pub_key, email);
+
+                zmq.remove_token_callback(token);
+                console.log("Default user inserted into the db");
+            });
+
+        });
+    }
   });
 
   redis.on('error', function (err) {
