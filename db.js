@@ -1,5 +1,5 @@
 const redis = require('redis').createClient();
-const INITIALIZED = false;
+var INITIALIZED = false;
 
 
 module.exports = function (dependencies) {
@@ -19,7 +19,7 @@ module.exports = function (dependencies) {
             let name = "swjang";
             let pw = "123";
 
-            const token = "1234";
+            token = "1234";
 
             let data = {
                 K : 20,
@@ -42,7 +42,7 @@ module.exports = function (dependencies) {
                     "state" : "Pending",
                 }));
 
-                save_user_password(email, password);
+                save_user_password(email, pw);
                 save_txn_to_username(data_txn.signature, email);
                 save_pubkey_to_user_name(data.pub_key, email);
 
