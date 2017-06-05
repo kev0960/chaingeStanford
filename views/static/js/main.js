@@ -1,6 +1,10 @@
 // Register UI javascript functionality here
 
+console.log("including main.js");
+
 $("#data_txn_form").submit(function(e) {
+	e.preventDefault(); // avoid to execute the actual submit of the form.
+	console.log('data_txn_form clicked');
 
     var url = "/new_txn"; // the script where you handle the form input.
 
@@ -16,18 +20,18 @@ $("#data_txn_form").submit(function(e) {
          });
 
     toggle_progress('data_txn')
-    e.preventDefault(); // avoid to execute the actual submit of the form.
+
 });
 
 const toggle_progress = function(txn_type) {
 	let modal_id = '#'+txn_type;
 	let progress_id = '#'+txn_type+'_progress';
 
-	if ($(model_id).hasClass('hidden')) {
-		$(model_id).removeClass('hidden');
+	if ($(modal_id).hasClass('hidden')) {
+		$(modal_id).removeClass('hidden');
 		$(progress_id).addClass('hidden');
 	} else {
-		$(model_id).addClass('hidden');
+		$(modal_id).addClass('hidden');
 		$(progress_id).removeClass('hidden');
 	}
 }
