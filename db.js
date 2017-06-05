@@ -79,8 +79,7 @@ module.exports = function (dependencies) {
   const change_user_txn_at = function (email, txn, at) {
     redis.lset(USER_TXN + email, at, txn, function (err) {
       if (err) console.log("Error :: ", err);
-    });
-  }
+    }); }
 
   const save_txn_to_username = function (sig, email) {
     // Save emails using txn signature as a key.
