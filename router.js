@@ -184,12 +184,9 @@ module.exports = function (dependencies) {
 				});
 			}
 
-            console.log(rows);
-
             db.get_keys(username).then(function(keys) {
-
-
                 let html_stream = mu2.compileAndRender('dashboard.mustache', {
+                    "email":username,
                     "pub_key":keys[0],
                     "prv_key":keys[1],
 				    "rows": rows,
