@@ -75,6 +75,7 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(express.static('views/static'))
 
 const port = process.env.PORT || 3333;
 
