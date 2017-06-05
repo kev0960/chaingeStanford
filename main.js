@@ -22,19 +22,22 @@ const mu2 = require('mu2');
 mu2.root = __dirname + '/views';
 
 const connect_node = require('./connect_node')();
-const db = require('./db.js')({
-  uuid,
-  bcrypt,
-  config
-});
-const email = require('./email.js')({
-  config
+const zmq = require('./zmq.js')({
+  sock
 });
 const util = require('./util.js')({
   protocol
 });
-const zmq = require('./zmq.js')({
-  sock
+
+const db = require('./db.js')({
+  uuid,
+  bcrypt,
+  config,
+  zmq,
+  util,
+});
+const email = require('./email.js')({
+  config
 });
 const transaction = require('./transaction.js')({
   crypto,
@@ -72,6 +75,7 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(express.static('views/static'))
 
 const port = process.env.PORT || 3333;
 

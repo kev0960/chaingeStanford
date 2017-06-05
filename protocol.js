@@ -84,6 +84,8 @@ module.exports = (function () {
                     // list of strings until that is actually
                     // used for Request verification
                     g_r_i: p.g_r_i,
+                    encrypted : p.encrypted,
+                    encrypted_key : p.encrypted_key,
                 };
             } else if (this.type == 1) {
                 txn_payload = {
@@ -130,7 +132,9 @@ module.exports = (function () {
                     g_r: big_int(data.g_r, 16),
                     K: data.K,
                     secret: big_int(data.secret, 16),
-                    g_r_i: data.g_r_i
+                    g_r_i: data.g_r_i,
+                    encrypted : data.encrypted,
+                    encrypted_key : data.encrypted_key,
                 }
             } else if (data.type == 1) {
                 this.payload = {
@@ -368,7 +372,7 @@ module.exports = (function () {
         return new Transaction (data_txn_obj);
     }
 
-    const create_data_txn = function (private_key, public_key, identity) {
+    const create_data_txn = function (private_key, public_key, id_key, identity) {
         console.log("Creating TXN!")
         // Defining g^a which is used for answering REQUEST
 
@@ -399,6 +403,11 @@ module.exports = (function () {
         const h_identity = big_int(calc_sha2_hash(identity), 16);
         const secret = h_identity.add(g_r); // g^r + H(M)
 
+        // rsa encryption for the key/value Chainge storage
+        var key = new node_rsa(public_key);
+        var enc_id_key = key.encrypt(id_key, 'base64');
+        var enc_identity = key.encrypt(identity, 'base64')
+
         const txn_payload = {
             G: G.toString(16),
             g: g.toString(16),
@@ -408,7 +417,9 @@ module.exports = (function () {
             secret: secret.toString(16),
             g_r_i: g_r_i, // List of Strings
             timestamp: Date.now(), // Number
-            type: 0 // Number
+            type: 0, // Number
+            encrypted: enc_identity,
+            encrypted_key : enc_id_key,
         };
 
         const txn_payload_str = stable_stringify(txn_payload);
