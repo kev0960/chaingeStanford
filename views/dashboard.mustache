@@ -45,10 +45,10 @@
                     <a href="#" data-toggle="modal" data-target="#answerModal">Answer Request</a>
                 </li>
                 <li>
-                    <a href="#">Services</a>
+                    <a href="#">My Transactions</a>
                 </li>
                 <li>
-                    <a href="#">Contact</a>
+                    <a href="#">FAQ</a>
                 </li>
             </ul>
         </div>
@@ -123,41 +123,76 @@
 
 </div>  
 
-<div class="modal fade" id="addModal" role="dialog">
-    <div class="modal-dialog">
-          <!-- Modal content-->
-          <div class="modal-content">
-            <div class="modal-header" style="height:50px;">
-              <button type="button" style="height:30px;" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Add My Info To Network</h4>
-            </div>
-            <div class="modal-body">
-            	Modal Body
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-          </div>      
-    </div>
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+			<h3 class="modal-title" id="lineModalLabel">Record Information</h3>
+		</div>
+		<div class="modal-body">
+			
+            <!-- content goes here -->
+
+           	<p>Securely add your information to the blockchain network by entering it as a key/value pair. <br><br> For example, this is how Bob might store his phone number: 
+			<ul id="addList"> 
+				<li> Key: "Phone Number"</li> 
+				<li> Value: "000-0000"</li>
+			</ul>
+			<br>
+
+			<form>
+              <div class="form-group">
+                <label for="Name">Data Key</label>
+                <input type="text" class="form-control" id="key" name="key" placeholder="Enter Name of Data (ex. email)">
+              </div>
+              <div class="form-group">
+                <label for="exampleInputPassword1">Data Value</label>
+                <input type="text" class="form-control" id="value" name="value" placeholder="Enter Data (ex. admin@chainge.com)">
+              </div>
+              <button type="submit" class="btn btn-default">Submit</button>
+            </form>
+
+		</div>
+		<div class="modal-footer">
+			
+		</div>
+	</div>
+  </div>
 </div>
 
 
-<div class="modal fade" id="verifyModal" role="dialog">
-    <div class="modal-dialog">
-          <!-- Modal content-->
-          <div class="modal-content">
-            <div class="modal-header" style="height:50px;">
-              <button type="button" style="height:30px;" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Verify Transaction Data</h4>
-            </div>
-            <div class="modal-body">
-            	Modal Body
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-          </div>      
-    </div>
+<div class="modal fade" id="verifyModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+			<h3 class="modal-title" id="lineModalLabel">My Modal</h3>
+		</div>
+		<div class="modal-body">
+			
+            <!-- content goes here -->
+			<form>
+              <div class="form-group">
+                <label for="exampleInputEmail1">Stanford Email address</label>
+                <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
+              </div>
+              <div class="form-group">
+                <label for="exampleInputPassword1">Data Key</label>
+                <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+              </div>
+              <div class="form-group">
+                <label for="exampleInputPassword1">Data Value</label>
+                <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+              </div>
+              <button type="submit" class="btn btn-default">Submit</button>
+            </form>
+
+		</div>
+		<div class="modal-footer">
+		</div>
+	</div>
+  </div>
 </div>
 
 <div class="modal fade" id="answerModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
