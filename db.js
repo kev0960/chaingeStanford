@@ -1,5 +1,6 @@
 const redis = require('redis').createClient();
 var INITIALIZED = false;
+var DEV = true;
 
 
 module.exports = function (dependencies) {
@@ -11,7 +12,7 @@ module.exports = function (dependencies) {
 
   redis.on('ready', function () {
     console.log("Redis is now connected!");
-    if (!INITIALIZED) {
+    if (!INITIALIZED && DEV) {
         console.log("Creating default user for testing...");
 
         let email = "swjang@stanford.edu";
@@ -28,6 +29,8 @@ module.exports = function (dependencies) {
                 dh_key_size: 1024,
                 token : token,
                 type : 0,
+                //encrypted : ,
+                //encrypted_key : ,
             };
 
             console.log("Creating a default user : swjang / 123");

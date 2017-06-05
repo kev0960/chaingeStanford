@@ -147,4 +147,7 @@
 
 #dashboard_jumbotron {
     background-image: url('../images/stanford.png');
+    background-size:     cover;                      /* <------ */
+    background-repeat:   no-repeat;
+    background-position: center center; 
 }
