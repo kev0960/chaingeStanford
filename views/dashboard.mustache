@@ -158,9 +158,6 @@
 			</div>
 		</div>
 		<div class="modal-footer">
-			<div id="data_txn_result">
-
-			</div>
 		</div>
 	</div>
   </div>
@@ -176,8 +173,10 @@
 		</div>
 		<div class="modal-body">
 			
+            <div id="req_txn">
+
             <!-- content goes here -->
-			<form action="/new_txn" method="post">
+			<form action="/new_txn" method="post" id ="req_txn_form">
 			  <input type="hidden" name="txn_type" value="1">
               <div class="form-group">
                 <label for="exampleInputEmail1">Stanford Email address</label>
@@ -194,6 +193,12 @@
               <button type="submit" class="btn btn-default">Submit</button>
             </form>
 
+            </div>
+            <div class="progress hidden" id="req_txn_progress">
+  			<div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+  				Please wait while we save your data...
+  			</div>
+			</div>
 		</div>
 		<div class="modal-footer">
 		</div>
@@ -209,9 +214,10 @@
 			<h3 class="modal-title" id="lineModalLabel">My Modal</h3>
 		</div>
 		<div class="modal-body">
-			
+			<div id="ans_txn">
+
             <!-- content goes here -->
-			<form action="/new_txn" method="post">
+			<form action="/new_txn" method="post" id ="ans_txn_form">
 			<input type="hidden" name="txn_type" value="2">
               <div class="form-group">
                 <label for="exampleInputEmail1">Email address</label>
@@ -229,6 +235,13 @@
 
               <button type="submit" class="btn btn-default">Submit</button>
             </form>
+
+            </div>
+            <div class="progress hidden" id="ans_txn_progress">
+  			<div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+  				Please wait while we save your data...
+  			</div>
+			</div>
 
 		</div>
 		<div class="modal-footer">

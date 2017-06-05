@@ -187,10 +187,16 @@ module.exports = function (dependencies) {
 
             // Req TXN
             case 1:
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify({ result: "good" }));
+
                 break;
 
             // Ans TXN
             case 2:
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify({ result: "good" }));
+
                 break;
         }
     });

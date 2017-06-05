@@ -2,26 +2,33 @@
 
 console.log("including main.js");
 
-$("#data_txn_form").submit(function(e) {
-	e.preventDefault(); // avoid to execute the actual submit of the form.
-	console.log('data_txn_form clicked');
+let txn_types = ['data_txn', 'req_txn', 'ans_txn'];
 
-    var url = "/new_txn"; // the script where you handle the form input.
+for (let i = 0; i <  txn_types.length; i++) {
+	let txn_type = txn_types[i];
+	let form_id = '#'+txn_type+"_form";
 
-    $.ajax({
-           type: "POST",
-           url: url,
-           data: $("#idForm").serialize(), // serializes the form's elements.
-           success: function(data)
-           {
-               alert(data); 
-               toggle_progress('data_txn');
-           }
-         });
+	$(form_id).submit(function(e) {
+		e.preventDefault(); // avoid to execute the actual submit of the form.
+		console.log('data_txn_form clicked');
 
-    toggle_progress('data_txn')
+	    var url = "/new_txn"; // the script where you handle the form input.
 
-});
+	    $.ajax({
+	           type: "POST",
+	           url: url,
+	           data: $(form_id).serialize(), // serializes the form's elements.
+	           success: function(data)
+	           {
+	               alert(data); 
+	               toggle_progress(txn_type);
+	           }
+	         });
+
+	    toggle_progress(txn_type)
+	});
+
+}
 
 const toggle_progress = function(txn_type) {
 	let modal_id = '#'+txn_type;
