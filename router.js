@@ -165,21 +165,34 @@ module.exports = function (dependencies) {
 				txn_list.push(JSON.parse(list[i]));
 			}
 
-			let content_list = []
+            let num_rows = ceil(txn_list.length / 4.0);
+			let rows = [];
+
+            // Populate empty row objects
+            for (let i = 0; i < num_rows; i++) {
+                rows.push({
+                    row_num : (i+1),
+                    cols : [],
+                });
+            }
+
 			for (let i = 0; i < txn_list.length; i++) {
-				content_list.push({
+                let row_idx = floor(i / 4.0);
+				rows[row_idx].cols.push({
 					content: txn_list[i].serial,
 					state: txn_list[i].state
 				});
 			}
 
+            console.log(rows);
+
             db.get_keys(username).then(function(keys) {
+
 
                 let html_stream = mu2.compileAndRender('dashboard.mustache', {
                     "pub_key":keys[0],
                     "prv_key":keys[1],
-				    "txn": content_list,
-				    "pending_txn": 0
+				    "rows": rows,
 			    });
 
 			    html_stream.pipe(res);
