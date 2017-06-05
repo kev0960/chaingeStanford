@@ -172,7 +172,7 @@ module.exports = function (dependencies) {
 				});
 			}
 
-			let html_stream = mu2.compileAndRender('profile.mustache', {
+			let html_stream = mu2.compileAndRender('dashboard.mustache', {
 				"txn": content_list,
 				"pending_txn": 0
 			});
