@@ -38,7 +38,7 @@
             <ul class="sidebar-nav">
                 <li class="sidebar-brand">
                     <a href="#">
-                        <img alt="Brand" style="max-width:100%; max-height: 100%" src="images/chainge.png"> Chainge @ Stanford
+                        <img alt="Brand" style="max-width:20%; max-height: 20%" src="images/chainge.png">
                     </a>
                 </li>
                 <li>
@@ -64,23 +64,33 @@
         </div>
 <!-- Main Contents for the dashboard page -->
 
-	<div class="container-fluid">
+	<div id = "" class="container-fluid">
 		<div class="row">
-  			<div class="col-sm-6 col-md-4">
+  			<div class="col-md-6">
     			<div class="panel panel-success">
-    				  <div class="panel-heading">
-    <h3 class="panel-title">Public Key</h3>
-  </div>
-  <div class="panel-body"> {{pub_key}}
-  </div>
+    				<div class="panel-heading">
+   						 <h3 class="panel-title">Public Key</h3>
+  					</div>
+  					<div class="panel-body">
+					  	<div class="input-group">
+					  		<span class="input-group-addon" id="basic-addon1">Key</span>
+					  		<input type="text" class="form-control" placeholder="{{pub_key}}" aria-describedby="basic-addon1">
+						</div>
+  					</div>
     			</div>
+    		</div>
+
+    		<div class="col-md-6">
     			<div class="panel panel-danger">
     				  <div class="panel-heading">
-    <h3 class="panel-title">Private Key</h3>
-  </div>
-  <div class="panel-body">
-    {{prv_key}}
-  </div>
+					    <h3 class="panel-title">Private Key</h3>
+					  </div>
+					  <div class="panel-body">
+					   	<div class="input-group">
+					  		<span class="input-group-addon" id="basic-addon1">Key</span>
+					  		<input type="text" class="form-control" placeholder="{{prv_key}}" aria-describedby="basic-addon1">
+						</div>
+					  </div>
     			</div>
  			 </div>
 		</div>
