@@ -165,7 +165,7 @@ module.exports = function (dependencies) {
 				txn_list.push(JSON.parse(list[i]));
 			}
 
-            let num_rows = ceil(txn_list.length / 4.0);
+            let num_rows = Math.ceil(txn_list.length / 4.0);
 			let rows = [];
 
             // Populate empty row objects
@@ -177,7 +177,7 @@ module.exports = function (dependencies) {
             }
 
 			for (let i = 0; i < txn_list.length; i++) {
-                let row_idx = floor(i / 4.0);
+                let row_idx = Math.floor(i / 4.0);
 				rows[row_idx].cols.push({
 					content: txn_list[i].serial,
 					state: txn_list[i].state
