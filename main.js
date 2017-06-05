@@ -87,6 +87,13 @@ const auth = require('./auth.js')({
   passport,
   db
 });
+
+const txn_handler = require('./txn_handler.js')( {
+    db,
+    zmq,
+    connect_node,
+});
+
 const router = require('./router.js')({
   app,
   db,

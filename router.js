@@ -11,6 +11,7 @@ module.exports = function (dependencies) {
 	const connect_node = dependencies['connect_node'];
 	const auth = dependencies['auth'];
 	const chain = dependencies['chain'];
+    const txn_handler = dependencies['txn_handler'];
 
 	app.get('/', function (req, res) {
 		res.sendFile(path.join(__dirname + '/index.html'));
@@ -155,6 +156,43 @@ module.exports = function (dependencies) {
     	res.send(JSON.stringify({ result: "good" }));
 		}
 	);
+
+    /**
+     * Define POST request behavior on route /new_txn
+     * It receives the POST params from the user, and cfeates / broadcasts the txn
+     */
+    app.post('/new_txn', auth.is_logged_in(), function (req, res) {
+        let txn_type = parseInt(req.body.txn_type);
+        let email = req.user;
+
+        console.log(email);
+        console.log(txn_type);
+
+        switch(txn_type) {
+
+            // Data TXN
+            case 0:
+                // Extract info 
+                let data_key = req.body.key;
+                let data_val = req.body.value;
+                let use_proxy = req.body.proxy;
+
+                // txn_handler takes care of all zmq / connect_node operations
+                txn_handler.data_txn_wrapper(email, data_key, data_val, use_proxy).then(function () {
+                    
+                });
+
+                break;
+
+            // Req TXN
+            case 1:
+                break;
+
+            // Ans TXN
+            case 2:
+                break;
+        }
+    });
 
 	app.get('/profile', auth.is_logged_in(), function (req, res) {
 		let username = req.user;
