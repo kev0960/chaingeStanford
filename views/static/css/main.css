@@ -1,7 +1,7 @@
 /* Toggle Styles */
 
 #wrapper {
-    padding-left: 250px;
+    padding-left: 200px;
     -webkit-transition: all 0.5s ease;
     -moz-transition: all 0.5s ease;
     -o-transition: all 0.5s ease;
@@ -9,7 +9,7 @@
 }
 
 #wrapper.toggled {
-    padding-left: 250px;
+    padding-left: 200px;
 }
 
 #sidebar-wrapper {
@@ -28,7 +28,7 @@
 }
 
 #wrapper.toggled #sidebar-wrapper {
-    width: 150px;
+    width: 160px;
 }
 
 #page-content-wrapper {
@@ -47,7 +47,7 @@
 .sidebar-nav {
     position: absolute;
     top: 25;
-    width: 150px;
+    width: 160px;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -96,7 +96,7 @@
     }
 
     #wrapper.toggled {
-        padding-left: 250px;
+        padding-left: 200px;
     }
 
     #sidebar-wrapper {
@@ -104,7 +104,7 @@
     }
 
     #wrapper.toggled #sidebar-wrapper {
-        width: 250px;
+        width: 160px;
     }
 
     #page-content-wrapper {
