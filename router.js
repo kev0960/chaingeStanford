@@ -178,10 +178,11 @@ module.exports = function (dependencies) {
                 let use_proxy = req.body.proxy;
 
                 // txn_handler takes care of all zmq / connect_node operations
-                txn_handler.data_txn_wrapper(email, data_key, data_val, use_proxy).then(function () {
-                    
-                });
-
+                //txn_handler.data_txn_wrapper(email, data_key, data_val, use_proxy).then(function () {
+                //    
+                //});
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify({ result: "good" }));
                 break;
 
             // Req TXN

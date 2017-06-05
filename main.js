@@ -106,5 +106,6 @@ const router = require('./router.js')({
   connect_node,
   auth,
   config,
-  chain
+  chain,
+  txn_handler
 });

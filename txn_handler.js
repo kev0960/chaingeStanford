@@ -1,6 +1,6 @@
 module.exports = function(dependencies) {
-    const db = dependenceis['db'];
-    const zmq = dependenceis['zmq'];
+    const db = dependencies['db'];
+    const zmq = dependencies['zmq'];
     const connect_node = dependencies['connect_node'];
 
     const data_txn_wrapper = function(email, id_key, id_val, use_proxy) {
@@ -13,7 +13,9 @@ module.exports = function(dependencies) {
 
     }
 
-    const ans_txn_wrapper = function(email) 
+    const ans_txn_wrapper = function(email) {
+
+    }
 
     return {
         data_txn_wrapper,
