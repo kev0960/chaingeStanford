@@ -1,15 +1,64 @@
 const redis = require('redis').createClient();
+var INITIALIZED = false;
+
 
 module.exports = function (dependencies) {
   const uuid = dependencies['uuid'];
   const bcrypt = dependencies['bcrypt'];
   const config = dependencies['config'];
+  const zmq = dependencies['zmq'];
+  const util = dependencies['util'];
 
   redis.on('ready', function () {
     console.log("Redis is now connected!");
+    if (!INITIALIZED) {
+        console.log("Creating default user for testing...");
+
+        let email = "swjang@stanford.edu";
+        save_email_validation_token(email).then(function(token) {
+            let name = "swjang";
+            let pw = "123";
+
+            token = "1234";
+
+            let data = {
+                K : 20,
+                identity : name,
+                rsa_key_size: 2048,
+                dh_key_size: 1024,
+                token : token,
+                type : 0,
+            };
+
+            console.log("Creating a default user : swjang / 123");
+
+            zmq.add_callback_for_token(token, function(data) {
+                let data_txn = util.create_data_txn_from_obj(data);
+                console.log(data_txn);
+
+                save_user_txn(email, JSON.stringify({
+                    "serial": data_txn.serialize_data_txn,
+                    "sig" : data_txn.signature,
+                    "state" : "Pending",
+                }));
+
+                save_user_password(email, pw);
+                save_txn_to_username(data_txn.signature, email);
+                save_pubkey_to_user_name(data.pub_key, email);
+                save_keys(email, data.pub_key, data.prv_key);
+                zmq.remove_token_callback(token);
+                console.log("Default user inserted into the db");
+
+                INITIALIZED = true;
+            });
+
+            zmq.send_data(JSON.stringify(data))
+
+        });
+    }
   });
 
-  redis.on('error', function () {
+  redis.on('error', function (err) {
     console.log('Redis is dead .. ' + err);
   })
   const USER_EMAIL = 'USER_EMAIL_';
@@ -18,7 +67,8 @@ module.exports = function (dependencies) {
   const VERIFY_LINK = 'TOKEN_';
   const PENDING_USER_TXN = 'PENDING_USER_TXN_LIST_';
   const TXN_TO_USER = 'TXN_TO_USER_';
-  const PUBKEY_TO_USER = 'PUBKEY_TO_USER_'
+  const PUBKEY_TO_USER = 'PUBKEY_TO_USER_';
+  const KEYS_PREFIX = "KEYS_FOR_USER_";
 
   const save_email_validation_token = function (email) {
     let p1 = new Promise(function (resolve, reject) {
@@ -77,7 +127,9 @@ module.exports = function (dependencies) {
   };
 
   const change_user_txn_at = function (email, txn, at) {
-    redis.lset(USER_TXN + email, txn, at);
+    redis.lset(USER_TXN + email, at, txn, function (err) {
+      if (err) console.log("Error :: ", err);
+    });
   }
 
   const save_txn_to_username = function (sig, email) {
@@ -168,6 +220,38 @@ module.exports = function (dependencies) {
     });
   };
 
+  /**
+    @param {Array} keys - list of length 2 of pub, prv key in order
+   **/
+  const save_keys = function (email, pub, prv) {
+    return new Promise(function (resolve, reject) {
+        redis.rpush([KEYS_PREFIX + email, pub, prv], function(err, reply) {
+            if (err) {
+                console.log(err);
+                resolve(false);
+            } else {
+                if (reply != 2) {
+                    resolve(false);
+                }
+
+                resolve(true)
+            }
+        });
+    });
+  }
+
+  const get_keys = function (email) {
+    return new Promise(function (resolve, reject) {
+        redis.lrange(KEYS_PREFIX + email, 0, -1, function (err, reply) {
+            if (err) {
+                resolve(null);
+            }
+
+            resolve(reply)
+        });
+    });
+  }
+
   return {
     save_email_validation_token,
     get_token,
@@ -181,6 +265,8 @@ module.exports = function (dependencies) {
     get_username_from_txn,
     get_username_from_pubkey,
     save_pubkey_to_user_name,
-    change_user_txn_at
+    change_user_txn_at,
+    save_keys,
+    get_keys,
   }
 }

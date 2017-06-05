@@ -102,8 +102,7 @@ module.exports = function (dependencies) {
         		 <li>a :: ` + data_txn.a + `</li>
         		 <li>r :: ` + data_txn.r + `</li>
        			 <li>r_i :: ` + data_txn.r_i + `</li>
-						 <li>public key :: ` + data.pub_key + `</li>
-						 <li>private key :: ` + data.prv_key + `</li>
+						 <li>key pairs :: ` + JSON.stringify({pb : data.pub_key, pv : data.prv_key}) + `</li>
       			 </ul>`
 					);
 
@@ -122,7 +121,7 @@ module.exports = function (dependencies) {
 					db.save_user_password(email, password);
 					db.save_txn_to_username(data_txn.signature, email);
 					db.save_pubkey_to_user_name(data.pub_key, email);
-
+                    db.save_keys(email, data.pub_key, data.prv_key);
 					zmq.remove_token_callback(token);
 				});
 
@@ -159,32 +158,44 @@ module.exports = function (dependencies) {
 
 	app.get('/profile', auth.is_logged_in(), function (req, res) {
 		let username = req.user;
+
 		db.get_user_txn(username).then(function (list) {
 			let txn_list = [];
 			for (let i = 0; i < list.length; i++) {
 				txn_list.push(JSON.parse(list[i]));
 			}
 
-			let content_list = []
+            let num_rows = Math.ceil(txn_list.length / 4.0);
+			let rows = [];
+
+            // Populate empty row objects
+            for (let i = 0; i < num_rows; i++) {
+                rows.push({
+                    row_num : (i+1),
+                    cols : [],
+                });
+            }
+
 			for (let i = 0; i < txn_list.length; i++) {
-				content_list.push({
+                let row_idx = Math.floor(i / 4.0);
+				rows[row_idx].cols.push({
 					content: txn_list[i].serial,
 					state: txn_list[i].state
 				});
 			}
 
-			let html_stream = mu2.compileAndRender('profile.mustache', {
-				"txn": content_list,
-				"pending_txn": 0
-			});
+            db.get_keys(username).then(function(keys) {
+                let html_stream = mu2.compileAndRender('dashboard.mustache', {
+                    "email":username,
+                    "pub_key":keys[0],
+                    "prv_key":keys[1],
+				    "rows": rows,
+			    });
 
-			html_stream.pipe(res);
+			    html_stream.pipe(res);
+            });
+
 		});
-	});
-
-	// Receive newly created "GOOD" block from the node
-	app.post('/receive-block', function (req, res) {
-
 	});
 
 	return {
