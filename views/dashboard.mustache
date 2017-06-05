@@ -18,15 +18,17 @@
 	</head>
 	<body>
 <!-- Navigation Bar for the dashboard page -->
+<!--
 <nav class="navbar navbar-inverse navbar-fixed-top">
   <div class="container-fluid">
     <div class="navbar-header">
       <a class="navbar-brand" href="#">
-        <img alt="Brand" style="max-width:50%; max-height: 50%" src="images/chainge.png"> Chainge @ Stanford
+        <img alt="Brand" style="max-width:100%; max-height: 100%" src="images/chainge.png">
       </a>
     </div>
   </div>
 </nav>
+-->
 
 <!-- Side Navbar -->
 
@@ -36,7 +38,7 @@
             <ul class="sidebar-nav">
                 <li class="sidebar-brand">
                     <a href="#">
-                        Start Bootstrap
+                        <img alt="Brand" style="max-width:100%; max-height: 100%" src="images/chainge.png"> Chainge @ Stanford
                     </a>
                 </li>
                 <li>
@@ -52,9 +54,6 @@
                     <a href="#">Answer Request</a>
                 </li>
                 <li>
-                    <a href="#"></a>
-                </li>
-                <li>
                     <a href="#">Services</a>
                 </li>
                 <li>
@@ -64,6 +63,65 @@
         </div>
         </div>
 <!-- Main Contents for the dashboard page -->
+
+	<div class="container-fluid">
+		<div class="row">
+  			<div class="col-sm-6 col-md-4">
+    			<div class="panel panel-success">
+    				  <div class="panel-heading">
+    <h3 class="panel-title">Public Key</h3>
+  </div>
+  <div class="panel-body"> {{pub_key}}
+  </div>
+    			</div>
+    			<div class="panel panel-danger">
+    				  <div class="panel-heading">
+    <h3 class="panel-title">Private Key</h3>
+  </div>
+  <div class="panel-body">
+    {{prv_key}}
+  </div>
+    			</div>
+ 			 </div>
+		</div>
+
+
+		<div class="row">
+  <div class="col-sm-6 col-md-4">
+    <div class="thumbnail">
+      <img src="..." alt="...">
+      <div class="caption">
+        <h3>Thumbnail label</h3>
+        <p>...</p>
+        <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#" class="btn btn-default" role="button">Button</a></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-6 col-md-4">
+    <div class="thumbnail">
+      <img src="..." alt="...">
+      <div class="caption">
+        <h3>Thumbnail label</h3>
+        <p>...</p>
+        <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#" class="btn btn-default" role="button">Button</a></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-6 col-md-4">
+    <div class="thumbnail">
+      <img src="..." alt="...">
+      <div class="caption">
+        <h3>Thumbnail label</h3>
+        <p>...</p>
+        <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#" class="btn btn-default" role="button">Button</a></p>
+      </div>
+    </div>
+  </div>
+
+</div>  		
+  	</div>
 
 	</body>
 </html>

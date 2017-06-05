@@ -121,7 +121,7 @@ module.exports = function (dependencies) {
 					db.save_user_password(email, password);
 					db.save_txn_to_username(data_txn.signature, email);
 					db.save_pubkey_to_user_name(data.pub_key, email);
-
+                    db.save_keys(email, data.pub_key, data.prv_key);
 					zmq.remove_token_callback(token);
 				});
 
@@ -158,6 +158,7 @@ module.exports = function (dependencies) {
 
 	app.get('/profile', auth.is_logged_in(), function (req, res) {
 		let username = req.user;
+
 		db.get_user_txn(username).then(function (list) {
 			let txn_list = [];
 			for (let i = 0; i < list.length; i++) {
@@ -172,12 +173,18 @@ module.exports = function (dependencies) {
 				});
 			}
 
-			let html_stream = mu2.compileAndRender('dashboard.mustache', {
-				"txn": content_list,
-				"pending_txn": 0
-			});
+            db.get_keys(username).then(function(keys) {
 
-			html_stream.pipe(res);
+                let html_stream = mu2.compileAndRender('dashboard.mustache', {
+                    "pub_key":keys[0],
+                    "prv_key":keys[1],
+				    "txn": content_list,
+				    "pending_txn": 0
+			    });
+
+			    html_stream.pipe(res);
+            });
+
 		});
 	});
 
