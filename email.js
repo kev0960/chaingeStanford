@@ -2,6 +2,7 @@ const nodemailer = require('nodemailer');
 
 module.exports = function (dependencies) {
   const config = dependencies['config'];
+console.log("config :: ", config);
   let transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
