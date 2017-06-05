@@ -3,7 +3,9 @@
 console.log("including main.js");
 
 let txn_types = ['data_txn', 'req_txn', 'ans_txn'];
+let modal_ids= ['#addModal', '#verifyModal', '#answerModal', '#txnsModal'];
 
+/* Register Ajax calls per txn creation form ... */
 for (let i = 0; i <  txn_types.length; i++) {
 	let txn_type = txn_types[i];
 	let form_id = '#'+txn_type+"_form";
@@ -22,6 +24,9 @@ for (let i = 0; i <  txn_types.length; i++) {
 	           {
 	               alert(data); 
 	               toggle_progress(txn_type);
+
+	               // reload the page afterwards so that the dashboard is refreshed
+	               //location.reload();
 	           }
 	         });
 
@@ -29,6 +34,16 @@ for (let i = 0; i <  txn_types.length; i++) {
 	});
 
 }
+
+/* Register modal related callbacks */
+for (let i = 0; i < modal_ids.length; i++) {
+	let modal_id = modal_ids[i];
+
+	$(modal_id).on('hidden.bs.modal', function () {
+    	location.reload();
+	})
+}
+
 
 const toggle_progress = function(txn_type) {
 	let modal_id = '#'+txn_type;

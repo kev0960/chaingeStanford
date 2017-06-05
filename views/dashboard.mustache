@@ -45,7 +45,36 @@
                     <a href="#" data-toggle="modal" data-target="#answerModal">Answer Request</a>
                 </li>
                 <li>
-                    <a href="#">My Transactions</a>
+                    <a href="#" data-toggle="modal" data-target="txnsModal">My History</a>
+                </li>
+                <li>
+                    <a href="#">FAQ</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- right sidebar-->
+        <div id="sidebar-wrapper-right">
+            <ul class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="#">
+                        <img alt="Brand" style="max-width:20%; max-height: 20%" src="images/chainge.png">  @ Stanford
+                    </a>
+                </li>
+                <li>
+                    <a href="/profile">Dashboard</a>
+                </li>
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#addModal">Record Data</a>
+                </li>
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#verifyModal">Request Verification</a>
+                </li>
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#answerModal">Answer Request</a>
+                </li>
+                <li>
+                    <a href="#" data-toggle="modal" data-target="txnsModal">My History</a>
                 </li>
                 <li>
                     <a href="#">FAQ</a>
@@ -227,11 +256,6 @@
                 <label for="exampleInputPassword1">Password</label>
                 <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
               </div>
-              <div class="form-group">
-                <label for="exampleInputFile">File input</label>
-                <input type="file" id="exampleInputFile">
-                <p class="help-block">Example block-level help text here.</p>
-              </div>
 
               <button type="submit" class="btn btn-default">Submit</button>
             </form>
@@ -242,6 +266,25 @@
   				Please wait while we save your data...
   			</div>
 			</div>
+
+		</div>
+		<div class="modal-footer">
+		</div>
+	</div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="txnsModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+			<h3 class="modal-title" id="lineModalLabel">My Modal</h3>
+		</div>
+		<div class="modal-body">
+
+			PUT ALL PENDING(Unanswered) TXNS HERE, both that I requested and I am being requested for...
 
 		</div>
 		<div class="modal-footer">
