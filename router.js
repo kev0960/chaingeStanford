@@ -189,14 +189,23 @@ module.exports = function (dependencies) {
                 // Extract info
                 let data_key = req.body.key;
                 let data_val = req.body.value;
-                let use_proxy = req.body.proxy;
 
                 // txn_handler takes care of all zmq / connect_node operations
-                //txn_handler.data_txn_wrapper(email, data_key, data_val, use_proxy).then(function () {
-                //
-                //});
-                res.setHeader('Content-Type', 'application/json');
-                res.send(JSON.stringify({ result: "good" }));
+                txn_handler.data_txn_wrapper(email, data_key, data_val, use_proxy).then(function (data_txn) {
+                    let result = {
+                        success : true,
+                        data_txn : data_txn,
+                    };
+
+                    if (data_txn == null) {
+                        result = {
+                            success : false,
+                        };
+                    }
+
+                    res.setHeader('Content-Type', 'application/json');
+                    res.send(JSON.stringify(result));
+                });
                 break;
 
             // Req TXN
@@ -237,10 +246,28 @@ module.exports = function (dependencies) {
 
 			for (let i = 0; i < txn_list.length; i++) {
                 let row_idx = Math.floor(i / 4.0);
-				rows[row_idx].cols.push({
-					content: txn_list[i].serial,
-					state: txn_list[i].state
-				});
+                let txn = txn_list[i];
+
+                // prepare block_num for rendering
+                let block_num = null;
+
+                if (txn.state == 'Pending') {
+                    block_num = 'Transaction Pending';
+                } else {
+                    block_num = txn.block_num;
+                }
+
+                let entry = {
+                    'key' : txn.key,
+                    'value': txn.value,
+                    'sig' : txn.sig,
+                    'block_num' : block_num,
+                    'r_i' : txn.r_i,
+                    'r' : txn.r,
+                    'a' : txn.a,
+                };
+
+				rows[row_idx].cols.push(entry);
 			}
 
             db.get_keys(username).then(function(keys) {

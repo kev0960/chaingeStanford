@@ -22,7 +22,6 @@ module.exports = function(dependencies) {
                 withkey : 0
             };
 
-
             console.log("Creating Transaction with :: ", data);
 
             // Now add a zmq callback to execute when the new transaction
@@ -57,14 +56,15 @@ module.exports = function(dependencies) {
 
                     db.save_txn_to_username(data_txn.signature, email);
 
-                    db.save_pubkey_to_user_name(data.pub_key, email);
-                    db.save_keys(email, data.pub_key, data.prv_key);
+                    //db.save_pubkey_to_user_name(data.pub_key, email);
+                    //db.save_keys(email, data.pub_key, data.prv_key);
 
                     resolve (data_txn);
 
                 });
 
-            })
+            });
+            zmq.send_data(data);
         });
     }
 
