@@ -79,10 +79,10 @@ public:
     CryptoPP::RSAES_OAEP_SHA_Encryptor encryptor(pub);
     std::vector<string> cipher_list;
 
-    for (int i = 0; i < msgs.length(); i ++) {
+    for (int i = 0; i < msgs.size(); i ++) {
       string cipher;
       CryptoPP::StringSource ss1(msgs[i], true,
-        new CryptoPP::PK_EncryptorFilter(rng, encryptor,
+        new CryptoPP::PK_EncryptorFilter(rnd, encryptor,
           new CryptoPP::StringSink(cipher)
         )
       );
@@ -137,14 +137,10 @@ class DataTxn
   string str_secret;
   int K;
 
-  // Information about txn
-  string data_key;
-  string data_value;
-
 public:
   // Create a data txn with given info.
-  DataTxn(int bit_size, int K, string hashed_identity, string data_key, string data_value)
-   : K(K), data_key(data_key), data_value(data_value)
+  DataTxn(int bit_size, int K, string hashed_identity)
+   : K(K)
   {
     AutoSeededRandomPool rnd;
     DH dh;
@@ -208,7 +204,6 @@ public:
         {"K", K},
         {"token", token}};
 
-    
     cout << j << std::endl;
     // Return the serialized JSON object
     return j.dump();
@@ -305,6 +300,56 @@ public:
 
 class AnswerTxn
 {
+
+  Integer integer_with_hex(string hex)
+  {
+    // Insert '0x' at front
+    hex.insert(0, "0x");
+
+    return Integer(hex.c_str());
+  }
+
+  std::vector<string> response;
+
+  public:
+
+  AnswerTxn(string data_txn_str, string request_txn_str, string secret) {
+    auto data_txn_json = json::parse(data_txn_str);
+    auto request_txn_json = json::parse(request_txn_str);
+    auto secret_json = json::parse(secret);
+
+    Integer a = integer_with_hex(secret_json["a"]);
+    Integer G = integer_with_hex(data_txn_json["txn_payload"]["G"]);
+    Integer g = integer_with_hex(data_txn_json["txn_payload"]["g"]);
+
+    Integer g_b = integer_with_hex(request_txn_json["txn_payload"]["g_b"]);
+    Integer g_ab = ModularExponentiation(g_b, a, G);
+
+    string request = request_txn_json["txn_payload"]["req"];
+    std::vector<string> r_i_list = secret_json["r_i"];
+    Integer r = integer_with_hex(secret_json["r"]);
+
+    for (int i = 0; i < request.length(); i ++) {
+      if (request[i] == '0') {
+        response.push_back(r_i_list[i]);
+      }
+      else if (request[i] == '1') {
+        Integer r_i_num = integer_with_hex(r_i_list[i]);
+        Integer resp = r_i_num + r + g_ab;
+        response.push_back(integer_to_string(resp));
+      }
+    }
+  }
+
+  string serialize_data(string token) {
+    json j = {
+      {"response", response},
+      {"token", token}
+    };
+
+    cout << j << std::endl;
+    return j.dump();
+  }
 };
 
 int main()
@@ -338,6 +383,10 @@ int main()
     // Request for generating REQUEST TXN
     else if (json_data["type"] == 1) {
       RequestTxn txn(json_data["data_txn"], json_data["identity"]);
+      serial = txn.serialize_data(json_data["token"]);
+    }
+    else if (json_data["type"] == 2) {
+      AnswerTxn txn(json_data["data_txn"], json_data["req_txn"], json_data["secret"]);
       serial = txn.serialize_data(json_data["token"]);
     }
 
