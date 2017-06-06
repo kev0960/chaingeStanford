@@ -253,7 +253,9 @@ module.exports = function (dependencies) {
 
                 if ('block_num' in txn) {
                     block_num = txn.block_num;
-		}
+		        } else {
+                    block_num = 'Pending'
+                }
 
                 let entry = {
                     'key' : txn.key,
