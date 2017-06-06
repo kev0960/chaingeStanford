@@ -29,8 +29,7 @@ module.exports = function (dependencies) {
                 dh_key_size: 1024,
                 token : token,
                 type : 0,
-                //encrypted : ,
-                //encrypted_key : ,
+                with_key:1,
             };
 
             console.log("Creating a default user : swjang / 123");
@@ -43,6 +42,13 @@ module.exports = function (dependencies) {
                     "serial": data_txn.serialize_data_txn,
                     "sig" : data_txn.signature,
                     "state" : "Pending",
+                    "secret" : {
+			r_i : data_txn.r_i,
+			r : data_txn.r,
+			a : data_txn.a
+		    },
+		    "key" : "email",
+		    "value" : email,
                 }));
 
                 save_user_password(email, pw);
@@ -54,7 +60,7 @@ module.exports = function (dependencies) {
 
                 INITIALIZED = true;
             });
-
+            console.log(JSON.stringify(data));
             zmq.send_data(JSON.stringify(data))
 
         });

@@ -173,3 +173,7 @@
 .hidden {
     display:none;
 }
+
+.panel-default > .panel-heading.pending {
+    background-image: linear-gradient(to bottom,#f2dede 0,#ebcccc 100%);    
+}

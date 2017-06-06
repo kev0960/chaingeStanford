@@ -15,16 +15,18 @@ module.exports = function (dependencies) {
     // Generate new block
     let new_block = block.create_block(block_data);
 
+    let block_num = new_block.header.get_height();
+
     // Search through the block's included transactions
     new_block.merkle_tree.create_deserialized_leaves();
     let included_txns = new_block.merkle_tree.deserialized_leaves;
 
     console.log("Check start ", included_txns);
     // included_txns are now list of Transaction objects
-    check_each_txn(included_txns, 0);
+    check_each_txn(included_txns, 0, block_num);
   }
 
-  const check_each_txn = function (included_txns, current) {
+  const check_each_txn = function (included_txns, current, block_num) {
     if (included_txns.length <= current) {
       return;
     }
@@ -46,6 +48,10 @@ module.exports = function (dependencies) {
               console.log("with  ", txn_signature);
               if (data.sig == txn_signature) {
                 data.state += '|ACCEPTED';
+
+                // now that the block is safe, store block_num
+                data['block_num'] = block_num;
+
                 db.change_user_txn_at(username, JSON.stringify(data), i);
 
                 found = true;
@@ -78,6 +84,9 @@ module.exports = function (dependencies) {
                 let data = JSON.parse(list[i]);
                 if (data.sig == current_txn.get_data_txn_sig()) {
                   data.state += '|REQUESTED' + txn_signature;
+
+                  data['block_num'] = block_num;
+
                   db.save_user_txn(username, JSON.stringify(data));
                 }
               }
@@ -97,6 +106,7 @@ module.exports = function (dependencies) {
                 let data = JSON.parse(list[i]);
                 if (data.sig == current_txn.get_req_txn_sig()) {
                   data.state += '|ANSWERED' + txn_signature;
+                  data['block_num'] = block_num;
                   db.save_user_txn(username, JSON.stringify(data));
                 }
               }
@@ -107,7 +117,7 @@ module.exports = function (dependencies) {
     }
 
     setTimeout(function () {
-      check_each_txn(included_txns, current + 1);
+      check_each_txn(included_txns, current + 1, block_num);
     }, 0);
   };
 

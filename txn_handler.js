@@ -19,9 +19,8 @@ module.exports = function(dependencies) {
                 dh_key_size : 1024,
                 token : new_token,
                 type : 0,
-                withkey : 0
+                with_key : 0
             };
-
 
             console.log("Creating Transaction with :: ", data);
 
@@ -38,6 +37,8 @@ module.exports = function(dependencies) {
 
                     data["pub_key_pkcs8"] = pub_key;
                     data["prv_key_pkcs8"] = prv_key;
+
+                    console.log(data);
 
                     let data_txn = util.create_data_txn_from_obj(data);
 
@@ -59,12 +60,12 @@ module.exports = function(dependencies) {
 
                     db.save_pubkey_to_user_name(data.pub_key, email);
                     db.save_keys(email, data.pub_key, data.prv_key);
-
+                    zmq.remove_token_callback(token);
                     resolve (data_txn);
-
                 });
 
-            })
+            });
+            zmq.send_data(JSON.stringify(data));
         });
     }
 

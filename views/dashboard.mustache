@@ -54,13 +54,15 @@
         </div>
 
         <!-- right sidebar-->
-        <div id="sidebar-wrapper-right">
+        <div id="sidebar-wrapper-right" style="overflow:scroll;">
             <ul class="sidebar-nav">
                 <li class="sidebar-brand">
-                    <a href="#">
-                     	Uanswered transactions
+                    <a href="#" onclick="reload_pending_txns('#pending_txns');">
+                     	Pending Txns
                     </a>
                 </li>
+            </ul>
+            <ul class="sidebar-nav" id = "pending_txns">
             </ul>
         </div>
 
@@ -108,15 +110,48 @@
 			<div class="row">
 				{{#cols}}
 					<div class="col-sm-6 col-md-3">
-    					<div class="thumbnail">
-      						<div class="caption">
-      							<div style="overflow:scroll;">
-      								{{content}}
-      							</div>
-        						<h4>{{state}}</h4>
+								<div class="panel panel-default" >
+								  <!-- Default panel contents -->
+								  <div class="panel-heading" id = "panel_heading_{{sig}}" style="overflow:scroll;">{{key}} : {{value}}</div>
+								  <div class="panel-body">
+								  <!-- List group -->
+								  <ul class="list-group">
+								  	 <li class="list-group-item">					  	
+									    <div class="input-group">
+									  		<span class="input-group-addon" id="basic-addon1">sig</span>
+									  		<input type="text" class="form-control sig" aria-describedby="basic-addon1" value="{{sig}}">
+										</div>
+									</li>
+									<li class="list-group-item">					  	
+									    <div class="input-group">
+									  		<span class="input-group-addon" id="basic-addon1">block</span>
+									  		<input id = "block_for_{{sig}}" type="text" class="form-control" aria-describedby="basic-addon1" value="{{block_num}}">
+										</div>
+									</li>
+								    <li class="list-group-item">					  	
+									    <div class="input-group">
+									  		<span class="input-group-addon" id="basic-addon1">r</span>
+									  		<input type="text" class="form-control" aria-describedby="basic-addon1" value="{{r}}">
+										</div>
+									</li>
+								    <li class="list-group-item">
+								    
+								    	 <div class="input-group">
+									  		<span class="input-group-addon" id="basic-addon1">r_i</span>
+									  		<input type="text" class="form-control" aria-describedby="basic-addon1" value="{{r_i}}">
+										</div>
+								    </li>
+								    <li class="list-group-item">
+								    	 <div class="input-group">
+									  		<span class="input-group-addon" id="basic-addon1">a</span>
+									  		<input type="text" class="form-control" aria-describedby="basic-addon1" value="{{a}}">
+										</div>
+								    </li>
+
+								  </ul>
+								</div>
       						</div>
     					</div>
- 					</div>
 				{{/cols}}
 			</div>
 		{{/rows}}
