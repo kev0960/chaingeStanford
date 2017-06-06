@@ -110,18 +110,24 @@
 					<div class="col-sm-6 col-md-3">
     					<div class="thumbnail">
       						<div class="caption" style="overflow:scroll;">
-								<div class="panel panel-default">
+								<div class="panel panel-default" >
 								  <!-- Default panel contents -->
-								  <div class="panel-heading">{{key}} : {{value}}</div>
+								  <div class="panel-heading" id = "panel_heading_{{sig}}" style="overflow:scroll;">{{key}} : {{value}}</div>
 								  <div class="panel-body">
-								  <ol class="breadcrumb">
-									  <li><{{sig}}</li>
-									  <li><{{block_num}}</li>
-									</ol>
-								  </div>
-
 								  <!-- List group -->
 								  <ul class="list-group">
+								  	 <li class="list-group-item">					  	
+									    <div class="input-group">
+									  		<span class="input-group-addon" id="basic-addon1">sig</span>
+									  		<input id = "sig" type="text" class="form-control" aria-describedby="basic-addon1" value="{{sig}}">
+										</div>
+									</li>
+									<li class="list-group-item">					  	
+									    <div class="input-group">
+									  		<span class="input-group-addon" id="basic-addon1">block</span>
+									  		<input id = "block_for_{{sig}}" type="text" class="form-control" aria-describedby="basic-addon1" value="{{block_num}}">
+										</div>
+									</li>
 								    <li class="list-group-item">					  	
 									    <div class="input-group">
 									  		<span class="input-group-addon" id="basic-addon1">r</span>

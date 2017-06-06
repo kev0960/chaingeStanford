@@ -44,6 +44,20 @@ for (let i = 0; i < modal_ids.length; i++) {
 	})
 }
 
+/* For coloring data txns in dashboard */
+var sig_texts = $('#sig');
+for (let i = 0; i < sig_texts.length; i++) {
+	let sig = sig_texts[i].value;
+	let block_num = $('#block_for_'_sig).value;
+	let panel = $('#panel_heading_'+sig);
+
+	console.log(block_num);
+
+	if (block_num == "") {
+		panel.addClass('pending');
+	} 
+}
+
 
 const toggle_progress = function(txn_type) {
 	let modal_id = '#'+txn_type;
