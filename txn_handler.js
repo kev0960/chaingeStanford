@@ -5,11 +5,11 @@ module.exports = function(dependencies) {
     const uuid = dependencies['uuid'];
     const util = dependencies['util'];
 
-    const create_data_txn = function(email, id_key, id_val, use_proxy) {
+    const data_txn_wrapper = function(email, id_key, id_val, use_proxy) {
         return new Promise(function(resolve, reject) {
             // Create an unique token to identify the result
-            const new_token = uuid();
-
+            //const new_token = uuid();
+            const token = email + id_key + id_val;
             // new DATA_TXN is created but it does not generate
             // new rsa key.
             let data = {
@@ -17,9 +17,9 @@ module.exports = function(dependencies) {
                 identity : id_val,
                 rsa_key_size : 2048,
                 dh_key_size : 1024,
-                token : new_token,
+                token : token,
                 type : 0,
-                withkey : 0
+                with_key : 0
             };
 
             console.log("Creating Transaction with :: ", data);
@@ -37,6 +37,8 @@ module.exports = function(dependencies) {
 
                     data["pub_key_pkcs8"] = pub_key;
                     data["prv_key_pkcs8"] = prv_key;
+
+                    console.log(data);
 
                     let data_txn = util.create_data_txn_from_obj(data);
 
@@ -58,13 +60,13 @@ module.exports = function(dependencies) {
 
                     //db.save_pubkey_to_user_name(data.pub_key, email);
                     //db.save_keys(email, data.pub_key, data.prv_key);
-
+                    zmq.remove_token_callback(token);
                     resolve (data_txn);
 
                 });
 
             });
-            zmq.send_data(data);
+            zmq.send_data(JSON.stringify(data));
         });
     }
 

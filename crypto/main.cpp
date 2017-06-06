@@ -386,7 +386,11 @@ int main()
         socket.recv(&request);
 
         std::cout << "Request :: " << (char *)request.data() << std::endl;
-        auto json_data = json::parse(string((char *)request.data()));
+        string data_str = string((char*)request.data());
+        string sub_str = data_str.substr(0, data_str.rfind('}') + 1);
+        std::cout << sub_str << std::endl;
+
+        auto json_data = json::parse(sub_str);
         string serial = "";
 
         // Request for generating DATA TXN

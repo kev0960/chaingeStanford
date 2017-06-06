@@ -84,7 +84,7 @@ module.exports = function (dependencies) {
 					dh_key_size: 1024,
 					token: token,
 					type: 0,
-                    withkey : 1
+                    with_key : 1
 				};
 
 				console.log("set :: ", token);
@@ -189,7 +189,7 @@ module.exports = function (dependencies) {
                 // Extract info
                 let data_key = req.body.key;
                 let data_val = req.body.value;
-
+                let use_proxy = req.body.proxy;
                 // txn_handler takes care of all zmq / connect_node operations
                 txn_handler.data_txn_wrapper(email, data_key, data_val, use_proxy).then(function (data_txn) {
                     let result = {
@@ -251,20 +251,18 @@ module.exports = function (dependencies) {
                 // prepare block_num for rendering
                 let block_num = null;
 
-                if (txn.state == 'Pending') {
-                    block_num = 'Transaction Pending';
-                } else {
+                if ('block_num' in txn) {
                     block_num = txn.block_num;
-                }
+		}
 
                 let entry = {
                     'key' : txn.key,
                     'value': txn.value,
                     'sig' : txn.sig,
                     'block_num' : block_num,
-                    'r_i' : txn.r_i,
-                    'r' : txn.r,
-                    'a' : txn.a,
+                    'r_i' : txn.secret.r_i,
+                    'r' : txn.secret.r,
+                    'a' : txn.secret.a,
                 };
 
 				rows[row_idx].cols.push(entry);
