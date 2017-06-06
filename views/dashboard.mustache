@@ -45,10 +45,21 @@
                     <a href="#" data-toggle="modal" data-target="#answerModal">Answer Request</a>
                 </li>
                 <li>
-                    <a href="#">My Transactions</a>
+                    <a href="#" data-toggle="modal" data-target="txnsModal">My History</a>
                 </li>
                 <li>
                     <a href="#">FAQ</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- right sidebar-->
+        <div id="sidebar-wrapper-right">
+            <ul class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="#">
+                     	Uanswered transactions
+                    </a>
                 </li>
             </ul>
         </div>
@@ -109,49 +120,6 @@
 				{{/cols}}
 			</div>
 		{{/rows}}
-		<!--
-		<div class="row">
-  <div class="col-sm-6 col-md-3">
-    <div class="thumbnail">
-      <div class="caption">
-        <h3>Thumbnail label</h3>
-        <p>...</p>
-        <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#" class="btn btn-default" role="button">Button</a></p>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-sm-6 col-md-3">
-    <div class="thumbnail">
-      <div class="caption">
-        <h3>Thumbnail label</h3>
-        <p>...</p>
-        <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#" class="btn btn-default" role="button">Button</a></p>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-sm-6 col-md-3">
-    <div class="thumbnail">
-      <div class="caption">
-        <h3>Thumbnail label</h3>
-        <p>...</p>
-        <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#" class="btn btn-default" role="button">Button</a></p>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-sm-6 col-md-3">
-    <div class="thumbnail">
-      <div class="caption">
-        <h3>Thumbnail label</h3>
-        <p>...</p>
-        <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#" class="btn btn-default" role="button">Button</a></p>
-      </div>
-    </div>
-  </div>
-
-</div>   -->
 
 <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -164,28 +132,43 @@
 			
             <!-- content goes here -->
 
+            <div id="data_txn">
+
            	<p>Securely add your information to the blockchain network by entering it as a key/value pair. <br><br> For example, this is how Bob might store his phone number: 
 			<ul id="addList"> 
 				<li> Key: "Phone Number"</li> 
 				<li> Value: "000-0000"</li>
 			</ul>
+			</p>
 			<br>
-
-			<form>
+			<p>If you don't check the box, the security code will be sent to your email. </p>
+			<form action="/new_txn" method="post" id ="data_txn_form">
+			  <input type="hidden" name="txn_type" value="0">
               <div class="form-group">
                 <label for="Name">Data Key</label>
                 <input type="text" class="form-control" id="key" name="key" placeholder="Enter Name of Data (ex. email)">
               </div>
               <div class="form-group">
-                <label for="exampleInputPassword1">Data Value</label>
+                <label for="Value">Data Value</label>
                 <input type="text" class="form-control" id="value" name="value" placeholder="Enter Data (ex. admin@chainge.com)">
+              </div>
+                <div class="checkbox">
+                <label>
+                  <input type="checkbox" name="proxy"> Store security information on my behalf
+                </label>
               </div>
               <button type="submit" class="btn btn-default">Submit</button>
             </form>
 
+            </div>
+
+            <div class="progress hidden" id="data_txn_progress">
+  			<div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+  				Please wait while we save your data...
+  			</div>
+			</div>
 		</div>
 		<div class="modal-footer">
-			
 		</div>
 	</div>
   </div>
@@ -201,8 +184,11 @@
 		</div>
 		<div class="modal-body">
 			
+            <div id="req_txn">
+
             <!-- content goes here -->
-			<form>
+			<form action="/new_txn" method="post" id ="req_txn_form">
+			  <input type="hidden" name="txn_type" value="1">
               <div class="form-group">
                 <label for="exampleInputEmail1">Stanford Email address</label>
                 <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
@@ -218,6 +204,12 @@
               <button type="submit" class="btn btn-default">Submit</button>
             </form>
 
+            </div>
+            <div class="progress hidden" id="req_txn_progress">
+  			<div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+  				Please wait while we save your data...
+  			</div>
+			</div>
 		</div>
 		<div class="modal-footer">
 		</div>
@@ -233,9 +225,11 @@
 			<h3 class="modal-title" id="lineModalLabel">My Modal</h3>
 		</div>
 		<div class="modal-body">
-			
+			<div id="ans_txn">
+
             <!-- content goes here -->
-			<form>
+			<form action="/new_txn" method="post" id ="ans_txn_form">
+			<input type="hidden" name="txn_type" value="2">
               <div class="form-group">
                 <label for="exampleInputEmail1">Email address</label>
                 <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
@@ -244,32 +238,38 @@
                 <label for="exampleInputPassword1">Password</label>
                 <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
               </div>
-              <div class="form-group">
-                <label for="exampleInputFile">File input</label>
-                <input type="file" id="exampleInputFile">
-                <p class="help-block">Example block-level help text here.</p>
-              </div>
-              <div class="checkbox">
-                <label>
-                  <input type="checkbox"> Check me out
-                </label>
-              </div>
+
               <button type="submit" class="btn btn-default">Submit</button>
             </form>
 
+            </div>
+            <div class="progress hidden" id="ans_txn_progress">
+  			<div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+  				Please wait while we save your data...
+  			</div>
+			</div>
+
 		</div>
 		<div class="modal-footer">
-			<div class="btn-group btn-group-justified" role="group" aria-label="group button">
-				<div class="btn-group" role="group">
-					<button type="button" class="btn btn-default" data-dismiss="modal"  role="button">Close</button>
-				</div>
-				<div class="btn-group btn-delete hidden" role="group">
-					<button type="button" id="delImage" class="btn btn-default btn-hover-red" data-dismiss="modal"  role="button">Delete</button>
-				</div>
-				<div class="btn-group" role="group">
-					<button type="button" id="saveImage" class="btn btn-default btn-hover-green" data-action="save" role="button">Save</button>
-				</div>
-			</div>
+		</div>
+	</div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="txnsModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+			<h3 class="modal-title" id="lineModalLabel">My Modal</h3>
+		</div>
+		<div class="modal-body">
+
+			PUT ALL PENDING(Unanswered) TXNS HERE, both that I requested and I am being requested for...
+
+		</div>
+		<div class="modal-footer">
 		</div>
 	</div>
   </div>
@@ -279,5 +279,6 @@
 
   	</div>
 
+  	<script src="js/main.js"></script>
 	</body>
 </html>

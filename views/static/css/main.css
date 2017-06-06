@@ -1,7 +1,7 @@
 /* Toggle Styles */
 
 #wrapper {
-    padding-left: 250px;
+    padding-left: 180px;
     -webkit-transition: all 0.5s ease;
     -moz-transition: all 0.5s ease;
     -o-transition: all 0.5s ease;
@@ -9,7 +9,8 @@
 }
 
 #wrapper.toggled {
-    padding-left: 250px;
+    padding-left: 180px;
+    padding-right: 200px;
 }
 
 #sidebar-wrapper {
@@ -27,8 +28,23 @@
     transition: all 0.5s ease;
 }
 
+#sidebar-wrapper-right {
+    z-index: 1000;
+    position: fixed;
+    right: 0px;
+    width: 200px;
+    height: 100%;
+    margin-left: 0px;
+    overflow-y: auto;
+    background: #000;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
 #wrapper.toggled #sidebar-wrapper {
-    width: 150px;
+    width: 160px;
 }
 
 #page-content-wrapper {
@@ -47,7 +63,7 @@
 .sidebar-nav {
     position: absolute;
     top: 25;
-    width: 150px;
+    width: 160px;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -96,7 +112,7 @@
     }
 
     #wrapper.toggled {
-        padding-left: 250px;
+        padding-left: 200px;
     }
 
     #sidebar-wrapper {
@@ -104,7 +120,7 @@
     }
 
     #wrapper.toggled #sidebar-wrapper {
-        width: 250px;
+        width: 160px;
     }
 
     #page-content-wrapper {
@@ -147,4 +163,13 @@
 
 #dashboard_jumbotron {
     background-image: url('../images/stanford.png');
+    background-size:     cover;                      /* <------ */
+    background-repeat:   no-repeat;
+    background-position: center center; 
+    color:white;
+    text-shadow: 1px 1px #000000;
+}
+
+.hidden {
+    display:none;
 }
