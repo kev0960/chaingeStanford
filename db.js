@@ -47,7 +47,7 @@ module.exports = function (dependencies) {
 			r : data_txn.r,
 			a : data_txn.a
 		    },
-		    "key" : "stanford email",
+		    "key" : "email",
 		    "value" : email,
                 }));
 

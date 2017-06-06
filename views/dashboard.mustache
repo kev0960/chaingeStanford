@@ -54,13 +54,15 @@
         </div>
 
         <!-- right sidebar-->
-        <div id="sidebar-wrapper-right">
+        <div id="sidebar-wrapper-right" style="overflow:scroll;">
             <ul class="sidebar-nav">
                 <li class="sidebar-brand">
-                    <a href="#">
+                    <a href="#" onclick="reload_pending_txns('#pending_txns');">
                      	Pending Txns
                     </a>
                 </li>
+            </ul>
+            <ul class="sidebar-nav" id = "pending_txns">
             </ul>
         </div>
 

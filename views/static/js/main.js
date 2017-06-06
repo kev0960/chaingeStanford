@@ -12,9 +12,8 @@ for (let i = 0; i <  txn_types.length; i++) {
 
 	$(form_id).submit(function(e) {
 		e.preventDefault(); // avoid to execute the actual submit of the form.
-		console.log('data_txn_form clicked');
 
-	    var url = "/new_txn"; // the script where you handle the form input.
+	    var url = "/new_txn";
 
 	    $.ajax({
 	           type: "POST",
@@ -22,13 +21,14 @@ for (let i = 0; i <  txn_types.length; i++) {
 	           data: $(form_id).serialize(), // serializes the form's elements.
 	           success: function(data)
 	           {
-	               alert(data); 
+	           	    if (data != undefined && data['success'] == true) {
+	           	    	alert("Nice! We saved your data successfully. Please checkout your dashboard.");
+	           	    } else {
+	           	    	alert("Error while saving your data. Please try again.");
+	           	    }
 	               toggle_progress(txn_type);
-
-	               // reload the page afterwards so that the dashboard is refreshed
-	               //location.reload();
 	           }
-	         });
+	    });
 
 	    toggle_progress(txn_type)
 	});
@@ -55,6 +55,35 @@ for (let i = 0; i < sig_texts.length; i++) {
 		panel.addClass('pending');
 	} 
 }
+
+/* For refreshing the pending (the ones that I'm being requested for) txns list */
+const reload_pending_txns = function(ul_id) {
+
+	// talk to the server to retrieve all pending txns
+
+	$.ajax({
+		type: "GET",
+	    url: url,
+	    success: function(txn_list) {
+
+	    	let li_start = "<li>";
+	    	let li_end = "</li>";
+	    	let ul = $(ul_id);
+
+	    	if (txn_list == undefined || txn_list == null || txn_list.length == 0) {
+	    		let li_elem = li_start + "No pending requests"+li_end;
+	    		ul.append(li_elem);
+	    	} else {
+	    		for (let i = 0; i < txn_list.length; i++) {
+	    			let req = txn_list[i];
+	    			let ok_button = "<a href='#' onclick='accept_request()'>OK</a>";
+	    			let li_elem = li_start + req.email + " requests: "+ req.key + ok_button+li_end;
+	    			ul.append(li_elem);
+	    		}
+	    	}
+	    }
+	});
+};
 
 
 const toggle_progress = function(txn_type) {

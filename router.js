@@ -224,6 +224,25 @@ module.exports = function (dependencies) {
         }
     });
 
+    app.get('/pending_txns', auth.is_logged_in(), function (req, res) {
+        let username = req.user; // the login stanford email
+
+        let dummy_list = [];
+        dummy_list.push({
+            email : "jbb@stanford.edu",
+            key : "name",
+        });
+
+        dummy_list.push({
+            email : "abcd@stanford.edu",
+            key : "email",
+        });
+
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify(dummy_list));
+
+    });
+
 	app.get('/profile', auth.is_logged_in(), function (req, res) {
 		let username = req.user;
 
