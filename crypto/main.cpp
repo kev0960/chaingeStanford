@@ -61,6 +61,36 @@ public:
       str_prv.erase(str_prv.length() - 1);
     }
   }
+
+  std::vector<string> encrypt(std::vector<string> msgs)
+  {
+    AutoSeededRandomPool rnd;
+    CryptoPP::InvertibleRSAFunction rsa;
+
+    RSA::PrivateKey priv (rsa);
+    RSA::PublicKey pub(rsa);
+
+    CryptoPP::StringSink fs(str_prv);
+    CryptoPP::PEM_Load(fs, priv);
+
+    CryptoPP::StringSink fs2(str_pub);
+    CryptoPP::PEM_Load(fs2, pub);
+
+    CryptoPP::RSAES_OAEP_SHA_Encryptor encryptor(pub);
+    std::vector<string> cipher_list;
+
+    for (int i = 0; i < msgs.length(); i ++) {
+      string cipher;
+      CryptoPP::StringSource ss1(msgs[i], true,
+        new CryptoPP::PK_EncryptorFilter(rng, encryptor,
+          new CryptoPP::StringSink(cipher)
+        )
+      );
+      cipher_list.push_back(cipher);
+    }
+
+    return cipher_list;
+  }
 };
 
 // g^{priv} == pub mod G
@@ -107,9 +137,14 @@ class DataTxn
   string str_secret;
   int K;
 
+  // Information about txn
+  string data_key;
+  string data_value;
+
 public:
   // Create a data txn with given info.
-  DataTxn(int bit_size, int K, string hashed_identity) : K(K)
+  DataTxn(int bit_size, int K, string hashed_identity, string data_key, string data_value)
+   : K(K), data_key(data_key), data_value(data_value)
   {
     AutoSeededRandomPool rnd;
     DH dh;
@@ -173,9 +208,16 @@ public:
         {"K", K},
         {"token", token}};
 
+    
     cout << j << std::endl;
     // Return the serialized JSON object
     return j.dump();
+  }
+
+  // If it is supplied with RSA private key, 
+  string serialize_data(string token, string prv_key) 
+  {
+
   }
 };
 
