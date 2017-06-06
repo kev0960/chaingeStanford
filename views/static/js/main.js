@@ -45,11 +45,11 @@ for (let i = 0; i < modal_ids.length; i++) {
 }
 
 /* For coloring data txns in dashboard */
-var sig_texts = $('#sig');
+var sig_texts = $('.sig');
 for (let i = 0; i < sig_texts.length; i++) {
 	let sig = sig_texts[i].value;
 	let block_num = $('#block_for_'+sig)[0].value;
-	let panel = $('#panel_heading_'+sig)[0];
+	let panel = $('#panel_heading_'+sig);
 
 	if (block_num == 'Pending') {
 		panel.addClass('pending');

@@ -108,8 +108,6 @@
 			<div class="row">
 				{{#cols}}
 					<div class="col-sm-6 col-md-3">
-    					<div class="thumbnail">
-      						<div class="caption" style="overflow:scroll;">
 								<div class="panel panel-default" >
 								  <!-- Default panel contents -->
 								  <div class="panel-heading" id = "panel_heading_{{sig}}" style="overflow:scroll;">{{key}} : {{value}}</div>
@@ -119,7 +117,7 @@
 								  	 <li class="list-group-item">					  	
 									    <div class="input-group">
 									  		<span class="input-group-addon" id="basic-addon1">sig</span>
-									  		<input id = "sig" type="text" class="form-control" aria-describedby="basic-addon1" value="{{sig}}">
+									  		<input type="text" class="form-control sig" aria-describedby="basic-addon1" value="{{sig}}">
 										</div>
 									</li>
 									<li class="list-group-item">					  	
@@ -152,8 +150,6 @@
 								</div>
       						</div>
     					</div>
- 					</div>
- 					</div>
 				{{/cols}}
 			</div>
 		{{/rows}}
