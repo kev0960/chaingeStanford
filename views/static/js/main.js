@@ -56,10 +56,18 @@ for (let i = 0; i < sig_texts.length; i++) {
 	} 
 }
 
+
+/* Register stuff to do when the dom is ready */
+$( document ).ready(function() {
+	reload_pending_txns('#pending_txns');
+});
+
 /* For refreshing the pending (the ones that I'm being requested for) txns list */
 const reload_pending_txns = function(ul_id) {
 
 	// talk to the server to retrieve all pending txns
+
+	let url = "/pending_txns";
 
 	$.ajax({
 		type: "GET",
