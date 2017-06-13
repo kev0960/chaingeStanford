@@ -23,6 +23,11 @@ module.exports = function (dependencies) {
     data = JSON.parse(rep);
     token = data['token'];
 
+    // Delete token from the object
+    // * Because there are some cases when we use
+    // the passed data object as a payload *
+    delete data['token'];
+
     // Execute associated callback function
     waiting_txn.get(token)(data);
   });
