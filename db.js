@@ -195,7 +195,11 @@ module.exports = function (dependencies) {
   const get_user_txn = function (email) {
     return new Promise(function (resolve, reject) {
       redis.lrange(USER_TXN + email, 0, -1, function (err, list) {
-        resolve(list);
+        if (err) {
+            resolve(undefined);
+        } else { 
+            resolve(list);
+        }
       });
     });
   };
