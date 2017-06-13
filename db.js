@@ -347,7 +347,7 @@ module.exports = function (dependencies) {
           }
 
           // If the txn is not confirmed
-          if (!(block_num in txn_list[i])) {
+          if (!('block_num' in txn_list[i])) {
             continue;
           }
 
