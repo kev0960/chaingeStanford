@@ -85,7 +85,7 @@ const reload_pending_txns = function(ul_id) {
 	    		for (let i = 0; i < txn_list.length; i++) {
 	    			let req = txn_list[i];
 	    			let ok_button = "<a href='#' onclick='accept_request()'>OK</a>";
-	    			let li_elem = li_start + req.email + " requests: "+ req.key + ok_button+li_end;
+	    			let li_elem = li_start + req.email + " requests:        "+ req.key + ok_button+li_end;
 	    			ul.append(li_elem);
 	    		}
 	    	}
