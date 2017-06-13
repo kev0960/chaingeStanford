@@ -100,12 +100,6 @@ module.exports = function (dependencies) {
     const serialize_data_txn = stable_stringify(data_txn_obj);
 
     return {
-<<<<<<< HEAD
-        create_data_txn_from_obj,
-        find_data_txn_with_key,
-        parse_db_txn_entry,
-    }
-=======
       r: txn_data.r,
       a: txn_data.a,
       r_i: txn_data.r_i,
@@ -117,7 +111,8 @@ module.exports = function (dependencies) {
   }
 
   return {
-    create_data_txn_from_obj
+    create_data_txn_from_obj,
+    find_data_txn_with_key,
+    parse_db_txn_entry,
   }
->>>>>>> 2c0483b786594d053fd4dd977e5bd8dd438cdff1
 };
