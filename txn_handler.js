@@ -55,7 +55,8 @@ module.exports = function(dependencies) {
                             a : data_txn.a
                         },
                         "key" : id_key,
-                        "value" : id_val // TODO : remove this?
+                        "value" : id_val, // TODO : remove this?
+                        "type" : 0,
                     }));
 
                     db.save_txn_to_username(data_txn.signature, email);
@@ -121,17 +122,17 @@ module.exports = function(dependencies) {
                     req_txn_payload.type = 1;
                     req_txn_payload.timestampe = Date.now();
 
+                    // Stringify the serialized transaction
                     const txn_payload_str = stable_stringify(req_txn_payload);
                     const txn_sig = protocol.create_sign(txn_payload_str);
-
                     const req_txn_obj = {
                         public_key : pub_key,
                         signature : txn_sig,
                         payload : txn_payload_str,
                     }
-
                     const serialized_txn = stable_stringify(req_txn_obj);
 
+                    // Make entry to store in the database
                     const db_txn_entry = {
                         "serial": serialized_txn,
                         "sig" : txn_sig,
