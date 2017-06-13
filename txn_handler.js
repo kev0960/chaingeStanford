@@ -5,10 +5,10 @@ module.exports = function(dependencies) {
     const uuid = dependencies['uuid'];
     const util = dependencies['util'];
 
-    const create_data_txn = function(email, id_key, id_val, use_proxy) {
+    const data_txn_wrapper = function(email, id_key, id_val, use_proxy) {
         return new Promise(function(resolve, reject) {
             // Create an unique token to identify the result
-            const new_token = uuid();
+            const token = uuid();
 
             // new DATA_TXN is created but it does not generate
             // new rsa key.
@@ -17,7 +17,7 @@ module.exports = function(dependencies) {
                 identity : id_val,
                 rsa_key_size : 2048,
                 dh_key_size : 1024,
-                token : new_token,
+                token : token,
                 type : 0,
                 with_key : 0
             };
@@ -78,7 +78,7 @@ module.exports = function(dependencies) {
     }
 
     return {
-        create_data_txn,
+        data_txn_wrapper,
         req_txn_wrapper,
         ans_txn_wrapper,
     };
