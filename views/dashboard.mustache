@@ -228,16 +228,16 @@
 			<form action="/new_txn" method="post" id ="req_txn_form">
 			  <input type="hidden" name="txn_type" value="1">
               <div class="form-group">
-                <label for="exampleInputEmail1">Stanford Email address</label>
-                <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
+                <label for="target_email">Stanford Email address</label>
+                <input type="email" name="target_email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
               </div>
               <div class="form-group">
-                <label for="exampleInputPassword1">Data Key</label>
-                <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                <label for="key">Data Key</label>
+                <input type="password" name="key" class="form-control" id="exampleInputPassword1" placeholder="Password">
               </div>
               <div class="form-group">
-                <label for="exampleInputPassword1">Data Value</label>
-                <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                <label for="value">Data Value</label>
+                <input type="password" name="value" class="form-control" id="exampleInputPassword1" placeholder="Password">
               </div>
               <button type="submit" class="btn btn-default">Submit</button>
             </form>

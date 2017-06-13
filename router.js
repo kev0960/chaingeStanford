@@ -210,9 +210,15 @@ module.exports = function (dependencies) {
 
                 // Req TXN
             case 1:
-                res.setHeader('Content-Type', 'application/json');
-                res.send(JSON.stringify({ result: "good" }));
 
+                let target_email = req.body.target_email;
+                let data_key = req.body.key;
+                let data_val = req.body.value;
+
+                txn_handler.req_txn_wrapper(email, target_email, data_key, dta_val).then(function(did_save) {
+                    res.setHeader('Content-Type', 'application/json');
+                    res.send(JSON.stringify({ result: did_save }));
+                });
                 break;
 
                 // Ans TXN
