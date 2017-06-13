@@ -45,10 +45,10 @@
                     <a href="#" data-toggle="modal" data-target="#answerModal">Answer Request</a>
                 </li>
                 <li>
-                    <a href="#" data-toggle="modal" data-target="txnsModal">My History</a>
+                    <a href="#" data-toggle="modal" data-target="#txnsModal">My History</a>
                 </li>
                 <li>
-                    <a href="#">FAQ</a>
+                    <a href="#" data-toggle="modal" data-target="#faqModal">FAQ</a>
                 </li>
                 <li>
                     <a href="#" data-toggle="modal" data-target="#linkGenerator">Link Generator</a>
@@ -312,6 +312,39 @@
 	</div>
   </div>
 </div>
+
+    <div class="modal fade" id="faqModal" role="dialog">
+        <div class="modal-dialog">
+              <!-- Modal content-->
+              <div class="modal-content">
+                <div class="modal-header" style="height:50px;">
+                  <button type="button" style="height:30px;" class="close" data-dismiss="modal">&times;</button>
+                  <h4 class="modal-title">Frequently Asked Questions</h4>
+                </div>
+                <div class="modal-body">
+                      <div class="spacing">
+                        <p><b> What exactly is Chainge?</b>
+                          <li> We are a new blockchain protocol, similar to the blockchains running bitcoin or ethereum, but this one 
+                            was built specifically to securely exchange real life identity (RLI) over the Internet. You can add your personal information to the chain using the "Add My Info to Network" button under Chain Options and request someone else's personal info using the "Get Peer's Information" button.</li>
+                        <br>
+                        <p><b> Great, but I want to generate a link to sell stuff, not iteract directly with the chain. </b>
+                          <li> That's fine! You're looking for the link generator under the Third Party Applications left side bar. Using that module, you can generate a link that allows people that click on it to see the personal information you've stored on the chain. You do need to store said personal information on the chain first using the "Add My Info to Network" button under Chain Options.</li>
+                        <br>
+                        <p><b> Wait, what is a blockchain? </b>
+                          <li> Great question! Essentially, it is the technology underpining bitcoin that allows bitcoin to be secure, decentralized, and verifiable across many users and locations. Take a look at this <a href="https://blockgeeks.com/guides/what-is-blockchain-technology/">online guide.</a></li>
+                        <br>
+                        <p><b> So by downloading your software, am I a node on the network? </b>
+                          <li> Not quite. Your computer will mine transactions by default (not a large strain on your computer) but if you want to make your computer accessible for others to send transactions to it, add it to the visible nodes using the "Add IP Address" button under Chain Options.</li>
+                        <br>
+                      </div>
+                    
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+              </div>      
+        </div>
+    </div>
 
         <div class="modal fade" id="linkGenerator" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
             <div class="modal-dialog">
