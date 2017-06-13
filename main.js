@@ -57,6 +57,7 @@ const block = require('./block.js')({
 const chain = require('./chain.js')({
   block,
   db,
+  util,
 });
 
 app.use(cookieParser());
