@@ -383,5 +383,6 @@ module.exports = function (dependencies) {
     save_req_txn_for_ans_txn,
     get_ans_txn_for_req_txn,
     get_req_txn_for_ans_txn,
+    find_data_txn_with_key,
   }
 }

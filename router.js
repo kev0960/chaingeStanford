@@ -215,9 +215,9 @@ module.exports = function (dependencies) {
                 data_key = req.body.key;
                 data_val = req.body.value;
 
-                txn_handler.req_txn_wrapper(email, target_email, data_key, data_val).then(function(did_save) {
+                txn_handler.req_txn_wrapper(email, target_email, data_key, data_val).then(function(result) {
                     res.setHeader('Content-Type', 'application/json');
-                    res.send(JSON.stringify({ result: did_save }));
+                    res.send(JSON.stringify(result));
                 });
                 break;
 

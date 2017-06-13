@@ -100,7 +100,11 @@ module.exports = function(dependencies) {
           //      block_num,
 
           if (txn == undefined || txn == null) {
-            resolve(false);
+            resolve({result: false, message: "transaction could not be found"});
+          }
+
+          if (!(block_num in txn)) {
+            resolve({result: false, message: "the data record is not committed yet"});
           }
 
           // these should be in there
@@ -152,7 +156,7 @@ module.exports = function(dependencies) {
             connect_node.send_txn(serialized_txn);
 
             zmq.remove_token_callback(token);
-            resolve(true);
+            resolve({result: true, message: "successfully requested id verification"});
           });
 
           console.log(JSON.stringify(data));
