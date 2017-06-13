@@ -204,7 +204,7 @@ module.exports = function(dependencies) {
                       txn_payload : {
                         g_b : data_txn.get_g_b()
                       }
-                    }).
+                    }),
                     secret : JSON.parse({
                       r_i : saved_txn.secret.r_i,
                       r : saved_txn.secret.r,
