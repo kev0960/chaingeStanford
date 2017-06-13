@@ -3,6 +3,59 @@ const stable_stringify = require('stable-stringify')
 
 module.exports = function (dependencies) {
     const protocol = dependencies['protocol'];
+    const parse_db_txn_entry = function (db_entry) {
+        // db txn entry : JSON.stringify({serial, sig, state})
+        // serial : JSON.stringify({public_key, payload, signature});
+        // payload : JSON.stringify({txn paylod stuff});
+
+        let entry = JSON.parse(db_entry);
+        let serial = JSON.parse(entry.serial);
+        let payload = JSON.parse(serial.payload);
+
+        serial.payload = payload;
+        entry.serial = serial;
+
+        return entry;
+    };
+
+    /**
+     * Finds the data transaction of the user with the given email
+     * that has the given key.
+     */
+    const find_data_txn_with_key = function (email, id_key) {
+        return new Promise(function (resolve, reject) {
+            db.get_user_txn(email).then(function(txn_list) {
+                // propagate an empty list if nothing is found or there was an erro
+                if (txn_list == undefined || txn_list == null || txn_list.length == 0) {
+                    resolve([]);
+                    return;
+                }
+
+                // Loop through all txns in the good block
+                for (let i = 0; i < txn_list.length; i++) {
+                    let db_entry = parse_db_txn_entry(txn_list[i]);
+                    let txn_payload = db_entry.serial.payload;
+
+                    if (txn_payload.type != 0) {
+                        continue;
+                    }
+
+                    // If the txn is not confirmed
+                    if (!(block_num in txn_list[i])) {
+                        continue;
+                    }
+
+                    // if the type == 0, then it must have its key and value stored
+                    if (db_entry.key == id_key) {
+                        resolve(db_entry);
+                        return;
+                    }
+                }
+
+                resolve([]);
+            });
+        });
+    };
 
     const create_data_txn_from_obj = function (txn_data) {
         let str_pub_key = txn_data.pub_key;

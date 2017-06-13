@@ -50,17 +50,22 @@
                 <li>
                     <a href="#">FAQ</a>
                 </li>
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#linkGenerator">Link Generator</a>
+                </li>
             </ul>
         </div>
 
         <!-- right sidebar-->
-        <div id="sidebar-wrapper-right">
+        <div id="sidebar-wrapper-right" style="overflow:scroll;">
             <ul class="sidebar-nav">
                 <li class="sidebar-brand">
-                    <a href="#">
-                     	Uanswered transactions
+                    <a href="#" onclick="reload_pending_txns('#pending_txns');">
+                     	Pending Txns
                     </a>
                 </li>
+            </ul>
+            <ul class="sidebar-nav" id = "pending_txns">
             </ul>
         </div>
 
@@ -108,15 +113,48 @@
 			<div class="row">
 				{{#cols}}
 					<div class="col-sm-6 col-md-3">
-    					<div class="thumbnail">
-      						<div class="caption">
-      							<div style="overflow:scroll;">
-      								{{content}}
-      							</div>
-        						<h4>{{state}}</h4>
+								<div class="panel panel-default" >
+								  <!-- Default panel contents -->
+								  <div class="panel-heading" id = "panel_heading_{{sig}}" style="overflow:scroll;">{{key}} : {{value}}</div>
+								  <div class="panel-body">
+								  <!-- List group -->
+								  <ul class="list-group">
+								  	 <li class="list-group-item">					  	
+									    <div class="input-group">
+									  		<span class="input-group-addon" id="basic-addon1">sig</span>
+									  		<input type="text" class="form-control sig" aria-describedby="basic-addon1" value="{{sig}}">
+										</div>
+									</li>
+									<li class="list-group-item">					  	
+									    <div class="input-group">
+									  		<span class="input-group-addon" id="basic-addon1">block</span>
+									  		<input id = "block_for_{{sig}}" type="text" class="form-control" aria-describedby="basic-addon1" value="{{block_num}}">
+										</div>
+									</li>
+								    <li class="list-group-item">					  	
+									    <div class="input-group">
+									  		<span class="input-group-addon" id="basic-addon1">r</span>
+									  		<input type="text" class="form-control" aria-describedby="basic-addon1" value="{{r}}">
+										</div>
+									</li>
+								    <li class="list-group-item">
+								    
+								    	 <div class="input-group">
+									  		<span class="input-group-addon" id="basic-addon1">r_i</span>
+									  		<input type="text" class="form-control" aria-describedby="basic-addon1" value="{{r_i}}">
+										</div>
+								    </li>
+								    <li class="list-group-item">
+								    	 <div class="input-group">
+									  		<span class="input-group-addon" id="basic-addon1">a</span>
+									  		<input type="text" class="form-control" aria-describedby="basic-addon1" value="{{a}}">
+										</div>
+								    </li>
+
+								  </ul>
+								</div>
       						</div>
     					</div>
- 					</div>
 				{{/cols}}
 			</div>
 		{{/rows}}
@@ -274,6 +312,53 @@
 	</div>
   </div>
 </div>
+
+        <div class="modal fade" id="linkGenerator" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+                        <h3 class="modal-title" id="lineModalLabel">Add Info to Link</h3>
+                    </div>
+                    <div class="modal-body">
+
+                        <!-- content goes here -->
+
+                        <div id="link_generator">
+
+                            <p>Add information you wish to add to link generated
+                            <ul id="addList">
+                                <li> Key: "Phone Number"</li>
+                                <li> Value: "000-0000"</li>
+                            </ul>
+                            </p>
+                            <br>
+                            <form action="/new_txn" method="post" id ="link_generator_form">
+                                <input type="hidden" name="txn_type" value="0">
+                                <div class="form-group">
+                                    <label for="Name">Data Key</label>
+                                    <input type="text" class="form-control" id="key" name="key" placeholder="Enter Name of Data (ex. email)">
+                                </div>
+                                <div class="form-group">
+                                    <label for="Value">Data Value</label>
+                                    <input type="text" class="form-control" id="value" name="value" placeholder="Enter Data (ex. admin@chainge.com)">
+                                </div>
+                                <button type="submit" class="btn btn-default">Submit</button>
+                            </form>
+
+                        </div>
+
+                        <div class="progress hidden" id="data_txn_progress">
+                            <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+                                Please wait while we save your data...
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
 
   	</div>
 
