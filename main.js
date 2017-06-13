@@ -93,6 +93,7 @@ const txn_handler = require('./txn_handler.js')( {
     zmq,
     connect_node,
     util,
+    uuid
 });
 
 const router = require('./router.js')({
