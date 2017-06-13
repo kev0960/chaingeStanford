@@ -63,6 +63,10 @@ module.exports = function(dependencies) {
 
           db.save_pubkey_to_user_name(data.pub_key, email);
           db.save_keys(email, data.pub_key, data.prv_key);
+
+          // send to the blockchain server
+          connect_node.send_txn(data_txn.serialize_data_txn);
+
           zmq.remove_token_callback(token);
           resolve (data_txn);
         });
@@ -140,10 +144,14 @@ module.exports = function(dependencies) {
               "target" : target_email, // req txn specific info
             };
 
-            db.save_txn_to_username(db_txn_entry);
+            // Save this request txn to the issuer
+            db.save_uer_txn(email, db_txn_entry);
+            db.save_txn_to_username(txn_sig, email);
+
+            // send to the blockchain server
+            connect_node.send_txn(serialized_txn);
 
             zmq.remove_token_callback(token);
-
             resolve(true);
           });
 

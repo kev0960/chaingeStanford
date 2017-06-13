@@ -270,7 +270,7 @@ module.exports = function (dependencies) {
         console.log("trying to save a different txn as a req txn");
     }
 
-    redis.lpush(REQ_TXN_FOR_USER + email, JSON.stringify(txn), function (err, reply) {
+    redis.lpush(REQ_TXN_FOR_USER + email, txn, function (err, reply) {
       if (err) {
         console.log("something is seriously wrong with ", err);
       }
@@ -290,35 +290,35 @@ module.exports = function (dependencies) {
   };
 
   const save_ans_txn_for_req_txn = function(req_txn_sig, ans_txn) {
-    redis.set(REQ_TXN_TO_ANS_TXN + req_txn_sig, JSON.stringify(ans_txn));
+    redis.set(REQ_TXN_TO_ANS_TXN + req_txn_sig, JSON.stringify(ans_txn_sig));
   };
 
-  const save_req_txn_for_ans_txn = function(ans_txn_sig, req_txn) {
-    redis.set(ANS_TXN_TO_REQ_TXN + ans_txn_sig, JSON.stringify(req_txn));
+  const save_req_txn_for_ans_txn = function(ans_txn_sig, req_txn_sig) {
+    redis.set(ANS_TXN_TO_REQ_TXN + ans_txn_sig, JSON.stringify(req_txn_sig));
   };
 
   const get_ans_txn_for_req_txn = function(req_txn_sig) {
     return new Promise(function (resolve, reject) {
-      redis.get(REQ_TXN_TO_ANS_TXN + req_txn_sig, function (err, ans_txn) {
-        if (err || !ans_txn) {
+      redis.get(REQ_TXN_TO_ANS_TXN + req_txn_sig, function (err, ans_txn_sig) {
+        if (err || !ans_txn_sig) {
           resolve(null);
           return;
         }
 
-        resolve(JSON.parse(ans_txn));
+        resolve(JSON.parse(ans_txn_sig));
       })
     });
   };
 
   const get_req_txn_for_ans_txn = function(ans_txn_sig) {
     return new Promise(function (resolve, reject) {
-      redis.get(ANS_TXN_TO_REQ_TXN + ans_txn_sig, function (err, req_txn) {
-        if (err || !req_txn) {
+      redis.get(ANS_TXN_TO_REQ_TXN + ans_txn_sig, function (err, req_txn_sig) {
+        if (err || !req_txn_sig) {
           resolve(null);
           return;
         }
 
-        resolve(JSON.parse(req_txn));
+        resolve(JSON.parse(req_txn_sig));
       })
     });
 
@@ -340,5 +340,9 @@ module.exports = function (dependencies) {
     get_keys,
     save_req_txn_for_user,
     get_req_txns_for_user,
+    save_ans_txn_for_req_txn,
+    save_req_txn_for_ans_txn,
+    get_ans_txn_for_req_txn,
+    get_req_txn_for_ans_txn,
   }
 }

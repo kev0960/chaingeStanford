@@ -3,6 +3,7 @@
 module.exports = function (dependencies) {
   const block = dependencies['block'];
   const db = dependencies['db'];
+  const util = dependencies['util'];
 
   // Current height of the GOOD block
   let good_block_height = -1;
@@ -65,6 +66,7 @@ module.exports = function (dependencies) {
                 "serial": current_txn.serialize(),
                 "sig": txn_signature,
                 "state": "ACCEPTED",
+                "type" : 0,
                 "block_num" : block_num
               }));
             }
@@ -75,17 +77,53 @@ module.exports = function (dependencies) {
 
     // Check whether REQUEST TXN is requesting to one of our user's txn
     if (included_txns[current].get_type() == 'REQUEST') {
+
       db.get_username_from_txn(current_txn.get_data_txn_sig()).then(
         function (username) {
           if (username) {
             // Find exact TXN from user's TXN list
-            db.get_user_txn(username).then(function (list) {
+
+            db.get_user_txn(username).then(function(list) { 
+
               for (let i = 0; i < list.length; i++) {
                 let data = JSON.parse(list[i]);
+
+                // Found
                 if (data.sig == current_txn.get_data_txn_sig()) {
                   data.state += '|REQUESTED' + txn_signature;
-                  data['block_num'] = block_num;
-                  db.save_user_txn(username, JSON.stringify(data));
+
+                  // save the request transaction to the requested user
+                  let db_txn_entry = {
+                    "serial" : curr_txn.serialize(),
+                    "sig" : curr_txn.get_signature(),
+                    "state" : "ACCEPTED",
+                    "type": 1, 
+                    "block_num" : block_num,
+                  };
+
+                  db.save_req_txn_for_user(username, db_txn_entry);
+
+                  // turn the block_num for the creator, if in Stanford community
+                  db.get_username_from_txn(current_txn.get_signature()).then(function(email) {
+
+                    // The user who issued this req txn is in the stanford community
+                    if (email != undefined && email != null) {
+
+                      db.get_user_txn(email).then(function(list) {
+
+                        // Find the req txn from the user's txn list and set blcoknum
+                        for (let i = 0; i < list.length; i++) {
+                            let data = util.parse_db_txn_entry(list[i]);
+
+                            if (data.sig == current_txn.get_signature()) {
+                                db.change_user_txn_at(email, db_txn_entry, i);
+                                break;
+                            }
+                        }
+                      });
+                    }
+                  });
+
                 }
               }
             });
