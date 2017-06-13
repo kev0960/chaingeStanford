@@ -105,9 +105,23 @@ const toggle_progress = function(txn_type) {
 		$(modal_id).addClass('hidden');
 		$(progress_id).removeClass('hidden');
 	}
-}
+};
 
 const show_result = function(txn_type, result) {
 	let div_id = '#'+txn_type+"_result";
 	$(div_id).text(result);
+};
+
+// TODO : dynamically pull app_storage addressese from a repo online
+let app_addrs = {'Link Generator': 'http://localhost:4000/create_link_js'};
+
+// once API.js is loaded, start pulling 3rd party frontend modules.
+for (let key in app_addrs) {
+    let addr = app_addrs[key];
+    $.getScript(addr, function(data, textStatus, jqxhr) {
+    	if (jqxhr.status == 200){
+            console.log('Successfullly read in script from' + key);
+		}
+        // If jqxhr.status == 200, the code is executed right away.
+    });
 }
