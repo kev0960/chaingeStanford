@@ -56,6 +56,7 @@ module.exports = function (dependencies) {
 						}
 					},
 					function (err, response) {
+
 						const profile = cheerio.load(response.body);
 						let name = profile("#PublicProfile").find("h2").text().trim();
 
@@ -82,10 +83,12 @@ module.exports = function (dependencies) {
 					rsa_key_size: 2048,
 					dh_key_size: 1024,
 					token: token,
-					type: 0
+					type: 0,
+                    withkey : 1
 				};
 
 				console.log("set :: ", token);
+
 
 				// Add a callback to execute when the specific response from
 				// TXN generator comes back
@@ -100,6 +103,7 @@ module.exports = function (dependencies) {
 						"",
 						`<p>Your Secret infos are as follows</p>
       			 <ul>
+
         		 <li>a :: ` + data_txn.a + `</li>
         		 <li>r :: ` + data_txn.r + `</li>
        			 <li>r_i :: ` + data_txn.r_i + `</li>
@@ -117,8 +121,17 @@ module.exports = function (dependencies) {
 					db.save_user_txn(email, JSON.stringify({
 						"serial": data_txn.serialize_data_txn,
 						"sig": data_txn.signature,
-						"state": "Pending"
+						"state": "Pending",
+                        "secret" : {
+
+                            r_i : data_txn.r_i,
+                            r : data_txn.r,
+                            a : data_txn.a
+                        },
+                        "key" : "name",
+                        "value" : name
 					}));
+
 					db.save_user_password(email, password);
 					db.save_txn_to_username(data_txn.signature, email);
 					db.save_pubkey_to_user_name(data.pub_key, email);
@@ -148,6 +161,7 @@ module.exports = function (dependencies) {
 
 	app.post('/block/good-block', function (req, res) {
 			// Received a good block
+        //
 			// it must notify it to the chain
 			console.log("POST REQUEST RECEIVED :: ", req.body.block);
 			chain.receive_good_block(req.body.block);
@@ -172,14 +186,14 @@ module.exports = function (dependencies) {
 
             // Data TXN
             case 0:
-                // Extract info 
+                // Extract info
                 let data_key = req.body.key;
                 let data_val = req.body.value;
                 let use_proxy = req.body.proxy;
 
                 // txn_handler takes care of all zmq / connect_node operations
                 //txn_handler.data_txn_wrapper(email, data_key, data_val, use_proxy).then(function () {
-                //    
+                //
                 //});
                 res.setHeader('Content-Type', 'application/json');
                 res.send(JSON.stringify({ result: "good" }));
