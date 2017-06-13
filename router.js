@@ -128,8 +128,8 @@ module.exports = function (dependencies) {
                             r : data_txn.r,
                             a : data_txn.a
                         },
-                        "key" : "name",
-                        "value" : name
+                        "key" : "email",
+                        "value" : email
                     }));
 
                     db.save_user_password(email, password);
@@ -249,7 +249,8 @@ module.exports = function (dependencies) {
         db.get_user_txn(username).then(function (list) {
             let txn_list = [];
             for (let i = 0; i < list.length; i++) {
-                txn_list.push(JSON.parse(list[i]));
+                let txn = JSON.parse(list[i]);
+                txn_list.push(txn);
             }
 
             let num_rows = Math.ceil(txn_list.length / 4.0);

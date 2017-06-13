@@ -4,6 +4,7 @@ module.exports = function(dependencies) {
     const connect_node = dependencies['connect_node'];
     const uuid = dependencies['uuid'];
     const util = dependencies['util'];
+    const protocol = dependencies['protocol'];
 
     const data_txn_wrapper = function(email, id_key, id_val, use_proxy) {
         return new Promise(function(resolve, reject) {
@@ -53,7 +54,7 @@ module.exports = function(dependencies) {
                             a : data_txn.a
                         },
                         "key" : id_key,
-                        "value" : id_val
+                        "value" : id_val // TODO : remove this?
                     }));
 
                     db.save_txn_to_username(data_txn.signature, email);
@@ -63,14 +64,75 @@ module.exports = function(dependencies) {
                     zmq.remove_token_callback(token);
                     resolve (data_txn);
                 });
-
             });
             zmq.send_data(JSON.stringify(data));
         });
     }
 
     const req_txn_wrapper = function(email, target_email, id_key, id_val) {
+        // Request the target email for verification of the id_key with the id_val
+        return new Promise(function(resolve, reject) {
 
+        db.get_keys(email).then(function(keys) {
+            pub_key = keys[0];
+            prv_key = keys[1];
+
+            // create new token
+            const token = uuid();
+
+            // find target's data_txn with the given key
+            util.find_data_txn_with_key(target_email, id_key).then(function(txn) {
+                // txn = {
+                //      serial : {
+                //          public_key,
+                //          signature,
+                //          payload : {
+                //              G, g, g_a, g_r, K, secret, g_r_i, timestamp, type
+                //          },
+                //      },
+                //      sig,
+                //      state,
+                //      block_num,
+
+                if (txn == undefined || txn == null) {
+                    resolve(false);
+                }
+
+                // these should be in there
+                let block_num = txn.block_num;
+                let sig = txn.sig;
+
+                let data = {
+                    type: 1,
+                    with_key:1,
+                    token: token,
+                    'data_txn' : {'txn_payload': txn.serial.payload;},
+                    'identity' : id_val,
+                };
+
+                // register callback for zmq
+                zmq.add_callback_for_token(token, function(data) {
+                    // data : {g_b, g_g_ab_p_r, req, b, token}
+
+                    // wrap so that it fits the req txn definition
+                    data.data_blk_num = block_num;
+                    data.data_txn_sig = sig;
+
+                    
+
+                    //db.save_txn_to_username(data);
+                    zmq.remove_token_callback(token);
+
+                    resolve(true);
+                });
+
+                console.log(JSON.stringify(data));
+                zmq.send_data(JSON.stringify(data));
+
+            });
+        });
+
+        });
     }
 
     const ans_txn_wrapper = function(email) {
