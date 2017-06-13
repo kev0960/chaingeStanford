@@ -3,6 +3,8 @@ const stable_stringify = require('stable-stringify')
 
 module.exports = function (dependencies) {
     const protocol = dependencies['protocol'];
+    const db = dependencies['db'];
+
     const parse_db_txn_entry = function (db_entry) {
         // db txn entry : JSON.stringify({serial, sig, state})
         // serial : JSON.stringify({public_key, payload, signature});
@@ -111,6 +113,8 @@ module.exports = function (dependencies) {
     }
 
     return {
-        create_data_txn_from_obj
+        create_data_txn_from_obj,
+        find_data_txn_with_key,
+        parse_db_txn_entry,
     }
 };

@@ -36,6 +36,7 @@ const db = require('./db.js')({
   zmq,
   util,
 });
+
 const email = require('./email.js')({
   config
 });

@@ -121,7 +121,7 @@ module.exports = function(dependencies) {
             req_txn_payload.data_blk_num = block_num;
             req_txn_payload.data_txn_sig = sig;
             req_txn_payload.type = 1;
-            req_txn_payload.timestampe = Date.now();
+            req_txn_payload.timestamp = Date.now();
 
             const txn_payload_str = stable_stringify(req_txn_payload);
             const txn_sig = protocol.create_sign(txn_payload_str);

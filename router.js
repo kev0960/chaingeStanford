@@ -187,8 +187,8 @@ module.exports = function (dependencies) {
                 // Data TXN
             case 0:
                 // Extract info
-                let data_key = req.body.key;
-                let data_val = req.body.value;
+                var data_key = req.body.key;
+                var data_val = req.body.value;
                 let use_proxy = req.body.proxy;
                 // txn_handler takes care of all zmq / connect_node operations
                 txn_handler.data_txn_wrapper(email, data_key, data_val, use_proxy).then(function (data_txn) {
@@ -212,10 +212,10 @@ module.exports = function (dependencies) {
             case 1:
 
                 let target_email = req.body.target_email;
-                let data_key = req.body.key;
-                let data_val = req.body.value;
+                data_key = req.body.key;
+                data_val = req.body.value;
 
-                txn_handler.req_txn_wrapper(email, target_email, data_key, dta_val).then(function(did_save) {
+                txn_handler.req_txn_wrapper(email, target_email, data_key, data_val).then(function(did_save) {
                     res.setHeader('Content-Type', 'application/json');
                     res.send(JSON.stringify({ result: did_save }));
                 });
