@@ -106,7 +106,7 @@ module.exports = function(dependencies) {
                     type: 1,
                     with_key:1,
                     token: token,
-                    'data_txn' : {'txn_payload': txn.serial.payload;},
+                    'data_txn' : {'txn_payload': txn.serial.payload},
                     'identity' : id_val,
                 };
 
