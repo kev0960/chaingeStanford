@@ -5,6 +5,7 @@ module.exports = function(dependencies) {
     const uuid = dependencies['uuid'];
     const util = dependencies['util'];
     const protocol = dependencies['protocol'];
+    const stable_stringify = require('stable-stringify');
 
     const data_txn_wrapper = function(email, id_key, id_val, use_proxy) {
         return new Promise(function(resolve, reject) {
@@ -111,16 +112,36 @@ module.exports = function(dependencies) {
                 };
 
                 // register callback for zmq
-                zmq.add_callback_for_token(token, function(data) {
-                    // data : {g_b, g_g_ab_p_r, req, b, token}
+                zmq.add_callback_for_token(token, function(req_txn_payload) {
+                    // req_txn_payload : {g_b, g_g_ab_p_r, req, b, token}
 
                     // wrap so that it fits the req txn definition
-                    data.data_blk_num = block_num;
-                    data.data_txn_sig = sig;
+                    req_txn_payload.data_blk_num = block_num;
+                    req_txn_payload.data_txn_sig = sig;
+                    req_txn_payload.type = 1;
+                    req_txn_payload.timestampe = Date.now();
 
-                    
+                    const txn_payload_str = stable_stringify(req_txn_payload);
+                    const txn_sig = protocol.create_sign(txn_payload_str);
 
-                    //db.save_txn_to_username(data);
+                    const req_txn_obj = {
+                        public_key : pub_key,
+                        signature : txn_sig,
+                        payload : txn_payload_str,
+                    }
+
+                    const serialized_txn = stable_stringify(req_txn_obj);
+
+                    const db_txn_entry = {
+                        "serial": serialized_txn,
+                        "sig" : txn_sig,
+                        "state" : "Pending",
+                        "type" : 1,
+                        "target" : target_email, // req txn specific info
+                    };
+
+                    db.save_txn_to_username(db_txn_entry);
+
                     zmq.remove_token_callback(token);
 
                     resolve(true);
