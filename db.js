@@ -69,7 +69,25 @@ module.exports = function (dependencies) {
 
   redis.on('error', function (err) {
     console.log('Redis is dead .. ' + err);
-  })
+  });
+
+
+  /*
+   * ONBOARD SERVER DB STRUCTURE (VERSION 1)
+   *
+   * get_user_txn
+   *    Return the list of the transactions that USER has created
+   *
+   * get_username_from_txn
+   *    Get the name of the user who created the transaction (by sig)
+   *
+   * get_req_txns_for_user
+   *    Get the list of req txns that REQUESTS TO USER
+   *
+   * get_ans_txns_for_user
+   *    Get the list of ans txns that ANSWERS TO USER's REQUEST
+   *
+   * */
   const USER_EMAIL = 'USER_EMAIL_';
   const USER_TXN = 'USER_TXN_LIST_';
   const USER_DATA = 'USER_DATA_';
