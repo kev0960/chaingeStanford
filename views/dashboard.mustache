@@ -57,11 +57,14 @@
         <!-- right sidebar-->
         <div id="sidebar-wrapper-right" style="overflow:scroll;">
             <ul class="sidebar-nav">
-              Pending Txns
-              <a href="#" onclick="reload_pending_txns('#pending_txns');">Reload</a>
+                <li class="sidebar-brand">
+                    <a href="#" onclick="reload_pending_txns('#pending_txns');">
+                      Pending Txns
+                    </a>
+                </li>
             </ul>
-            <li>
-            </li>
+            <ul class="sidebar-nav" id = "pending_txns">
+            </ul>
         </div>
 
 <!-- Main Contents for the dashboard page -->
