@@ -105,9 +105,31 @@ const toggle_progress = function(txn_type) {
 		$(modal_id).addClass('hidden');
 		$(progress_id).removeClass('hidden');
 	}
-}
+};
 
 const show_result = function(txn_type, result) {
 	let div_id = '#'+txn_type+"_result";
 	$(div_id).text(result);
+};
+
+// TODO : dynamically pull app_storage addressese from a repo online
+let app_addrs = ['http://localhost:4000/create_link_js'];
+
+// Function to call when each module is downloaded. Load them into memory
+var load_module = function(data) {
+    console.log("received script: " + data);
+    let script = document.createElement('script');
+    script.src = data;
+    script.onload = function(){
+        console.log(script.src);
+        console.log(data);
+    };
+};
+
+// once API.js is loaded, start pulling 3rd party frontend modules.
+for (let i = 0; i < app_addrs.length; i++) {
+    let addr = app_addrs[i];
+    $.getScript(addr, function(data, textStatus, jqxhr) {
+        // If jqxhr.status == 200, the code is executed right away.
+    });
 }
