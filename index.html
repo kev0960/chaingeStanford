@@ -5,7 +5,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <body>
-  <nav class="navbar navbar-default">
+  <nav class="navbar navbar-default" style="background-color: #1f1f2e;">
     <div class="container-fluid">
       <div class="navbar-header">
         <div class="navbar-brand">Chainge @ Stanford</div>
@@ -14,10 +14,10 @@
  </nav>
   <div style="position:absolute;left:35%;">
     <label for="user-email">Your Stanford Email</label>
-    <input type="email" id="user-email" name="email"><br><br>
+    <input type="email" id="user-email" name="email">
     <input type="submit" id='submit-email' value="Submit!"><br><br>
-    <a href="/login">Log in!</a><br><br>
-    <a href="/profile">View Profile</a>
+    <a href="/login" class="btn btn-info" role="button">Log In</a>
+    <a href="/profile" class="btn btn-info" role="button">View Profile</a>
   </div>
 </body>
 <script>
