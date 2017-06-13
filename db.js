@@ -78,6 +78,9 @@ module.exports = function (dependencies) {
   const TXN_TO_USER = 'TXN_TO_USER_';
   const PUBKEY_TO_USER = 'PUBKEY_TO_USER_';
   const KEYS_PREFIX = "KEYS_FOR_USER_";
+  const REQ_TXN_FOR_USER = 'REQ_TXN_FOR_USER_'; // user email to req txn
+  const REQ_TXN_TO_ANS_TXN = "REQ_TXN_TO_ANS_TXN_"; // use for txn_sig to txn storage
+  const ANS_TXN_TO_REQ_TXN = "ANS_TXN_TO_REQ_TXN_";
 
   const save_email_validation_token = function (email) {
     let p1 = new Promise(function (resolve, reject) {
@@ -143,15 +146,6 @@ module.exports = function (dependencies) {
   const save_txn_to_username = function (sig, email) {
     // Save emails using txn signature as a key.
     redis.set(TXN_TO_USER + sig, email);
-  };
-
-  // User txn is classified by the user's email
-  const save_pending_user_txn = function (email, txn) {
-    redis.lpush(PENDING_USER_TXN + email, txn, function (err, reply) {
-      if (err) {
-        console.log("something is seriously wrong with ", err);
-      }
-    });
   };
 
   // Save public key - username pair
@@ -221,18 +215,6 @@ module.exports = function (dependencies) {
   }
 
   /**
-   * @returns {Promise}
-   * @param {String} email
-   */
-  const get_pending_user_txn = function (email) {
-    return new Promise(function (resolve, reject) {
-      redis.lrange(PENDING_USER_TXN + email, 0, -1, function (err, list) {
-        resolve(list);
-      });
-    });
-  };
-
-  /**
     @param {Array} keys - list of length 2 of pub, prv key in order
    **/
   const save_keys = function (email, pub, prv) {
@@ -264,6 +246,66 @@ module.exports = function (dependencies) {
     });
   }
 
+  const save_req_txn_for_user = function(email, txn) {
+    // txn must be a req txn json object
+    if (txn.type != 1) {
+        console.log("trying to save a different txn as a req txn");
+    }
+
+    redis.lpush(REQ_TXN_FOR_USER + email, JSON.stringify(txn), function (err, reply) {
+      if (err) {
+        console.log("something is seriously wrong with ", err);
+      }
+    });
+  };
+
+  const get_req_txns_for_user = function(email) {
+    return new Promise(function (resolve, reject) {
+      redis.lrange(REQ_TXN_FOR_USER + email, 0, -1, function (err, list) {
+        if (err) {
+            resolve(undefined);
+        } else { 
+            resolve(list);
+        }
+      });
+    });
+  };
+
+  const save_ans_txn_for_req_txn = function(req_txn_sig, ans_txn) {
+    redis.set(REQ_TXN_TO_ANS_TXN + req_txn_sig, JSON.stringify(ans_txn));
+  };
+
+  const save_req_txn_for_ans_txn = function(ans_txn_sig, req_txn) {
+    redis.set(ANS_TXN_TO_REQ_TXN + ans_txn_sig, JSON.stringify(req_txn));
+  };
+
+  const get_ans_txn_for_req_txn = function(req_txn_sig) {
+    return new Promise(function (resolve, reject) {
+      redis.get(REQ_TXN_TO_ANS_TXN + req_txn_sig, function (err, ans_txn) {
+        if (err || !ans_txn) {
+          resolve(null);
+          return;
+        }
+
+        resolve(JSON.parse(ans_txn));
+      }
+    });
+  };
+
+  const get_req_txn_for_ans_txn = function(ans_txn_sig) {
+    return new Promise(function (resolve, reject) {
+      redis.get(ANS_TXN_TO_REQ_TXN + ans_txn_sig, function (err, req_txn) {
+        if (err || !req_txn) {
+          resolve(null);
+          return;
+        }
+
+        resolve(JSON.parse(req_txn));
+      }
+    });
+
+  }
+
   return {
     save_email_validation_token,
     get_token,
@@ -280,5 +322,7 @@ module.exports = function (dependencies) {
     change_user_txn_at,
     save_keys,
     get_keys,
+    save_req_txn_for_user,
+    get_req_txns_for_user,
   }
 }
