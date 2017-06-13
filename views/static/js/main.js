@@ -3,7 +3,7 @@
 console.log("including main.js");
 
 let txn_types = ['data_txn', 'req_txn', 'ans_txn'];
-let modal_ids= ['#addModal', '#verifyModal', '#answerModal', '#txnsModal'];
+let modal_ids= ['#addModal', '#verifyModal', '#answerModal', 'txnsModal', '#linkGenerator'];
 
 /* Register Ajax calls per txn creation form ... */
 for (let i = 0; i <  txn_types.length; i++) {
@@ -120,7 +120,7 @@ for (let key in app_addrs) {
     let addr = app_addrs[key];
     $.getScript(addr, function(data, textStatus, jqxhr) {
     	if (jqxhr.status == 200){
-            console.log('Successfullly read in script from' + key);
+            console.log('Successfullly read in script from ' + key);
 		}
         // If jqxhr.status == 200, the code is executed right away.
     });
