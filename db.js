@@ -264,7 +264,7 @@ module.exports = function (dependencies) {
       redis.lrange(REQ_TXN_FOR_USER + email, 0, -1, function (err, list) {
         if (err) {
             resolve(undefined);
-        } else { 
+        } else {
             resolve(list);
         }
       });
@@ -288,7 +288,7 @@ module.exports = function (dependencies) {
         }
 
         resolve(JSON.parse(ans_txn));
-      }
+      })
     });
   };
 
@@ -301,7 +301,7 @@ module.exports = function (dependencies) {
         }
 
         resolve(JSON.parse(req_txn));
-      }
+      })
     });
 
   }
@@ -313,8 +313,6 @@ module.exports = function (dependencies) {
     get_user_txn,
     save_user_password,
     check_user_password,
-    save_pending_user_txn,
-    get_pending_user_txn,
     save_txn_to_username,
     get_username_from_txn,
     get_username_from_pubkey,
