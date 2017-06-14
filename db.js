@@ -49,6 +49,7 @@ module.exports = function (dependencies) {
             },
             "key" : "email",
             "value" : email,
+            "type" : 0,
           }));
 
           save_user_password(email, pw);

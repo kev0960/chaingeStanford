@@ -57,7 +57,8 @@ module.exports = function(dependencies) {
               a : data_txn.a
             },
             "key" : id_key,
-            "value" : id_val // TODO : remove this?
+            "value" : id_val, // TODO : remove this?
+            "type" : 0,
           }));
 
           db.save_txn_to_username(data_txn.signature, email);

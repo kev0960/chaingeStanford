@@ -350,7 +350,7 @@ module.exports = function (dependencies) {
 
             if (txn.type == 1) {
                 displayable = util.format_req_txn_for_display(txn);
-            } else {
+            } else if (txn.type == 2) {
                 displayable = util.format_ans_txn_for_display(txn);
             }
 
