@@ -245,21 +245,38 @@ module.exports = function (dependencies) {
   });
 
   app.get('/pending_txns', auth.is_logged_in(), function (req, res) {
-    let username = req.user; // the login stanford email
+    let email = req.user; // the login stanford email
 
+    /*
     let dummy_list = [];
     dummy_list.push({
       email : "jbb@stanford.edu",
       key : "name",
+      value; "xx",
     });
 
     dummy_list.push({
       email : "abcd@stanford.edu",
       key : "email",
+      value: "yy"
     });
+    */
 
-    res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify(dummy_list));
+
+    db.get_req_txns_for_user(email).then(function(txns) {
+        if (txns == undefined || txns == null) {
+            txns = [];
+        } 
+
+        txns.push({
+            email: "abcd234@stanford.edu",
+            key : "email",
+        });
+
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify(txns));
+    }); 
+
 
   });
 
