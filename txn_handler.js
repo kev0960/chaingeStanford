@@ -99,12 +99,12 @@ module.exports = function(dependencies) {
           //      block_num,
 
           if (txn == undefined || txn == null) {
-            resolve({result: false, message: "transaction could not be foundi"});
+            resolve({success: false, message: "transaction could not be foundi"});
             return ;
           }
 
           if (!txn.hasOwnProperty('block_num')) {
-            resolve({result: false, message: "the data record is not committed yet"});
+            resolve({success: false, message: "the data record is not committed yet"});
             return ;
           }
 
@@ -158,7 +158,7 @@ module.exports = function(dependencies) {
             connect_node.send_txn(serialized_txn);
 
             zmq.remove_token_callback(token);
-            resolve({result: true, message: "successfully requested id verification"});
+            resolve({success: true, message: "successfully requested id verification"});
           });
 
           console.log(JSON.stringify(data));
