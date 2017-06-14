@@ -17,8 +17,6 @@ module.exports = function (dependencies) {
     res.sendFile(path.join(__dirname + '/index.html'));
   });
 
-  app.use('/assets', express.static(__dirname + 'views/assets'));
-
   // Send the verification email to the received address
   app.post('/add-me', function (req, res) {
     let email = req.body.email;
@@ -349,7 +347,7 @@ module.exports = function (dependencies) {
       db.link_viewed(pub_key);
       // res.sendFile(path.join(__dirname + '/user_info_page.html'));
       console.log("Current Directory", __dirname + "/user_info_page.html");
-      res.sendFile(__dirname + "/views/index.html");
+      res.sendFile(__dirname + "/views/user_info_page.html");
   });
 
   app.get('/history', auth.is_logged_in(), function (req, res) {
