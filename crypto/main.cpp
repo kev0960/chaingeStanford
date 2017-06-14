@@ -283,7 +283,7 @@ class RequestTxn
     Integer identity_hash = integer_with_hex(hashed_request_identity);
     Integer g_g_ab_p_r = ModularExponentiation(g, g_ab, G) * (secret - identity_hash);
 
-    string req_str = "";
+    req_str = "";
 
     for (int i = 0; i < K; i ++) {
       Integer req (rng, 1);
@@ -421,7 +421,7 @@ int main()
       string secret = json_data["data_txn"]["txn_payload"]["secret"];
       int K = json_data["data_txn"]["txn_payload"]["K"];
 
-      string hashed_identity = json_data["data_txn"]["identity"];
+      string hashed_identity = json_data["identity"];
 
       try {
           RequestTxn txn(G, g, g_a, secret, K, hashed_identity);
