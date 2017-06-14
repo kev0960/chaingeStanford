@@ -26,12 +26,16 @@ module.exports = function (dependencies) {
   };
 
   const stringify_db_txn_entry = function(db_entry) {
-
-    let payload = db_entry.serial.payload;
-    let serial = db_entry.serial;
-
-    serial.payload = stable_stringify(payload);
-    db_entry.serial = stable_stringify(serial);
+    let db_obj = {
+      "serial" : stable_stringify(db_entry.serial),
+      "sig" : db_entry.sig,
+      "answered" : db_entry.answered,
+      "requester" : db_entry.requester,
+      "key" : db_entry.key,
+      "target" : db_entry.target,
+      "state" : db_entry.state,
+      "type" : db_entry.type
+    };
 
     return JSON.stringify(db_entry);
   };

@@ -96,14 +96,15 @@ module.exports = function (dependencies) {
 
                     let requester = email;
 
-                    if (email == undefined || email == null) 
+                    if (email == undefined || email == null)
                         requester = "unidentified"
+
 
                     let db_txn_entry = {
                         "serial" : current_txn.serialize(),
                         "sig" : current_txn.get_signature(),
                         "state" : "ACCEPTED",
-                        "type": 1, 
+                        "type": 1,
                         "block_num" : block_num,
                         "target" : username,
                         "answered" : false, // a new good block can't have an answered txn
@@ -113,6 +114,7 @@ module.exports = function (dependencies) {
 
                     db.save_req_txn_for_user(username, db_txn_entry);
                     // The user who issued this req txn is in the stanford community
+                    /*
                     if (email != undefined && email != null) {
 
                       db.get_user_txn(email).then(function(list) {
@@ -128,6 +130,8 @@ module.exports = function (dependencies) {
                         }
                       });
                     }
+                    */
+
                   });
 
                 }
@@ -148,8 +152,7 @@ module.exports = function (dependencies) {
               for (let i = 0; i < list.length; i++) {
                 let data = JSON.parse(list[i]);
                 if (data.sig == current_txn.get_req_txn_sig()) {
-                  data.state += '|ANSWERED' + txn_signature;
-                  data['block_num'] = block_num;
+                  data['answered'] = true;
                   db.save_user_txn(username, JSON.stringify(data));
                 }
               }
@@ -174,9 +177,7 @@ module.exports = function (dependencies) {
               console.log('No req txn saved for ans txn');
             }
           }
-      )
-
-
+      );
     }
 
     setTimeout(function () {

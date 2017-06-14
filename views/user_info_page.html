@@ -16,14 +16,14 @@
 
 <!-- Header -->
 <div id="header">
-    <span class="logo icon fa-lock"></span>
-    <h1>Your request is being verified...</h1>
+    <span class="logo icon fa fa-check"></span>
+    <h1>Success! Your request has been verified.</h1>
     <!--include loading bar-->
     <div style="height:20px;"></div>
-    <div id="loadBar" class="w3-light-grey" style="width:50%; position:absolute; left:25%;">
-        <div id="myBar" class="w3-container w3-green" style="height:34px; width:0%"></div>
-    </div>
-    <br>
+    <br><br>
+    <div> The value you verified: </div> <div id="keyVal"></div> <br><br>
+    <div> Number of times verification link has been generated for this key/value pair:</div> <div id="generated"></div> <br><br>
+    <div> Number of link views: </div> <div id="viewed"></div> 
 </div>
 
 <!-- Main -->
@@ -91,6 +91,9 @@
         success: function(result, status, xhr){
             console.log('Got user data');
             console.log(result);
+            document.getElementById("keyVal").innerHTML = result[Object.keys(result)[0]];
+            document.getElementById("generated").innerHTML = result.link_generated;
+            document.getElementById("viewed").innerHTML = result.link_viewed;
 	    if (result) {
 		console.log('print');
     		setTimeout(function(){

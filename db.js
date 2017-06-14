@@ -301,6 +301,22 @@ module.exports = function (dependencies) {
     });
   };
 
+  const ANSWER_REQ = "ANSWER_REQ_"
+  const save_answered_request = function (email, sig) {
+    redis.lpush(ANSWER_REQ + email, sig, function (err, reply) {
+      if (err) console.log(err);
+    });
+  };
+
+  const get_answered_request = function (email) {
+    return new Promise(function (resolve, reject) {
+      redis.lrange(ANSWER_REQ + email, 0, -1, function (err, list) {
+        if (err) resolve (null);
+        else resolve (list);
+      });
+    });
+  };
+
   const save_ans_txn_for_req_txn = function(req_txn_sig, ans_txn) {
     redis.set(REQ_TXN_TO_ANS_TXN + req_txn_sig, JSON.stringify(ans_txn_sig));
   };
@@ -483,5 +499,7 @@ module.exports = function (dependencies) {
     get_pending_req_txn_for_link_generator,
     change_req_txn_at,
     save_print_message,
+    save_answered_request,
+    get_answered_request
   }
 }
