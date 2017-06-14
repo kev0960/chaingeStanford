@@ -303,6 +303,8 @@ module.exports = function (dependencies) {
         let row_idx = Math.floor(i / 4.0);
         let txn = txn_list[i];
 
+        if (txn.type != 0) continue;
+
         // prepare block_num for rendering
         let block_num = null;
 
@@ -311,8 +313,6 @@ module.exports = function (dependencies) {
         } else {
           block_num = 'Pending'
         }
-
-
 
         let entry = {
           'key' : txn.key,

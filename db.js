@@ -18,7 +18,7 @@ module.exports = function (dependencies) {
 
       let email = "swjang@stanford.edu";
       save_email_validation_token(email).then(function(token) {
-        let name = "swjang";
+        let name = "Se Won Jang";
         let pw = "123";
 
         token = "1234";
