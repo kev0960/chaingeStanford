@@ -1,7 +1,7 @@
 # chaingeStanford
 Onboard Stanford students to Chainge
 
-<img src="service.png" width=auto height="300" />
+<img src="service.png" width=auto height="500" />
 
 
 ## Step by step guide for running chaingeStanford on Docker
