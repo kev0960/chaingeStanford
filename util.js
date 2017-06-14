@@ -1,6 +1,6 @@
 const rsa = require('node-rsa');
-const stable_stringify = require('stable-stringify');
 const sha256 = require('sha256');
+const stable_stringify = require('json-stable-stringify');
 
 module.exports = function (dependencies) {
   const protocol = dependencies['protocol'];

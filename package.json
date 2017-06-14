@@ -17,7 +17,6 @@
     "json-stable-stringify" : "1.0.1",
     "zmq" : "latest",
     "nodemailer": "latest",
-    "stable-stringify": "latest",
     "uuid" : "latest",
     "jsdom" : "latest",
     "mu2" : "latest",
