@@ -188,7 +188,7 @@ const get_history = function() {
 			let ans_txn_keys = ['requester', 'key', 'state'];
 
 			for (let i = 0; i < req_txns.length; i++) {
-				let txn = req_table[i];
+				let txn = req_txns[i];
 				let elem = tr_start;
 
 				for (let j = 0; j < req_txn_keys.length; j++) {
@@ -205,7 +205,7 @@ const get_history = function() {
 			}
 
 			for (let i = 0; i < ans_txns.length; i++) {
-				let txn = ans_table[i];
+				let txn = ans_txns[i];
 				let elem = tr_start;
 
 				for (let j = 0; j < req_txn_keys.length; j++) {
