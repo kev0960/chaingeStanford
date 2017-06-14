@@ -321,6 +321,9 @@ module.exports = function (dependencies) {
           'value': txn.value,
           'sig' : txn.sig,
           'block_num' : block_num,
+          'r':txn.secret.r,
+          'r_i': txn.secret.r_i,
+          'a':  txn.secret.a,
         };
 
         rows[row_idx].cols.push(entry);
@@ -406,8 +409,45 @@ module.exports = function (dependencies) {
             return;
         }
 
-        res.setHeader('Content-Type', 'application/json');
-        res.send(JSON.stringify({success, message: "success!"}));
+        // if answered successfully, turn the txn as answered : true
+        // duplicates r saved in 2 diff places
+
+        // First, find the one stored under the requested user
+        db.get_req_txns_for_user(email).then(function(txn_list) {
+            for (let i = 0 ; i < txn_list.length; i++) {
+                let txn = util.parse_db_txn_entry(txn_list[i]);
+                let requester = txn.requester;
+                txn.answered = true;
+
+                // Found. Turn answered = true
+                if (txn.sig == sig) {
+                    db.change_req_txn_at(email, JSON.stringify(txn), i);
+
+                    if (requester == "unidentified") {
+                        res.setHeader('Content-Type', 'application/json');
+                        res.send(JSON.stringify({success, message: "success!"}));
+                        break;
+                    }
+
+                    // Now Find the one stored under the requester
+                    db.get_user_txn(requester).then(function(list) {
+
+                        for (let j = 0; j < list.length; j++) {
+                            let this_txn = util.parse_db_txn_entry(list[i]);
+                            if (this_txn.sig == sig) {
+                                db.change_user_txn_at(requester, txn, j);
+                            }
+                        }
+
+                    });
+
+                    res.setHeader('Content-Type', 'application/json');
+                    res.send(JSON.stringify(success));
+                    break;
+                }
+            }
+        });
+
     });
   });
 
