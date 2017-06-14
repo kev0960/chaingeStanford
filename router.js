@@ -390,8 +390,10 @@ module.exports = function (dependencies) {
 
   app.post('/accept_request', auth.is_logged_in(), function(req, res) {
     let email = req.user;
-
     let sig = req.body.sig;
+
+    console.log("EMAIL :: ", email);
+    console.log("SIG :: ", sig);
 
     txn_handler.ans_txn_wrapper(email, sig).then(function(success) {
         if (success == undefined || success == null || !success) {
