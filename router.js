@@ -79,7 +79,7 @@ module.exports = function (dependencies) {
       if (answer == "Yes") {
         let data = {
           K: 20,
-          identity: name,
+          identity: create_sha256_hash(name),
           rsa_key_size: 2048,
           dh_key_size: 1024,
           token: token,
@@ -313,8 +313,6 @@ module.exports = function (dependencies) {
         } else {
           block_num = 'Pending'
         }
-
-        console.log("txn :: ", txn);
 
         let entry = {
           'key' : txn.key,

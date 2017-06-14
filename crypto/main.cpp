@@ -414,7 +414,6 @@ int main()
     // Request for generating REQUEST TXN
     else if (json_data["type"] == 1) {
       std::cout << json_data["token"] << std::endl;
-      std::cout << "DATA TXN :: " << json_data["data_txn"]["txn_payload"] << std::endl;
 
       string G = json_data["data_txn"]["txn_payload"]["G"];
       string g = json_data["data_txn"]["txn_payload"]["g"];
