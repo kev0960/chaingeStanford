@@ -436,7 +436,7 @@ module.exports = function (dependencies) {
                         for (let j = 0; j < list.length; j++) {
                             let this_txn = util.parse_db_txn_entry(list[i]);
                             if (this_txn.sig == sig) {
-                                db.change_user_txn_at(requester, txn, j);
+                                db.change_user_txn_at(requester, JSON.stringify(txn), j);
                             }
                         }
 
