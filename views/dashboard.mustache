@@ -59,7 +59,7 @@
             <ul class="sidebar-nav" style="color:white;" id="pending_txns">
                 <li class="sidebar-brand">
                     <a href="#" onclick="reload_pending_txns('#pending_txns');">
-                      Load Pending Txns
+                      Load Pending Requests
                     </a>
                 </li>
             </ul>
@@ -197,7 +197,7 @@
             </div>
 
             <div class="progress hidden" id="data_txn_progress">
-  			<div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+  			<div class="progress-bar" id = "progress_data" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
   				Please wait while we save your data...
   			</div>
 			</div>
@@ -240,7 +240,7 @@
 
             </div>
             <div class="progress hidden" id="req_txn_progress">
-  			<div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+  			<div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
   				Please wait while we save your data...
   			</div>
 			</div>
