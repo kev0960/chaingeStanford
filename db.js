@@ -271,6 +271,7 @@ module.exports = function (dependencies) {
   const change_req_txn_at = function(email, txn, at) {
     redis.lset(REQ_TXN_FOR_USER + email, at, txn, function (err) {
     if (err) console.log("Error :: ", err);
+    });
   };
 
   const save_req_txn_for_user = function(email, txn) {
