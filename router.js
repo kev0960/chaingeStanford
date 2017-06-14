@@ -258,14 +258,14 @@ module.exports = function (dependencies) {
         let result = [];
 
         for (let i = 0; i < txns.length; i++) {
-
+            let txn = JSON.parse(txns[i]);
             // only deal with the unanswered requests
-            if (txns[i].answered == false) {
+            if (txn.answered == false) {
 
                 result.push({
-                    'sig' : txns[i].sig,
-                    'key' : txns[i].key,
-                    'requester' : txns[i].requester,
+                    'sig' : txn.sig,
+                    'key' : txn.key,
+                    'requester' : txn.requester,
                 });
             }
         }
@@ -284,7 +284,8 @@ module.exports = function (dependencies) {
       let txn_list = [];
       for (let i = 0; i < list.length; i++) {
         let txn = JSON.parse(list[i]);
-        txn_list.push(txn);
+        if (txn.type == 0)
+            txn_list.push(txn);
       }
 
       let num_rows = Math.ceil(txn_list.length / 4.0);
@@ -301,8 +302,6 @@ module.exports = function (dependencies) {
       for (let i = 0; i < txn_list.length; i++) {
         let row_idx = Math.floor(i / 4.0);
         let txn = txn_list[i];
-
-        if (txn.type != 0) continue;
 
         // prepare block_num for rendering
         let block_num = null;
