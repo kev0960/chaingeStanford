@@ -29,6 +29,8 @@
 <!-- Main -->
 <div id="main" style="padding-top:20px;">
 
+    <header class="major container 50%" id="info_box"><h4>Verifying Results:</h4></header>
+
     <header class="major container 75%">
         <h2>we keep your data safe
             <br />
@@ -62,7 +64,7 @@
         var elem = document.getElementById("myBar");
 	if (elem) {
 	    var width = 0;
-            var id = setInterval(frame, 200);
+            var id = setInterval(frame, 50);
             function frame() {
                 if (width >= 100) {
                     clearInterval(id);
@@ -77,25 +79,29 @@
     setInterval(move, 25000);
 
     var email = decodeURIComponent(document.URL.split('/').pop());
-    var returnedUser = {};
-    setTimeout(function(){
-        $.ajax({
-            type: 'GET',
-            contentType: "application/json; charset=utf-8",
-            url: '/get_user_info_link_gen',
-            dataType: "json",
-            data: {
-                email
-            },
-            success: function(result, status, xhr){
-                console.log('Got user data');
-                console.log(result);
-                document.getElementById("loadBar").innerHTML = '<div>' + JSON.stringify(result) + '</div>';
-                returnedUser = result;
-            }
-        });
-        console.log(returnedUser);
-    }, 10000);
+    $.ajax({
+        type: 'GET',
+        contentType: "application/json; charset=utf-8",
+        url: '/get_user_info_link_gen',
+        dataType: "json",
+        data: {
+            email
+        },
+        success: function(result, status, xhr){
+            console.log('Got user data');
+            console.log(result);
+	    result = {'name': 'mark', 'email':'swjang92@stanford.edu'};
+	    if (result) {
+		console.log('print');
+    		setTimeout(function(){
+		    for (var key in result){
+                	document.getElementById("info_box").innerHTML += '<div>' + key + ":" + result[key] + '</div>';
+		    }
+    		}, 5000);
+
+	    }
+        }
+    });
 </script>
 </body>
 </html>
