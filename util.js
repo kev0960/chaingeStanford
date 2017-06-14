@@ -25,6 +25,17 @@ module.exports = function (dependencies) {
     return entry;
   };
 
+  const stringify_db_txn_entry = function(db_entry) {
+
+    let payload = db_entry.serial.payload;
+    let serial = db_entry.serial;
+
+    serial.payload = stable_stringify(payload);
+    db_entry.serial = stable_stringify(serial);
+
+    return JSON.stringify(db_entry);
+  };
+
   /**
    * Finds the data transaction of the user with the given email
    * that has the given key.
@@ -147,6 +158,7 @@ module.exports = function (dependencies) {
     parse_db_txn_entry,
     format_req_txn_for_display,
     format_ans_txn_for_display,
-    create_sha256_hash
+    create_sha256_hash,
+    stringify_db_txn_entry,
   }
 };

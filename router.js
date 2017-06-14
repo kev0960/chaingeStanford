@@ -424,7 +424,7 @@ module.exports = function (dependencies) {
 
                 // Found. Turn answered = true
                 if (txn.sig == sig) {
-                    db.change_req_txn_at(email, JSON.stringify(txn), i);
+                    db.change_req_txn_at(email, util.stringify_db_txn_entry(txn), i);
 
                     if (requester == "unidentified") {
                         res.setHeader('Content-Type', 'application/json');
@@ -438,7 +438,7 @@ module.exports = function (dependencies) {
                         for (let j = 0; j < list.length; j++) {
                             let this_txn = util.parse_db_txn_entry(list[j]);
                             if (this_txn.sig == sig) {
-                                db.change_user_txn_at(requester, JSON.stringify(txn), j);
+                                db.change_user_txn_at(requester, util.stringify_db_txn_entry(txn), j);
                                 break;
                             }
                         }
