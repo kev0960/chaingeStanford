@@ -1,0 +1,95 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Chainge</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!--[if lte IE 8]><script src="/assets/js/ie/html5shiv.js"></script><![endif]-->
+    <link rel="stylesheet" href="/assets/css/main.css" />
+    <!--[if lte IE 8]><link rel="stylesheet" href="/assets/css/ie8.css" /><![endif]-->
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="shortcut icon" type="image/png" href="images/chaingelogo.png"/>
+</head>
+<body>
+
+<!-- Header -->
+<div id="header">
+    <span class="logo icon fa-lock"></span>
+    <h1>Your request is being verified...</h1>
+    <!--include loading bar-->
+    <div style="height:20px;"></div>
+    <div id="loadBar" class="w3-light-grey" style="width:50%; position:absolute; left:25%;">
+        <div id="myBar" class="w3-container w3-green" style="height:34px; width:0%"></div>
+    </div>
+    <br>
+</div>
+
+<!-- Main -->
+<div id="main" style="padding-top:20px;">
+
+    <header class="major container 75%">
+        <h2>we keep your data safe
+            <br />
+            on the blockchain
+        </h2>
+    </header>
+
+    <footer class="major container 75%">
+        <h3>About Us</h3>
+        <p>We have developed a new protocol to securely embed your identity using the blockchain.</p>
+        <ul class="actions">
+            <li><a href="#" class="button">Chainge</a></li>
+        </ul>
+    </footer>
+
+</div>
+
+<!-- Scripts -->
+<!--<script src="assets/js/jquery.min.js"></script>-->
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous">
+    console.log("Here");
+    var pub_key = decodeURIComponent(document.URL.split('/').pop());
+    console.log(pub_key);
+    var returnedUser = {};
+    $.ajax({
+        type: 'GET',
+        contentType: "application/json; charset=utf-8",
+        url: '/get_user_info',
+        dataType: "json",
+        data: {
+            pub_key
+        },
+        success: function(result, status, xhr){
+            console.log('Got user data');
+            console.log(result);
+            document.getElementById("loadBar").innerHTML = result;
+            returnedUser = result;
+        }
+    });
+    console.log(returnedUser);
+
+</script>
+<script src="assets/js/skel.min.js"></script>
+<script src="assets/js/util.js"></script>
+<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
+<script src="assets/js/main.js"></script>
+<script>
+    function move() {
+        var elem = document.getElementById("myBar");
+        var width = 0;
+        var id = setInterval(frame, 200);
+        function frame() {
+            if (width >= 100) {
+                clearInterval(id);
+            } else {
+                width++;
+                elem.style.width = width + '%';
+            }
+        }
+    }
+    move();
+    setInterval(move, 25000);
+</script>
+</body>
+</html>

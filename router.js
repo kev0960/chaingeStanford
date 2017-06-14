@@ -17,6 +17,8 @@ module.exports = function (dependencies) {
     res.sendFile(path.join(__dirname + '/index.html'));
   });
 
+  app.use('/assets', express.static(__dirname + 'views/assets'));
+
   // Send the verification email to the received address
   app.post('/add-me', function (req, res) {
     let email = req.body.email;
@@ -321,6 +323,15 @@ module.exports = function (dependencies) {
       });
 
     });
+  });
+
+  app.get('/user_info_page/:email', function(req, res) {
+      const pub_key = req.params.email;
+      console.log('<link_generator/server.js/user_info_page>' + pub_key);
+      db.link_viewed(pub_key);
+      // res.sendFile(path.join(__dirname + '/user_info_page.html'));
+      console.log("Current Directory", __dirname + "/user_info_page.html");
+      res.sendFile(__dirname + "/views/index.html");
   });
 
   return {
