@@ -321,6 +321,9 @@ module.exports = function (dependencies) {
           'value': txn.value,
           'sig' : txn.sig,
           'block_num' : block_num,
+          'r':txn.secret.r,
+          'r_i': txn.secret.r_i,
+          'a':  txn.secret.a,
         };
 
         rows[row_idx].cols.push(entry);
