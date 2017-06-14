@@ -18,7 +18,7 @@ module.exports = function(dependencies) {
       // new rsa key.
       let data = {
         K : 20,
-        identity : id_val,
+        identity : create_sha256_hash(id_val),
         rsa_key_size : 2048,
         dh_key_size : 1024,
         token : token,
@@ -86,6 +86,7 @@ module.exports = function(dependencies) {
 
 
         // find target's data_txn with the given key
+
         db.find_data_txn_with_key(target_email, id_key).then(function(txn) {
           // txn = {
           //      serial : {
@@ -118,7 +119,7 @@ module.exports = function(dependencies) {
             with_key:1,
             token: token,
             'data_txn' : {'txn_payload': txn.serial.payload},
-            'identity' : id_val,
+            'identity' : create_sha256_hash(id_val),
           };
 
           // register callback for zmq
@@ -210,7 +211,8 @@ module.exports = function(dependencies) {
                       txn_payload : {
                         G : data_txn.get_G(),
                         g : data_txn.get_g(),
-                      }
+                      },
+                      identity
                     }),
                     request_txn : JSON.parse({
                       txn_payload : {
@@ -221,7 +223,8 @@ module.exports = function(dependencies) {
                       r_i : saved_txn.secret.r_i,
                       r : saved_txn.secret.r,
                       a : saved_txn.secret.a
-                    })
+                    }),
+
                   };
 
 
@@ -305,7 +308,7 @@ module.exports = function(dependencies) {
         // check only for the keys that exist in the txn
         if (key in txn && !(filter[key].includes(txn[key]))) {
             return false;
-        } 
+        }
     }
 
     return true;

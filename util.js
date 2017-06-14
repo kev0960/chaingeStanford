@@ -1,8 +1,15 @@
 const rsa = require('node-rsa');
-const stable_stringify = require('stable-stringify')
+const stable_stringify = require('stable-stringify');
+const sha256 = require('sha256');
 
 module.exports = function (dependencies) {
   const protocol = dependencies['protocol'];
+
+  // Create sha 256 hash of the string
+  const create_sha256_hash = function(str) {
+    return sha256(str);
+  }
+
   const parse_db_txn_entry = function (db_entry) {
     // db txn entry : JSON.stringify({serial, sig, state})
     // serial : JSON.stringify({public_key, payload, signature});
@@ -107,7 +114,7 @@ module.exports = function (dependencies) {
   }
 
   const format_req_txn_for_display = function(txn) {
-    // req txns should have 
+    // req txns should have
     // 1) I'm requesting to who
     // 2) What info I'm requesting
     // 3) If it has been answered
@@ -138,5 +145,6 @@ module.exports = function (dependencies) {
     parse_db_txn_entry,
     format_req_txn_for_display,
     format_ans_txn_for_display,
+    create_sha256_hash
   }
 };
