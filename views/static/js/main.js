@@ -187,6 +187,13 @@ const toggle_progress = function(txn_type) {
 	} else {
 		$(modal_id).addClass('hidden');
 		$(progress_id).removeClass('hidden');
+
+		let percentage = 0;
+
+		setTimeout(function() {
+			percentage++;
+			$('#progress_data').style.width = parseInt(percentage) + "%";
+		}, 200);
 	}
 };
 
