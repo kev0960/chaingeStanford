@@ -434,7 +434,7 @@ module.exports = function (dependencies) {
                     db.get_user_txn(requester).then(function(list) {
 
                         for (let j = 0; j < list.length; j++) {
-                            let this_txn = util.parse_db_txn_entry(list[i]);
+                            let this_txn = util.parse_db_txn_entry(list[j]);
                             if (this_txn.sig == sig) {
                                 db.change_user_txn_at(requester, JSON.stringify(txn), j);
                             }
