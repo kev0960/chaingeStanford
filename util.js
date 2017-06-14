@@ -114,7 +114,7 @@ module.exports = function (dependencies) {
     // 4) If this txn is committed
 
     return {
-        'type' : 'Request'
+        'type' : 'Request',
         'target' : txn.target,
         'state' : txn.state,
         'key' : txn.key,
@@ -128,9 +128,8 @@ module.exports = function (dependencies) {
     // 2) What info it was
     // 3) If I have answered
     return {
-        'type' : 'Answer'
+        'type' : 'Answer',
         'state' : txn.state,
-        ''
     };
   };
 

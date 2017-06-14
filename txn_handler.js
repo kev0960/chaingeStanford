@@ -335,8 +335,8 @@ module.exports = function(dependencies) {
 
             resolve(txns);
         });
-    };
-  });
+    });
+  };
 
   return {
     data_txn_wrapper,

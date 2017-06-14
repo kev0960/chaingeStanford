@@ -100,7 +100,7 @@ module.exports = function (dependencies) {
                     "block_num" : block_num,
                     "target" : username,
                     "answered" : false, // a new good block can't have an answered txn
-                    "key" : data.key;
+                    "key" : data.key,
                   };
 
                   db.save_req_txn_for_user(username, db_txn_entry);
