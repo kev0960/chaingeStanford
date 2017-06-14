@@ -21,6 +21,7 @@ for (let i = 0; i <  txn_types.length; i++) {
 	           data: $(form_id).serialize(), // serializes the form's elements.
 	           success: function(data)
 	           {
+	           		$('#progress_data')[0].style.width = 100 + "%";
 	           	    if (data != undefined && data['success'] == true) {
 	           	    	alert("Nice! We saved your data successfully. Please checkout your dashboard.");
 	           	    } else {
@@ -190,11 +191,10 @@ const toggle_progress = function(txn_type) {
 
 		let percentage = 0;
 
-		setTimeout(function() {
+		setInterval(function() {
 			percentage++;
-			console.log(percentage);
 			$('#progress_data')[0].style.width = percentage + "%";
-		}, 200);
+		}, 150);
 	}
 };
 
