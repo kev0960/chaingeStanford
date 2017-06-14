@@ -156,6 +156,23 @@ module.exports = function (dependencies) {
           }
         }
       );
+
+      db.get_pending_req_txn_for_link_generator(current_txn.get_req_txn_sig()).then(
+          function(result){
+            if (result) {
+                let email = result['email'];
+                email.delete('email');
+                let key = result.keys()[0];  // there is only one key for a txn
+                let val = result[key];
+
+                db.save_user_data_for_link_generator(email, key, val);
+            } else {
+              console.log('No req txn saved for ans txn');
+            }
+          }
+      )
+
+
     }
 
     setTimeout(function () {
