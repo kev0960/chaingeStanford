@@ -24,7 +24,11 @@ for (let i = 0; i <  txn_types.length; i++) {
 	           	    if (data != undefined && data['success'] == true) {
 	           	    	alert("Nice! We saved your data successfully. Please checkout your dashboard.");
 	           	    } else {
-	           	    	alert("Error while saving your data. Please try again.");
+	           	    	if ('message' in data) {
+	           	    		alert(data['message']);
+	           	    	} else {
+	           	    		alert("Error while saving your data. Please try again.");
+	           	    	}
 	           	    }
 	               toggle_progress(txn_type);
 	           }
@@ -32,8 +36,31 @@ for (let i = 0; i <  txn_types.length; i++) {
 
 	    toggle_progress(txn_type)
 	});
-
 }
+
+let form_id = '#link_generator_form';
+$(form_id).submit(function(e) {
+    e.preventDefault(); // avoid to execute the actual submit of the form.
+
+    var url = "/new_txn";
+
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: $(form_id).serialize(), // serializes the form's elements.
+        success: function(data)
+        {
+            if (data != undefined && data['success'] == true) {
+                alert("Nice! We saved your data successfully. Please checkout your dashboard.");
+            } else {
+                alert("Error while saving your data. Please try again.");
+            }
+            toggle_progress('link_generator');
+        }
+    });
+
+    toggle_progress('link_generator');
+});
 
 /* Register modal related callbacks */
 for (let i = 0; i < modal_ids.length; i++) {
@@ -93,6 +120,20 @@ const reload_pending_txns = function(ul_id) {
 	});
 };
 
+const get_history = function() {
+	let url = "/history";
+
+	$.ajax({
+		type: "GET",
+		url: url,
+		success: function(txn_list) {
+
+			alert(txn_list);
+
+		}
+	});
+}
+
 
 const toggle_progress = function(txn_type) {
 	let modal_id = '#'+txn_type;
@@ -111,17 +152,3 @@ const show_result = function(txn_type, result) {
 	let div_id = '#'+txn_type+"_result";
 	$(div_id).text(result);
 };
-
-// TODO : dynamically pull app_storage addressese from a repo online
-let app_addrs = {'Link Generator': 'http://localhost:4000/create_link_js'};
-
-// once API.js is loaded, start pulling 3rd party frontend modules.
-for (let key in app_addrs) {
-    let addr = app_addrs[key];
-    $.getScript(addr, function(data, textStatus, jqxhr) {
-    	if (jqxhr.status == 200){
-            console.log('Successfullly read in script from ' + key);
-		}
-        // If jqxhr.status == 200, the code is executed right away.
-    });
-}

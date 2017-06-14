@@ -57,7 +57,7 @@
         <!-- right sidebar-->
         <div id="sidebar-wrapper-right" style="overflow:scroll;">
             <ul class="sidebar-nav" style="color:white;">
-                <li class="sidebar-brand" style="padding-left:35px;">
+                <li class="sidebar-brand">
                     <a href="#" onclick="reload_pending_txns('#pending_txns');">
                       Pending Txns
                     </a>
@@ -356,18 +356,18 @@
                     <div class="modal-body">
 
                         <!-- content goes here -->
-
                         <div id="link_generator">
 
-                            <p>Add information you wish to add to link generated
+                            <p>
                             <ul id="addList">
                                 <li> Key: "Phone Number"</li>
                                 <li> Value: "000-0000"</li>
                             </ul>
                             </p>
                             <br>
-                            <form action="/new_txn" method="post" id ="link_generator_form">
-                                <input type="hidden" name="txn_type" value="0">
+                            <form action='/link_generator_req_txn' method="post" id ="link_generator_form">
+                                <input type="hidden" name="user_email" value={{email}}>
+                                <input type="hidden" name="txn_type" value="1">
                                 <div class="form-group">
                                     <label for="Name">Data Key</label>
                                     <input type="text" class="form-control" id="key" name="key" placeholder="Enter Name of Data (ex. email)">
@@ -381,11 +381,12 @@
 
                         </div>
 
-                        <div class="progress hidden" id="data_txn_progress">
+                        <div class="progress hidden" id="link_generator_progress">
                             <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
                                 Please wait while we save your data...
                             </div>
                         </div>
+
                     </div>
                     <div class="modal-footer">
                     </div>

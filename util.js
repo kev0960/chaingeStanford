@@ -106,8 +106,38 @@ module.exports = function (dependencies) {
     };
   }
 
+  const format_req_txn_for_display = function(txn) {
+    // req txns should have 
+    // 1) I'm requesting to who
+    // 2) What info I'm requesting
+    // 3) If it has been answered
+    // 4) If this txn is committed
+
+    return {
+        'type' : 'Request'
+        'target' : txn.target,
+        'state' : txn.state,
+        'key' : txn.key,
+        'answered': txn.answered,
+    };
+  };
+
+  const format_ans_txn_for_display = function(txn) {
+    // ans txns should have
+    // 1) Who requested this info
+    // 2) What info it was
+    // 3) If I have answered
+    return {
+        'type' : 'Answer'
+        'state' : txn.state,
+        ''
+    };
+  };
+
   return {
     create_data_txn_from_obj,
     parse_db_txn_entry,
+    format_req_txn_for_display,
+    format_ans_txn_for_display,
   }
 };
