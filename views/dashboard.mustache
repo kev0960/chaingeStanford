@@ -28,9 +28,7 @@
         <div id="sidebar-wrapper">
             <ul class="sidebar-nav">
                 <li class="sidebar-brand">
-                    <a href="#">
-                        <img alt="Brand" style="max-width:20%; max-height: 20%" src="images/chainge.png">  @ Stanford
-                    </a>
+                    <img alt="Brand" style="max-width:20%; max-height: 20%; text-color:white;" src="images/chainge.png">  @ Stanford
                 </li>
                 <li>
                     <a href="/profile">Dashboard</a>
@@ -45,10 +43,10 @@
                     <a href="#" data-toggle="modal" data-target="#answerModal">Answer Request</a>
                 </li>
                 <li>
-                    <a href="#" data-toggle="modal" data-target="txnsModal">My History</a>
+                    <a href="#" data-toggle="modal" data-target="#txnsModal">My History</a>
                 </li>
                 <li>
-                    <a href="#">FAQ</a>
+                    <a href="#" data-toggle="modal" data-target="#faqModal">FAQ</a>
                 </li>
                 <li>
                     <a href="#" data-toggle="modal" data-target="#linkGenerator">Link Generator</a>
@@ -58,13 +56,15 @@
 
         <!-- right sidebar-->
         <div id="sidebar-wrapper-right" style="overflow:scroll;">
-            <ul class="sidebar-nav">
-                <li class="sidebar-brand">
+            <ul class="sidebar-nav" style="color:white;">
+                <li class="sidebar-brand" style="padding-left:35px;">
                     <a href="#" onclick="reload_pending_txns('#pending_txns');">
-                     	Pending Txns
+                      Pending Txns
                     </a>
                 </li>
             </ul>
+            <br>
+            <br>
             <ul class="sidebar-nav" id = "pending_txns">
             </ul>
         </div>
@@ -76,7 +76,7 @@
 		<div id="dashboard_jumbotron" class="jumbotron">
 		  <h1>Hello, {{email}}</h1>
 		  <p>Chainge @ Stanford is a 3rd party application build on top of the Chainge Blockchain Stack. You can use this to store all kinds of real life identity information safely, in a distributed manner.</p>
-		  <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a></p>
+		  <p><a class="btn btn-primary btn-lg" href="https://github.com/cs210/SAP-3" role="button">Learn more</a></p>
 		</div>
 
 		<div class="row">
@@ -218,7 +218,7 @@
 	<div class="modal-content">
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
-			<h3 class="modal-title" id="lineModalLabel">My Modal</h3>
+			<h3 class="modal-title" id="lineModalLabel">Verify Someone's Data</h3>
 		</div>
 		<div class="modal-body">
 			
@@ -260,7 +260,7 @@
 	<div class="modal-content">
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
-			<h3 class="modal-title" id="lineModalLabel">My Modal</h3>
+			<h3 class="modal-title" id="lineModalLabel">Answer a Request</h3>
 		</div>
 		<div class="modal-body">
 			<div id="ans_txn">
@@ -300,7 +300,7 @@
 	<div class="modal-content">
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
-			<h3 class="modal-title" id="lineModalLabel">My Modal</h3>
+			<h3 class="modal-title" id="lineModalLabel">Pending Transactions</h3>
 		</div>
 		<div class="modal-body">
 
@@ -313,12 +313,45 @@
   </div>
 </div>
 
+    <div class="modal fade" id="faqModal" role="dialog">
+        <div class="modal-dialog">
+              <!-- Modal content-->
+              <div class="modal-content">
+                <div class="modal-header" style="height:50px;">
+                  <button type="button" style="height:30px;" class="close" data-dismiss="modal">&times;</button>
+                  <h4 class="modal-title">Frequently Asked Questions</h4>
+                </div>
+                <div class="modal-body">
+                      <div class="spacing">
+                        <p><b> What exactly is Chainge?</b>
+                          <li> We are a new blockchain protocol, similar to the blockchains running bitcoin or ethereum, but this one 
+                            was built specifically to securely exchange real life identity (RLI) over the Internet. You can add your personal information to the chain using the "Record Data" button on the left sidebar and request to verify someone else's personal info using the "Request Verification" button.</li>
+                        <br>
+                        <p><b> Great, but I want to generate a link to sell stuff, not iteract directly with the chain. </b>
+                          <li> That's fine! You're looking for the "Link Generator" button under the left side bar. Using that module, you can generate a link that allows people that click on it to see the personal information you've stored on the chain. You do need to store said personal information on the chain first using the "Record Data" button on the left sidebar.</li>
+                        <br>
+                        <p><b> Wait, what is a blockchain? </b>
+                          <li> Great question! Essentially, it is the technology underpining bitcoin that allows bitcoin to be secure, decentralized, and verifiable across many users and locations. Take a look at this <a href="https://blockgeeks.com/guides/what-is-blockchain-technology/">online guide.</a></li>
+                        <br>
+                        <p><b> So by downloading your software, am I a node on the network? </b>
+                          <li> In a limited way, yes. Your computer will mine transactions by default (not a large strain on your computer).</li>
+                        <br>
+                      </div>
+                    
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+              </div>      
+        </div>
+    </div>
+
         <div class="modal fade" id="linkGenerator" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
-                        <h3 class="modal-title" id="lineModalLabel">Add Info to Link</h3>
+                        <h3 class="modal-title" id="lineModalLabel">Generate a Link</h3>
                     </div>
                     <div class="modal-body">
 

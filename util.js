@@ -48,6 +48,7 @@ module.exports = function (dependencies) {
         }
 
         resolve([]);
+
       });
     });
   };
@@ -107,7 +108,6 @@ module.exports = function (dependencies) {
 
   return {
     create_data_txn_from_obj,
-    find_data_txn_with_key,
     parse_db_txn_entry,
   }
 };

@@ -1,10 +1,25 @@
 <html>
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
     crossorigin="anonymous"></script>
-
-<label for="user-email">Your Stanford Email</label>
-<input type="email" id="user-email" name="email">
-<input type="submit" id='submit-email' value="Submit!">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<body>
+  <nav class="navbar navbar-default" style="background-color: #1f1f2e;">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <p style="color:white;font-size:25px;">chainge @ stanford</p>
+      </div>
+    </div>
+ </nav>
+  <div style="position:absolute;left:35%;text-align:center;">
+    <label for="user-email">Your Stanford Email</label>
+    <input type="email" id="user-email" name="email">
+    <input type="submit" id='submit-email' value="Submit!"><br><br>
+    <a href="/login" class="btn btn-info" role="button" style="width:100px;">Log In</a><br><br>
+    <a href="/profile" class="btn btn-info" role="button" style="width:100px;">View Profile</a>
+  </div>
+</body>
 <script>
     $('#submit-email').click(function() {
         $.post({
@@ -20,10 +35,4 @@
         })
     });
 </script>
-<div>
-    <a href="/login">Log in!</a>
-</div>
-<div>
-    <a href="/profile">View Profile</a>
-</div>
 </html>

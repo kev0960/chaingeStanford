@@ -31,5 +31,5 @@ Onboard Stanford students to Chainge
     ```
       docker ps
     ```
-1. Go to config.js and set your id and password for nodemailer service. You can use your gmail account. 
-1. Finally run ```npm start``` to run the server. 
+1. Go to config.js (which can be found in the chaingeStanford repo within Docker) and set your id and password for nodemailer service. You can use your gmail account. 
+1. Change directories to home and then chaingeStanford, then run ```npm start``` to run the server.
