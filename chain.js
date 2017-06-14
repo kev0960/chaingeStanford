@@ -83,7 +83,7 @@ module.exports = function (dependencies) {
           if (username) {
             // Find exact TXN from user's TXN list
 
-            db.get_user_txn(username).then(function(list) { 
+            db.get_user_txn(username).then(function(list) {
 
               for (let i = 0; i < list.length; i++) {
                 let data = JSON.parse(list[i]);
@@ -93,17 +93,17 @@ module.exports = function (dependencies) {
 
                   // save the request transaction to the requested user
                   let db_txn_entry = {
-                    "serial" : curr_txn.serialize(),
-                    "sig" : curr_txn.get_signature(),
+                    "serial" : current_txn.serialize(),
+                    "sig" : current_txn.get_signature(),
                     "state" : "ACCEPTED",
-                    "type": 1, 
+                    "type": 1,
                     "block_num" : block_num,
                     "target" : username,
                     "answered" : false, // a new good block can't have an answered txn
                     "key" : data.key,
                   };
 
-                  db.save_req_txn_for_user(username, db_txn_entry);
+                  db.save_req_txn_for_user(username, JSON.stringify(db_txn_entry));
 
                   // turn the block_num for the creator, if in Stanford community
                   db.get_username_from_txn(current_txn.get_signature()).then(function(email) {
@@ -118,7 +118,7 @@ module.exports = function (dependencies) {
                             let data = util.parse_db_txn_entry(list[i]);
 
                             if (data.sig == current_txn.get_signature()) {
-                                db.change_user_txn_at(email, db_txn_entry, i);
+                                db.change_user_txn_at(email, JSON.stringify(db_txn_entry), i);
                                 break;
                             }
                         }
