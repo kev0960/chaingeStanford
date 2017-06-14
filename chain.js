@@ -83,7 +83,7 @@ module.exports = function (dependencies) {
           if (username) {
             // Find exact TXN from user's TXN list
 
-            db.get_user_txn(username).then(function(list) { 
+            db.get_user_txn(username).then(function(list) {
 
               for (let i = 0; i < list.length; i++) {
                 let data = JSON.parse(list[i]);
@@ -111,8 +111,7 @@ module.exports = function (dependencies) {
                         "requester" : requester,
                     };
 
-                    db.save_req_txn_for_user(username, db_txn_entry);
-
+                    db.save_req_txn_for_user(username, JSON.stringify(db_txn_entry));
                     // The user who issued this req txn is in the stanford community
                     if (email != undefined && email != null) {
 
@@ -123,7 +122,7 @@ module.exports = function (dependencies) {
                             let data = util.parse_db_txn_entry(list[i]);
 
                             if (data.sig == current_txn.get_signature()) {
-                                db.change_user_txn_at(email, db_txn_entry, i);
+                                db.change_user_txn_at(email, JSON.stringify(db_txn_entry), i);
                                 break;
                             }
                         }

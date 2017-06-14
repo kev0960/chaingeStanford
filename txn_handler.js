@@ -222,32 +222,27 @@ module.exports = function(dependencies) {
                   // Create the answer transaction with
                   // data_txn and req_txn
 
+                  console.log("ANSWER DATA TXN :: ", saved_txn);
+                  console.log("ANSWER REQU TXN :: ", saved_req);
                   let token = uuid();
                   let data = {
                     type : 2,
-                    data_txn : JSON.parse({
-                      txn_payload : {
-                        G : data_txn.get_G(),
-                        g : data_txn.get_g(),
-                      },
-                      identity
-                    }),
-                    request_txn : JSON.parse({
-                      txn_payload : {
-                        g_b : data_txn.get_g_b()
-                      }
-                    }),
-                    secret : JSON.parse({
-                      r_i : saved_txn.secret.r_i,
-                      r : saved_txn.secret.r,
-                      a : saved_txn.secret.a
-                    }),
-
+                    G : data_txn.get_G(),
+                    g : data_txn.get_g(),
+                    g_b : request_txn.get_g_b(),
+                    r_i : saved_txn.secret.r_i,
+                    r : saved_txn.secret.r,
+                    a : saved_txn.secret.a,
+                    req : request_txn.req,
                   };
 
 
-                  zmq.add_callback_for_token(token, function(ans_txn_payload) {
-                    // main returns response
+                  zmq.add_callback_for_token(token, function(txn_payload) {
+                    // txn_payload = {response}
+
+                    let ans_txn_payload = {
+                      res : txn_payload.response
+                    };
 
                     ans_txn_payload['data_blk_num'] = saved_txn.block_num;
                     ans_txn_payload['data_blk_sig'] = saved_txn.sig;

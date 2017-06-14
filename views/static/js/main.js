@@ -42,7 +42,7 @@ let form_id = '#link_generator_form';
 $(form_id).submit(function(e) {
     e.preventDefault(); // avoid to execute the actual submit of the form.
 
-    var url = "/new_txn";
+    var url = "/link_generator_req_txn";
 
     $.ajax({
         type: "POST",

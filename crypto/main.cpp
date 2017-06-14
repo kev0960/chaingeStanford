@@ -331,21 +331,16 @@ class AnswerTxn
 
   public:
 
-  AnswerTxn(string data_txn_str, string request_txn_str, string secret) {
-    auto data_txn_json = json::parse(data_txn_str);
-    auto request_txn_json = json::parse(request_txn_str);
-    auto secret_json = json::parse(secret);
+  AnswerTxn(string str_G, string str_g, string str_g_b, std::vector<string> r_i_list, string str_r, string str_a, string request) {
 
-    Integer a = integer_with_hex(secret_json["a"]);
-    Integer G = integer_with_hex(data_txn_json["txn_payload"]["G"]);
-    Integer g = integer_with_hex(data_txn_json["txn_payload"]["g"]);
+    Integer a = integer_with_hex(str_a);
+    Integer G = integer_with_hex(str_G);
+    Integer g = integer_with_hex(str_g);
 
-    Integer g_b = integer_with_hex(request_txn_json["txn_payload"]["g_b"]);
+    Integer g_b = integer_with_hex(str_g_b);
     Integer g_ab = ModularExponentiation(g_b, a, G);
 
-    string request = request_txn_json["txn_payload"]["req"];
-    std::vector<string> r_i_list = secret_json["r_i"];
-    Integer r = integer_with_hex(secret_json["r"]);
+    Integer r = integer_with_hex(str_r);
 
     for (unsigned int i = 0; i < request.size(); i ++) {
       if (request[i] == '0') {
@@ -389,7 +384,7 @@ int main()
     std::cout << "Request :: " << (char *)request.data() << std::endl;
     cout << std::endl << std::endl << std::endl;
     string data_str = string((char*)request.data());
-    string sub_str = data_str.substr(0, data_str.rfind('}') + 1);
+    string sub_str = data_str.substr(0, data_str.rfind("END{}OF"));
     std::cout << sub_str << std::endl;
 
     auto json_data = json::parse(sub_str);
@@ -424,15 +419,23 @@ int main()
       string hashed_identity = json_data["identity"];
 
       try {
-          RequestTxn txn(G, g, g_a, secret, K, hashed_identity);
-          serial = txn.serialize_data(json_data["token"]);
-        }
+        RequestTxn txn(G, g, g_a, secret, K, hashed_identity);
+        serial = txn.serialize_data(json_data["token"]);
+      }
       catch (std::exception e) {
         std::cout << "Error :: " << e.what() << std::endl;
       }
     }
     else if (json_data["type"] == 2) {
-      AnswerTxn txn(json_data["data_txn"], json_data["req_txn"], json_data["secret"]);
+      string G = json_data["G"];
+      string g = json_data["g"];
+      string g_b = json_data["g_b"];
+      std::vector<string> r_i = json_data["r_i"];
+      string r = json_data["r"];
+      string a = json_data["a"];
+      string req = json_data["req"];
+
+      AnswerTxn txn(G, g, g_b, r_i, r, a, req);
       serial = txn.serialize_data(json_data["token"]);
     }
 
