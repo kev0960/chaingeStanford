@@ -111,6 +111,7 @@ void create_key_pair(AutoSeededRandomPool &rnd, DH &dh, Integer &priv, Integer &
 string integer_to_string(Integer num)
 {
   stringstream ss;
+
   ss << std::hex << num;
 
   string s = ss.str();
@@ -127,6 +128,15 @@ string integer_to_string(Integer num)
 
 class DataTxn
 {
+  Integer integer_with_hex(string hex)
+  {
+    // Insert '0x' at front
+    hex.insert(0, "0x");
+
+    return Integer(hex.c_str());
+  }
+
+
   std::vector<string> str_g_r_i;
   std::vector<string> str_r_i;
   string str_G;
@@ -164,7 +174,7 @@ class DataTxn
     create_key_pair(rnd, dh, r, g_r);
 
     // Create secret secret = g^r + hashed_identity
-    Integer secret = g_r + Integer(hashed_identity.c_str());
+    Integer secret = g_r + integer_with_hex(hashed_identity);
 
     // Create 'tryouts' for ZKP
     for (int i = 0; i < K; i++)

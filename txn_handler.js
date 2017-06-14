@@ -5,7 +5,7 @@ module.exports = function(dependencies) {
   const uuid = dependencies['uuid'];
   const util = dependencies['util'];
   const protocol = dependencies['protocol'];
-  const stable_stringify = require('stable-stringify');
+  const stable_stringify = require('json-stable-stringify');
   const transaction = dependencies['transaction']
 
 
@@ -231,9 +231,6 @@ module.exports = function(dependencies) {
                   // Create the answer transaction with
                   // data_txn and req_txn
 
-                  console.log("ANSWER DATA TXN :: ", saved_txn);
-                  console.log("ANSWER REQU TXN :: ", saved_req);
-
                   let token = uuid();
                   let data = {
                     type : 2,
@@ -247,8 +244,6 @@ module.exports = function(dependencies) {
                     token : token
                   };
 
-
-                  console.log("token :: ", token);
                   zmq.add_callback_for_token(token, function(txn_payload) {
                     // txn_payload = {response}
 
@@ -257,21 +252,24 @@ module.exports = function(dependencies) {
                     };
 
                     ans_txn_payload['data_blk_num'] = saved_txn.block_num;
-                    ans_txn_payload['data_blk_sig'] = saved_txn.sig;
+                    ans_txn_payload['data_txn_sig'] = saved_txn.sig;
 
                     ans_txn_payload['req_blk_num'] = saved_req.block_num;
-                    ans_txn_payload['req_blk_sig'] = saved_req.sig;
+                    ans_txn_payload['req_txn_sig'] = saved_req.sig;
 
                     ans_txn_payload['timestamp'] = Date.now();
                     ans_txn_payload['type'] = 2;
 
                     const txn_payload_str = stable_stringify(ans_txn_payload);
+                    console.log("ans_txn_payload :: ", ans_txn_payload);
 
                     db.get_keys(email).then(function(rsa_keys) {
                       let pub_key = rsa_keys[0];
                       let prv_key = rsa_keys[1];
 
                       const txn_sig = protocol.create_sign(txn_payload_str, prv_key);
+
+                      console.log("TXN payload str :: ", txn_payload_str);
 
                       const ans_txn_obj = {
                         public_key : pub_key,
