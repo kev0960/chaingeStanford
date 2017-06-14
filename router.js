@@ -442,7 +442,7 @@ module.exports = function (dependencies) {
                     });
 
                     res.setHeader('Content-Type', 'application/json');
-                    res.send(JSON.stringify({success, message: "success!"}));
+                    res.send(JSON.stringify(success));
                     break;
                 }
             }
