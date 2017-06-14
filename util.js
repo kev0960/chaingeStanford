@@ -137,6 +137,8 @@ module.exports = function (dependencies) {
     return {
         'type' : 'Answer',
         'state' : txn.state,
+        'key' : txn.key,
+        'requester' : txn.requester
     };
   };
 

@@ -375,7 +375,8 @@ module.exports = function (dependencies) {
       // Query my txns (issued by me) by the filter
       txn_handler.query_txns(email, filter).then(function (txns) {
 
-          let displayables = [];
+          let req_displayables = [];
+          let ans_displayables = [];
 
           for (let i = 0; i < txns.length; i++) {
               let txn = txns[i];
@@ -383,15 +384,15 @@ module.exports = function (dependencies) {
 
               if (txn.type == 1) {
                   displayable = util.format_req_txn_for_display(txn);
+                  req_displayables.push(displayable);
               } else if (txn.type == 2) {
                   displayable = util.format_ans_txn_for_display(txn);
+                  ans_displayables.push(displayable);
               }
-
-              displayables.push(displayable);
           }
 
           res.setHeader('Content-Type', 'application/json');
-          res.send(JSON.stringify(displayables));
+          res.send(JSON.stringify({req_displayables, ans_displayables}));
       });
   });
 

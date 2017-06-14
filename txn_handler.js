@@ -286,6 +286,8 @@ module.exports = function(dependencies) {
                         "sig" : txn_sig,
                         "state" : "Pending",
                         "type" : 2,
+                        "requester" : saved_req.requester,
+                        "key" : saved_req.key,
                       };
 
                       db.save_txn_to_username(txn_sig, email);

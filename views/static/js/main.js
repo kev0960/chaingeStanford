@@ -168,11 +168,56 @@ const get_history = function() {
 	$.ajax({
 		type: "GET",
 		url: url,
-		success: function(txn_list) {
+		success: function(result) {
 
 			console.log(txn_list);
-			alert(txn_list);
+			let req_txns = result.req_displayables;
+			let ans_txns = result.ans_displayables;
 
+			let req_table = $('#req_table');
+			let ans_table = $('#ans_table');
+			let tr_start = "<tr>"
+			let tr_end = "</tr>"
+			let td_start = "<td>"
+			let td_end = "</td>"
+
+			let req_txn_keys = ['target', 'key', 'state', 'answered'];
+			let ans_txn_keys = ['requester', 'key', 'state'];
+
+			for (let i = 0; i < req_table.length; i++) {
+				let txn = req_table[i];
+				let elem = tr_start;
+
+				for (let j = 0; j < req_txn_keys.length; j++) {
+					let key = req_txn_keys[j];
+
+					elem += td_start
+					elem += txn[key];
+					elem += td_end;
+				}
+
+				elem += tr_end;
+
+				req_table.append(elem);
+			}
+
+			for (let i = 0; i < ans_table.length; i++) {
+				let txn = ans_table[i];
+				let elem = tr_start;
+
+				for (let j = 0; j < req_txn_keys.length; j++) {
+					let key = req_txn_keys[j];
+
+					elem += td_start
+					elem += txn[key];
+					elem += td_end;
+				}
+
+				elem += tr_end;
+
+				ans_table.append(elem);
+
+			}
 		}
 	});
 }
