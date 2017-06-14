@@ -49,29 +49,9 @@
 <!-- Scripts -->
 <!--<script src="assets/js/jquery.min.js"></script>-->
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-        crossorigin="anonymous">
-    console.log("Here");
-    var pub_key = decodeURIComponent(document.URL.split('/').pop());
-    console.log(pub_key);
-    var returnedUser = {};
-    $.ajax({
-        type: 'GET',
-        contentType: "application/json; charset=utf-8",
-        url: '/get_user_info',
-        dataType: "json",
-        data: {
-            pub_key
-        },
-        success: function(result, status, xhr){
-            console.log('Got user data');
-            console.log(result);
-            document.getElementById("loadBar").innerHTML = result;
-            returnedUser = result;
-        }
-    });
-    console.log(returnedUser);
-
-</script>
+        crossorigin="anonymous"></script>
+<script>
+    </script>
 <script src="/assets/js/skel.min.js"></script>
 <script src="/assets/js/util.js"></script>
 <!--[if lte IE 8]>
@@ -80,19 +60,40 @@
 <script>
     function move() {
         var elem = document.getElementById("myBar");
-        var width = 0;
-        var id = setInterval(frame, 200);
-        function frame() {
-            if (width >= 100) {
-                clearInterval(id);
-            } else {
-                width++;
-                elem.style.width = width + '%';
+	if (elem) {
+	    var width = 0;
+            var id = setInterval(frame, 200);
+            function frame() {
+                if (width >= 100) {
+                    clearInterval(id);
+                } else {
+                    width++;
+                    elem.style.width = width + '%';
+                }
             }
-        }
+	}
     }
     move();
     setInterval(move, 25000);
+
+    var email = decodeURIComponent(document.URL.split('/').pop());
+    var returnedUser = {};
+    $.ajax({
+        type: 'GET',
+        contentType: "application/json; charset=utf-8",
+        url: '/get_user_info_link_gen',
+        dataType: "json",
+        data: {
+            email
+        },
+        success: function(result, status, xhr){
+            console.log('Got user data');
+            console.log(result);
+            document.getElementById("loadBar").innerHTML = '<div>' + JSON.stringify(result) + '</div>';
+            returnedUser = result;
+        }
+     });
+     console.log(returnedUser);
 </script>
 </body>
 </html>
