@@ -80,7 +80,7 @@ for (let i = 0; i < sig_texts.length; i++) {
 
 	if (block_num == 'Pending') {
 		panel.addClass('pending');
-	} 
+	}
 }
 
 
@@ -97,8 +97,9 @@ const accept_request = function(req_txn_sig) {
         type: "POST",
         url: url,
         data: {"sig" : req_txn_sig}, // serializes the form's elements.
-        success: function(data)
-        {
+        success: function(data) {
+          console.log("data :: ", data);
+
         	if (data != undefined && data['success'] == true) {
                 alert("Answered the Id verification request");
             } else {
