@@ -32,8 +32,31 @@ for (let i = 0; i <  txn_types.length; i++) {
 
 	    toggle_progress(txn_type)
 	});
-
 }
+
+let form_id = '#link_generator_form';
+$(form_id).submit(function(e) {
+    e.preventDefault(); // avoid to execute the actual submit of the form.
+
+    var url = "/new_txn";
+
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: $(form_id).serialize(), // serializes the form's elements.
+        success: function(data)
+        {
+            if (data != undefined && data['success'] == true) {
+                alert("Nice! We saved your data successfully. Please checkout your dashboard.");
+            } else {
+                alert("Error while saving your data. Please try again.");
+            }
+            toggle_progress(txn_type);
+        }
+    });
+
+    toggle_progress(txn_type)
+});
 
 /* Register modal related callbacks */
 for (let i = 0; i < modal_ids.length; i++) {
