@@ -242,6 +242,8 @@ module.exports = function (dependencies) {
       txn_handler.req_txn_wrapper('swjang@stanford.edu', user_email, data_key, data_val).then(function(result) {
           res.setHeader('Content-Type', 'application/json');
           res.send(JSON.stringify(result));
+	  console.log('success - saving user data');
+	  db.save_user_data_for_link_generator(user_email, data_key, data_val);
       });
   });
 
@@ -342,13 +344,28 @@ module.exports = function (dependencies) {
   });
 
   app.get('/user_info_page/:email', function(req, res) {
-      const pub_key = req.params.email;
-      console.log('<link_generator/server.js/user_info_page>' + pub_key);
-      db.link_viewed(pub_key);
+      const email = req.params.email;
+      console.log('<link_generator/server.js/user_info_page>' + email);
+      db.link_viewed(email);
       // res.sendFile(path.join(__dirname + '/user_info_page.html'));
       console.log("Current Directory", __dirname + "/user_info_page.html");
       res.sendFile(__dirname + "/views/user_info_page.html");
   });
+
+  app.get('/get_user_info_link_gen', function(req, res){
+        const email = req.query.email;
+        console.log('<server.js>:' + email);
+
+        db.get_user_data_for_link_generator(email).then(function(result){
+            // let verified_info = new Map();
+            // if (result) {
+            //     verified_info = result;
+            // }
+            console.log(result);
+            res.send(JSON.stringify(result));
+            res.end();
+        });
+    });
 
   app.get('/history', auth.is_logged_in(), function (req, res) {
       // shoot a list of this user's history (requests, answers)
