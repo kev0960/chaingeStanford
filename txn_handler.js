@@ -18,7 +18,7 @@ module.exports = function(dependencies) {
       // new rsa key.
       let data = {
         K : 20,
-        identity : create_sha256_hash(id_val),
+        identity : util.create_sha256_hash(id_val),
         rsa_key_size : 2048,
         dh_key_size : 1024,
         token : token,
@@ -44,7 +44,7 @@ module.exports = function(dependencies) {
 
           let data_txn = util.create_data_txn_from_obj(data);
 
-	  console.log(data_txn);
+          console.log(data_txn);
 
           // Save the newly created data
           db.save_user_txn(email, JSON.stringify({
@@ -119,50 +119,67 @@ module.exports = function(dependencies) {
             with_key:1,
             token: token,
             'data_txn' : {'txn_payload': txn.serial.payload},
-            'identity' : create_sha256_hash(id_val),
+            'identity' : util.create_sha256_hash(id_val),
           };
 
           // register callback for zmq
-          zmq.add_callback_for_token(token, function(req_txn_payload) {
-            // req_txn_payload : {g_b, g_g_ab_p_r, req, b, token}
-
-            // wrap so that it fits the req txn definition
-            req_txn_payload.data_blk_num = block_num;
-            req_txn_payload.data_txn_sig = sig;
-            req_txn_payload.type = 1;
-            req_txn_payload.timestamp = Date.now();
-
-            const txn_payload_str = stable_stringify(req_txn_payload);
-            const txn_sig = protocol.create_sign(txn_payload_str);
-
-            const req_txn_obj = {
-              public_key : pub_key,
-              signature : txn_sig,
-              payload : txn_payload_str,
+          zmq.add_callback_for_token(token, function(txn_payload) {
+            // txn payload {g_b, g_g_ab_p_r, req, b}
+            console.log("TXN payload : ", txn_payload);
+            // req_txn_payload : {req, data_blk_num, data_txn_sig, req_blk_num, req_txn_num}
+            let req_txn_payload = {
+              req : txn_payload.req,
+              data_blk_num : block_num,
+              data_txn_sig : sig,
+              g_b : txn_payload.g_b,
+              g_g_ab_p_r : txn_payload.g_g_ab_p_r,
+              type : 1,
+              timestamp : Date.now()
             }
 
-            const serialized_txn = stable_stringify(req_txn_obj);
+            // wrap so that it fits the req txn definition
 
+            // You need to find out the private key to sign the message
+            db.get_keys(email).then(function (rsa_keys) {
+              let pub_key = rsa_keys[0];
+              let prv_key = rsa_keys[1];
 
-            const db_txn_entry = {
-              "serial": serialized_txn,
-              "sig" : txn_sig,
-              "state" : "Pending",
-              "type" : 1,
-              "target" : target_email, // req txn specific info,
-              "answered" : false,
-              "key" : id_key, // the key that I'm requesting
-            };
+              const txn_payload_str = stable_stringify(req_txn_payload);
+              console.log("Txn payload :: ", txn_payload_str);
 
-            // Save this request txn to the issuer
-            db.save_uer_txn(email, db_txn_entry);
-            db.save_txn_to_username(txn_sig, email);
+              const txn_sig = protocol.create_sign(txn_payload_str, prv_key);
 
-            // send to the blockchain server
-            connect_node.send_txn(serialized_txn);
+              const req_txn_obj = {
+                public_key : pub_key,
+                signature : txn_sig,
+                payload : txn_payload_str,
+              }
 
-            zmq.remove_token_callback(token);
-            resolve({success: true, message: "successfully requested id verification"});
+              const serialized_txn = stable_stringify(req_txn_obj);
+              console.log("Creaeted Request TXN :: ", serialized_txn);
+
+              const db_txn_entry = {
+                "serial": serialized_txn,
+                "sig" : txn_sig,
+                "state" : "Pending",
+                "type" : 1,
+                "target" : target_email, // req txn specific info,
+                "answered" : false,
+                "key" : id_key, // the key that I'm requesting
+              };
+
+              // Save this request txn to the issuer
+              db.save_user_txn(email, JSON.stringify(db_txn_entry));
+              db.save_txn_to_username(txn_sig, email);
+
+              // send to the blockchain server
+              connect_node.send_txn(serialized_txn);
+
+              zmq.remove_token_callback(token);
+              resolve({success: true, message: "successfully requested id verification"});
+
+            });
+
           });
 
           console.log(JSON.stringify(data));
@@ -283,16 +300,16 @@ module.exports = function(dependencies) {
 
     let filter = {};
     if (kwarg != undefined || kwarg != null) {
-        filter = kwarg;
+      filter = kwarg;
     }
 
     if (sig != undefined && sig != null) filter.sig = [sig];
     if (types != undefined && types != null) filter.types = types;
     if (committed != undefined && committed != null) {
-        filter.committed = [committed];
-        if (committed && block_bum != null) {
-            filter.block_num = [block_num];
-        }
+      filter.committed = [committed];
+      if (committed && block_bum != null) {
+        filter.block_num = [block_num];
+      }
     }
 
     return filter;
@@ -303,12 +320,12 @@ module.exports = function(dependencies) {
 
     // filter by linear loop over the keys
     for (let i = 0; i < filter_keys.length; i++) {
-        let key = filter_keys[i];
+      let key = filter_keys[i];
 
-        // check only for the keys that exist in the txn
-        if (key in txn && !(filter[key].includes(txn[key]))) {
-            return false;
-        }
+      // check only for the keys that exist in the txn
+      if (key in txn && !(filter[key].includes(txn[key]))) {
+        return false;
+      }
     }
 
     return true;
@@ -319,26 +336,26 @@ module.exports = function(dependencies) {
 
     return new Promise(function(resolve, reject) {
 
-        db.get_user_txn(email).then(function(list) {
+      db.get_user_txn(email).then(function(list) {
 
-            let txns = [];
+        let txns = [];
 
-            if (list == undefined || list == null || list.length == 0) {
-                resolve(txns);
-                return;
-            }
+        if (list == undefined || list == null || list.length == 0) {
+          resolve(txns);
+          return;
+        }
 
-            for (let i = 0; i < list.length; i++) {
-                let txn = util.parse_db_txn_entry(list[i]);
+        for (let i = 0; i < list.length; i++) {
+          let txn = util.parse_db_txn_entry(list[i]);
 
-                // compare txn with the filter
-                if (txn_matches_filter(txn, filter)) {
-                    txns.push(txn);
-                }
-            }
+          // compare txn with the filter
+          if (txn_matches_filter(txn, filter)) {
+            txns.push(txn);
+          }
+        }
 
-            resolve(txns);
-        });
+        resolve(txns);
+      });
     });
   };
 

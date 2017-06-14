@@ -25,7 +25,7 @@ module.exports = function (dependencies) {
 
         let data = {
           K : 20,
-          identity : name,
+          identity : util.create_sha256_hash(name),
           rsa_key_size: 2048,
           dh_key_size: 1024,
           token : token,
@@ -45,8 +45,8 @@ module.exports = function (dependencies) {
               r : data_txn.r,
               a : data_txn.a
             },
-            "key" : "email",
-            "value" : email,
+            "key" : "name",
+            "value" : name,
             "type" : 0,
           }));
 

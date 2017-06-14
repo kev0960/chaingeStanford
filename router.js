@@ -131,6 +131,7 @@ module.exports = function (dependencies) {
               a : data_txn.a
             },
             "key" : "email",
+
             "value" : email
           }));
 
@@ -266,7 +267,7 @@ module.exports = function (dependencies) {
     db.get_req_txns_for_user(email).then(function(txns) {
         if (txns == undefined || txns == null) {
             txns = [];
-        } 
+        }
 
         txns.push({
             email: "abcd234@stanford.edu",
@@ -275,7 +276,7 @@ module.exports = function (dependencies) {
 
         res.setHeader('Content-Type', 'application/json');
         res.send(JSON.stringify(txns));
-    }); 
+    });
 
 
   });
@@ -314,14 +315,13 @@ module.exports = function (dependencies) {
           block_num = 'Pending'
         }
 
+
+
         let entry = {
           'key' : txn.key,
           'value': txn.value,
           'sig' : txn.sig,
           'block_num' : block_num,
-          'r_i' : txn.secret.r_i,
-          'r' : txn.secret.r,
-          'a' : txn.secret.a,
         };
 
         rows[row_idx].cols.push(entry);
