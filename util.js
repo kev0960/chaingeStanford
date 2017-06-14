@@ -18,6 +18,41 @@ module.exports = function (dependencies) {
     return entry;
   };
 
+  /**
+   * Finds the data transaction of the user with the given email
+   * that has the given key.
+   */
+  const find_data_txn_with_key = function (email, id_key) {
+    return new Promise(function (resolve, reject) {
+      db.get_user_txn(email).then(function(txn_list) {
+        // propagate an empty list if nothing is found or there was an erro
+        if (txn_list == undefined || txn_list == null || txn_list.length == 0) {
+          resolve([]);
+          return;
+        }
+
+        // Loop through all txns in the good block
+        for (let i = 0; i < txn_list.length; i++) {
+          let db_entry = parse_db_txn_entry(txn_list[i]);
+          let txn_payload = db_entry.serial.payload;
+
+          if (txn_payload.type != 0) {
+            continue;
+          }
+
+          // if the type == 0, then it must have its key and value stored
+          if (db_entry.key == id_key) {
+            resolve(db_entry);
+            return;
+          }
+        }
+
+        resolve([]);
+
+      });
+    });
+  };
+
   const create_data_txn_from_obj = function (txn_data) {
     let str_pub_key = txn_data.pub_key;
     let str_prv_key = txn_data.prv_key;

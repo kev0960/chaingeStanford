@@ -2,16 +2,26 @@
 <html>
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
     crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
 <head>
     <title>Login</title>
 </head>
 
 <body>
-    <form method='POST'>
+	<nav class="navbar navbar-default" style="background-color: #1f1f2e;">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <p style="color:white;font-size:25px;">chainge @ stanford</p>
+      </div>
+    </div>
+ 	</nav>
+    <form method='POST' style="position:absolute;left:35%;">
         <label for="username">Username</label>
-        <input type="text" name="username">
-        <label for="password">Password</label>
+        <input type="text" name="username"></br>
+        <label for="password">Password</label></br>
         <input type="password" name="password">
         <input type="submit" value="submit">
     </form>

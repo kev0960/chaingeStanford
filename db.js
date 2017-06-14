@@ -13,57 +13,57 @@ module.exports = function (dependencies) {
   redis.on('ready', function () {
     console.log("Redis is now connected!");
     if (!INITIALIZED && DEV) {
-        console.log("Creating default user for testing...");
+      console.log("Creating default user for testing...");
 
-        let email = "swjang@stanford.edu";
-        save_email_validation_token(email).then(function(token) {
-            let name = "swjang";
-            let pw = "123";
+      let email = "swjang@stanford.edu";
+      save_email_validation_token(email).then(function(token) {
+        let name = "swjang";
+        let pw = "123";
 
-            token = "1234";
+        token = "1234";
 
-            let data = {
-                K : 20,
-                identity : name,
-                rsa_key_size: 2048,
-                dh_key_size: 1024,
-                token : token,
-                type : 0,
-                with_key:1,
-            };
+        let data = {
+          K : 20,
+          identity : name,
+          rsa_key_size: 2048,
+          dh_key_size: 1024,
+          token : token,
+          type : 0,
+          with_key:1,
+        };
 
-            console.log("Creating a default user : swjang / 123");
+        console.log("Creating a default user : swjang / 123");
 
-            zmq.add_callback_for_token(token, function(data) {
-                let data_txn = util.create_data_txn_from_obj(data);
-                console.log(data_txn);
+        zmq.add_callback_for_token(token, function(data) {
+          let data_txn = util.create_data_txn_from_obj(data);
+          console.log(data_txn);
 
-                save_user_txn(email, JSON.stringify({
-                    "serial": data_txn.serialize_data_txn,
-                    "sig" : data_txn.signature,
-                    "state" : "Pending",
-                    "secret" : {
-			r_i : data_txn.r_i,
-			r : data_txn.r,
-			a : data_txn.a
-		    },
-		    "key" : "email",
-		    "value" : email,
-                }));
+          save_user_txn(email, JSON.stringify({
+            "serial": data_txn.serialize_data_txn,
+            "sig" : data_txn.signature,
+            "state" : "Pending",
+            "secret" : {
+              r_i : data_txn.r_i,
+              r : data_txn.r,
+              a : data_txn.a
+            },
+            "key" : "email",
+            "value" : email,
+          }));
 
-                save_user_password(email, pw);
-                save_txn_to_username(data_txn.signature, email);
-                save_pubkey_to_user_name(data.pub_key, email);
-                save_keys(email, data.pub_key, data.prv_key);
-                zmq.remove_token_callback(token);
-                console.log("Default user inserted into the db");
+          save_user_password(email, pw);
+          save_txn_to_username(data_txn.signature, email);
+          save_pubkey_to_user_name(data.pub_key, email);
+          save_keys(email, data.pub_key, data.prv_key);
+          zmq.remove_token_callback(token);
+          console.log("Default user inserted into the db");
 
-                INITIALIZED = true;
-            });
-            console.log(JSON.stringify(data));
-            zmq.send_data(JSON.stringify(data))
-
+          INITIALIZED = true;
         });
+        console.log(JSON.stringify(data));
+        zmq.send_data(JSON.stringify(data))
+
+      });
     }
   });
 
@@ -208,9 +208,9 @@ module.exports = function (dependencies) {
     return new Promise(function (resolve, reject) {
       redis.lrange(USER_TXN + email, 0, -1, function (err, list) {
         if (err) {
-            resolve(undefined);
+          resolve(undefined);
         } else {
-            resolve(list);
+          resolve(list);
         }
       });
     });
@@ -237,37 +237,38 @@ module.exports = function (dependencies) {
    **/
   const save_keys = function (email, pub, prv) {
     return new Promise(function (resolve, reject) {
-        redis.rpush([KEYS_PREFIX + email, pub, prv], function(err, reply) {
-            if (err) {
-                console.log(err);
-                resolve(false);
-            } else {
-                if (reply != 2) {
-                    resolve(false);
-                }
+      console.log("Rpush :: ", email, pub, prv);
+      redis.rpush([KEYS_PREFIX + email, pub, prv], function(err, reply) {
+        if (err) {
+          console.log(err);
+          resolve(false);
+        } else {
+          if (reply != 2) {
+            resolve(false);
+          }
 
-                resolve(true)
-            }
-        });
+          resolve(true)
+        }
+      });
     });
   }
 
   const get_keys = function (email) {
     return new Promise(function (resolve, reject) {
-        redis.lrange(KEYS_PREFIX + email, 0, -1, function (err, reply) {
-            if (err) {
-                resolve(null);
-            }
+      redis.lrange(KEYS_PREFIX + email, 0, -1, function (err, reply) {
+        if (err) {
+          resolve(null);
+        }
 
-            resolve(reply)
-        });
+        resolve(reply)
+      });
     });
   }
 
   const save_req_txn_for_user = function(email, txn) {
     // txn must be a req txn json object
     if (txn.type != 1) {
-        console.log("trying to save a different txn as a req txn");
+      console.log("trying to save a different txn as a req txn");
     }
 
     redis.lpush(REQ_TXN_FOR_USER + email, txn, function (err, reply) {
@@ -281,9 +282,9 @@ module.exports = function (dependencies) {
     return new Promise(function (resolve, reject) {
       redis.lrange(REQ_TXN_FOR_USER + email, 0, -1, function (err, list) {
         if (err) {
-            resolve(undefined);
+          resolve(undefined);
         } else {
-            resolve(list);
+          resolve(list);
         }
       });
     });
@@ -324,7 +325,7 @@ module.exports = function (dependencies) {
 
   }
 
-    /**
+  /**
    * Finds the data transaction of the user with the given email
    * that has the given key.
    */
@@ -340,6 +341,7 @@ module.exports = function (dependencies) {
         // Loop through all txns in the good block
         for (let i = 0; i < txn_list.length; i++) {
           let db_entry = util.parse_db_txn_entry(txn_list[i]);
+          console.log("Db entry :: ", db_entry);
           let txn_payload = db_entry.serial.payload;
 
           if (txn_payload.type != 0) {
@@ -347,7 +349,7 @@ module.exports = function (dependencies) {
           }
 
           // If the txn is not confirmed
-          if (!('block_num' in txn_list[i])) {
+          if (!txn_list[i].hasOwnProperty('block_num')) {
             continue;
           }
 

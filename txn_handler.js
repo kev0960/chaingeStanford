@@ -35,6 +35,7 @@ module.exports = function(dependencies) {
         // the db
 
         db.get_keys(email).then(function(keys) {
+          console.log("keys :: ", keys);
           let pub_key = keys[0];
           let prv_key = keys[1];
 
@@ -61,9 +62,6 @@ module.exports = function(dependencies) {
 
           db.save_txn_to_username(data_txn.signature, email);
 
-          db.save_pubkey_to_user_name(data.pub_key, email);
-          db.save_keys(email, data.pub_key, data.prv_key);
-
           // send to the blockchain server
           connect_node.send_txn(data_txn.serialize_data_txn);
 
@@ -85,6 +83,7 @@ module.exports = function(dependencies) {
         // create new token
         const token = uuid();
 
+
         // find target's data_txn with the given key
         db.find_data_txn_with_key(target_email, id_key).then(function(txn) {
           // txn = {
@@ -100,11 +99,13 @@ module.exports = function(dependencies) {
           //      block_num,
 
           if (txn == undefined || txn == null) {
-            resolve({result: false, message: "transaction could not be found"});
+            resolve({result: false, message: "transaction could not be foundi"});
+            return ;
           }
 
-          if (!(block_num in txn)) {
+          if (!txn.hasOwnProperty('block_num')) {
             resolve({result: false, message: "the data record is not committed yet"});
+            return ;
           }
 
           // these should be in there
@@ -140,6 +141,7 @@ module.exports = function(dependencies) {
 
             const serialized_txn = stable_stringify(req_txn_obj);
 
+
             const db_txn_entry = {
               "serial": serialized_txn,
               "sig" : txn_sig,
@@ -172,7 +174,10 @@ module.exports = function(dependencies) {
       // First find the request transaction that
       // targets the user (email)
       db.get_req_txns_for_user (email).then(function (req_list) {
-        if (!req_list) resolve();
+        if (!req_list) {
+          resolve();
+          return ;
+        }
 
         for (let i = 0; i < req_list.length; i ++) {
           let saved_req = JSON.parse(req_list[i]);
