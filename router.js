@@ -250,7 +250,6 @@ module.exports = function (dependencies) {
   app.get('/pending_txns', auth.is_logged_in(), function (req, res) {
     let email = req.user; // the login stanford email
 
-
     db.get_req_txns_for_user(email).then(function(txns) {
         if (txns == undefined || txns == null) {
             txns = [];
@@ -348,22 +347,6 @@ module.exports = function (dependencies) {
   });
 
   app.get('/get_user_info_link_gen', function(req, res){
-<<<<<<< HEAD
-      const pub_key = req.query.email;
-      console.log('<server.js>:' + email);
-
-      db.get_user_info(email).then(function(result){
-          // let verified_info = new Map();
-          // if (result) {
-          //     verified_info = result;
-          // }
-          console.log(result);
-          res.send(stable_stringify(result));
-          res.end();
-      });
-
-  });
-=======
         const email = req.query.email;
         console.log('<server.js>:' + email);
 
@@ -377,7 +360,6 @@ module.exports = function (dependencies) {
             res.end();
         });
     });
->>>>>>> 1310f9ad92b14ffb0b1fd8bb2e05cd537304e228
 
   app.get('/history', auth.is_logged_in(), function (req, res) {
       // shoot a list of this user's history (requests, answers)

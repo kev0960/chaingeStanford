@@ -272,6 +272,8 @@ module.exports = function (dependencies) {
       console.log("trying to save a different txn as a req txn");
     }
 
+    txn = JSON.stringify(txn);
+
     redis.lpush(REQ_TXN_FOR_USER + email, txn, function (err, reply) {
       if (err) {
         console.log("something is seriously wrong with ", err);

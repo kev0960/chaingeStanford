@@ -111,7 +111,7 @@ module.exports = function (dependencies) {
                         "requester" : requester,
                     };
 
-                    db.save_req_txn_for_user(username, JSON.stringify(db_txn_entry));
+                    db.save_req_txn_for_user(username, db_txn_entry);
                     // The user who issued this req txn is in the stanford community
                     if (email != undefined && email != null) {
 
