@@ -340,14 +340,14 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
-                        <h3 class="modal-title" id="lineModalLabel">Generate a Link</h3>
+                        <h3 class="modal-title" id="lineModalLabel">Add Info to your Verification Link</h3>
                     </div>
                     <div class="modal-body">
 
                         <!-- content goes here -->
                         <div id="link_generator">
-
-                            <p>
+			    <p>Add the information already saved to the Chainge server to the Link Generator which will display your verified info.<br></p>
+                            <p id="link_generator_link"></p> 
                             <ul id="addList">
                                 <li> Key: "Phone Number"</li>
                                 <li> Value: "000-0000"</li>
@@ -388,5 +388,15 @@
   	</div>
 
   	<script src="js/main.js"></script>
+	<script>
+		let verification_link = 'http://localhost:3333/user_info_page/' + encodeURIComponent('{{email}}');
+		document.getElementById('link_generator_link').innerHTML = '<a href=' + verification_link + '>Go to verification link</a>';
+		document.getElementById('link_generator_link').innerHTML += "<div><input type='button' value='Copy link' onClick=copyToClipboard('" + verification_link + "')></input></div>"
+
+		function copyToClipboard(text) {
+			window.prompt("Copy to clipboard: Cmd(Ctrl) + C, Enter", text);
+		}
+		
+	</script>
 	</body>
 </html>
