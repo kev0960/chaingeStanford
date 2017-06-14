@@ -117,10 +117,12 @@ module.exports = function (dependencies) {
           connect_node.send_txn(data_txn.serialize_data_txn);
           console.log("Serialized :: ", data_txn.serialize_data_txn);
 
+          //
           // Save created user's data txn
           db.save_user_txn(email, JSON.stringify({
             "serial": data_txn.serialize_data_txn,
             "sig": data_txn.signature,
+
             "state": "Pending",
             "secret" : {
 
@@ -164,6 +166,7 @@ module.exports = function (dependencies) {
     //
     // it must notify it to the chain
     console.log("POST REQUEST RECEIVED :: ", req.body.block);
+    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
     chain.receive_good_block(req.body.block);
 
     res.setHeader('Content-Type', 'application/json');
@@ -210,7 +213,7 @@ module.exports = function (dependencies) {
 
         // Req TXN
       case 1:
-
+        console.log("TXN RECEVED !! ");
         let target_email = req.body.target_email;
         data_key = req.body.key;
         data_val = req.body.value;
