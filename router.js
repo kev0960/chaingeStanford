@@ -243,7 +243,11 @@ module.exports = function (dependencies) {
         res.setHeader('Content-Type', 'application/json');
         res.send(JSON.stringify(result));
         console.log('success - saving user data');
-        db.save_pending_req_txn_for_link_generator(user_email, data_key, data_val);
+	console.log(result);
+	db.get_user_txn(user_email).then(function(result){
+	  let last_txn = result[result.length - 1];
+	  db.save_pending_req_txn_for_link_generator(user_email, data_key, data_val, util.parse_db_txn_entry(last_txn).sig);
+	});
       });
   });
 
