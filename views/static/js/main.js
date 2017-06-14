@@ -97,6 +97,20 @@ const reload_pending_txns = function(ul_id) {
 	});
 };
 
+const get_history = function() {
+	let url = "/history";
+
+	$.ajax({
+		type: "GET",
+		url: url,
+		success: function(txn_list) {
+
+			alert(txn_list);
+
+		}
+	});
+}
+
 
 const toggle_progress = function(txn_type) {
 	let modal_id = '#'+txn_type;
