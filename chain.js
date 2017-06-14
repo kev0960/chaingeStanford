@@ -48,7 +48,7 @@ module.exports = function (dependencies) {
               console.log("Comparing :: ", data.sig);
               console.log("with  ", txn_signature);
               if (data.sig == txn_signature) {
-                data.state += '|ACCEPTED';
+                data.state = 'ACCEPTED';
 
                 // now that the block is safe, store block_num
                 data['block_num'] = block_num;
@@ -90,7 +90,6 @@ module.exports = function (dependencies) {
 
                 // Found
                 if (data.sig == current_txn.get_data_txn_sig()) {
-                  data.state += '|REQUESTED' + txn_signature;
 
                   // save the request transaction to the requested user
                   let db_txn_entry = {
@@ -99,6 +98,9 @@ module.exports = function (dependencies) {
                     "state" : "ACCEPTED",
                     "type": 1, 
                     "block_num" : block_num,
+                    "target" : username,
+                    "answered" : false, // a new good block can't have an answered txn
+                    "key" : data.key,
                   };
 
                   db.save_req_txn_for_user(username, db_txn_entry);

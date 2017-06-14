@@ -27,7 +27,8 @@
     "connect-redis" :"^3.3.0",
     "passport-local" : "^1.0.0",
     "bcrypt": "latest",
-    "cookie-parser" : "^1.4.3"
+    "cookie-parser" : "^1.4.3",
+    "sha256" : "latest"
   },
   "engines": {
     "node": ">=6.10.0"

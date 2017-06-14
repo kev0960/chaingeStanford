@@ -18,7 +18,7 @@ module.exports = function(dependencies) {
       // new rsa key.
       let data = {
         K : 20,
-        identity : id_val,
+        identity : create_sha256_hash(id_val),
         rsa_key_size : 2048,
         dh_key_size : 1024,
         token : token,
@@ -42,9 +42,9 @@ module.exports = function(dependencies) {
           data["pub_key_pkcs8"] = pub_key;
           data["prv_key_pkcs8"] = prv_key;
 
-          console.log(data);
-
           let data_txn = util.create_data_txn_from_obj(data);
+
+	  console.log(data_txn);
 
           // Save the newly created data
           db.save_user_txn(email, JSON.stringify({
@@ -57,7 +57,8 @@ module.exports = function(dependencies) {
               a : data_txn.a
             },
             "key" : id_key,
-            "value" : id_val // TODO : remove this?
+            "value" : id_val, // TODO : remove this?
+            "type" : 0,
           }));
 
           db.save_txn_to_username(data_txn.signature, email);
@@ -85,6 +86,7 @@ module.exports = function(dependencies) {
 
 
         // find target's data_txn with the given key
+
         db.find_data_txn_with_key(target_email, id_key).then(function(txn) {
           // txn = {
           //      serial : {
@@ -117,7 +119,7 @@ module.exports = function(dependencies) {
             with_key:1,
             token: token,
             'data_txn' : {'txn_payload': txn.serial.payload},
-            'identity' : id_val,
+            'identity' : create_sha256_hash(id_val),
           };
 
           // register callback for zmq
@@ -147,7 +149,9 @@ module.exports = function(dependencies) {
               "sig" : txn_sig,
               "state" : "Pending",
               "type" : 1,
-              "target" : target_email, // req txn specific info
+              "target" : target_email, // req txn specific info,
+              "answered" : false,
+              "key" : id_key, // the key that I'm requesting
             };
 
             // Save this request txn to the issuer
@@ -207,7 +211,8 @@ module.exports = function(dependencies) {
                       txn_payload : {
                         G : data_txn.get_G(),
                         g : data_txn.get_g(),
-                      }
+                      },
+                      identity
                     }),
                     request_txn : JSON.parse({
                       txn_payload : {
@@ -218,7 +223,8 @@ module.exports = function(dependencies) {
                       r_i : saved_txn.secret.r_i,
                       r : saved_txn.secret.r,
                       a : saved_txn.secret.a
-                    })
+                    }),
+
                   };
 
 
@@ -271,9 +277,76 @@ module.exports = function(dependencies) {
     });
   }
 
+  const build_query_filter = function(sig, types, committed, block_num, kwarg) {
+    // sig = string | types = array | committed = Boolean | block_num = Number
+    // filters behave by exact match except for the type
+
+    let filter = {};
+    if (kwarg != undefined || kwarg != null) {
+        filter = kwarg;
+    }
+
+    if (sig != undefined && sig != null) filter.sig = [sig];
+    if (types != undefined && types != null) filter.types = types;
+    if (committed != undefined && committed != null) {
+        filter.committed = [committed];
+        if (committed && block_bum != null) {
+            filter.block_num = [block_num];
+        }
+    }
+
+    return filter;
+  };
+
+  const txn_matches_filter = function(txn, filter) {
+    let filter_keys = Object.keys(filter);
+
+    // filter by linear loop over the keys
+    for (let i = 0; i < filter_keys.length; i++) {
+        let key = filter_keys[i];
+
+        // check only for the keys that exist in the txn
+        if (key in txn && !(filter[key].includes(txn[key]))) {
+            return false;
+        }
+    }
+
+    return true;
+  };
+
+  const query_txns = function(email, filter) {
+    // filter must be an object that looks like a db_txn_entry
+
+    return new Promise(function(resolve, reject) {
+
+        db.get_user_txn(email).then(function(list) {
+
+            let txns = [];
+
+            if (list == undefined || list == null || list.length == 0) {
+                resolve(txns);
+                return;
+            }
+
+            for (let i = 0; i < list.length; i++) {
+                let txn = util.parse_db_txn_entry(list[i]);
+
+                // compare txn with the filter
+                if (txn_matches_filter(txn, filter)) {
+                    txns.push(txn);
+                }
+            }
+
+            resolve(txns);
+        });
+    });
+  };
+
   return {
     data_txn_wrapper,
     req_txn_wrapper,
     ans_txn_wrapper,
+    build_query_filter,
+    query_txns,
   };
 }

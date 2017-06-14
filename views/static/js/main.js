@@ -111,14 +111,29 @@ const reload_pending_txns = function(ul_id) {
 	    	} else {
 	    		for (let i = 0; i < txn_list.length; i++) {
 	    			let req = txn_list[i];
-	    			let ok_button = "<a href='#' onclick='accept_request()'>OK</a>";
-	    			let li_elem = li_start + req.email + " requests: "+ req.key + ok_button+li_end;
+	    			let ok_button = "<a href='#' onclick='accept_request()'>Verify</a>";
+	    			let li_elem = li_start + req.email + " | "+ req.key + " | "+ ok_button + li_end;
 	    			ul.append(li_elem);
 	    		}
 	    	}
 	    }
 	});
 };
+
+const get_history = function() {
+	let url = "/history";
+
+	$.ajax({
+		type: "GET",
+		url: url,
+		success: function(txn_list) {
+
+			console.log(txn_list);
+			alert(txn_list);
+
+		}
+	});
+}
 
 
 const toggle_progress = function(txn_type) {

@@ -9,6 +9,7 @@ module.exports = function (dependencies) {
   const config = dependencies['config'];
   const zmq = dependencies['zmq'];
   const util = dependencies['util'];
+  const connect_node = dependencies['connect_node'];
 
   redis.on('ready', function () {
     console.log("Redis is now connected!");
@@ -32,11 +33,8 @@ module.exports = function (dependencies) {
           with_key:1,
         };
 
-        console.log("Creating a default user : swjang / 123");
-
         zmq.add_callback_for_token(token, function(data) {
           let data_txn = util.create_data_txn_from_obj(data);
-          console.log(data_txn);
 
           save_user_txn(email, JSON.stringify({
             "serial": data_txn.serialize_data_txn,
@@ -49,13 +47,15 @@ module.exports = function (dependencies) {
             },
             "key" : "email",
             "value" : email,
+            "type" : 0,
           }));
 
           save_user_password(email, pw);
           save_txn_to_username(data_txn.signature, email);
-          save_pubkey_to_user_name(data.pub_key, email);
-          save_keys(email, data.pub_key, data.prv_key);
+          save_pubkey_to_user_name(data_txn.pub_key, email);
+          save_keys(email, data_txn.pub_key, data_txn.prv_key);
           zmq.remove_token_callback(token);
+          connect_node.send_txn(data_txn.serialize_data_txn);
           console.log("Default user inserted into the db");
 
           INITIALIZED = true;
@@ -342,7 +342,6 @@ module.exports = function (dependencies) {
         // Loop through all txns in the good block
         for (let i = 0; i < txn_list.length; i++) {
           let db_entry = util.parse_db_txn_entry(txn_list[i]);
-          console.log("Db entry :: ", db_entry);
           let txn_payload = db_entry.serial.payload;
 
           if (txn_payload.type != 0) {
@@ -350,10 +349,11 @@ module.exports = function (dependencies) {
           }
 
           // If the txn is not confirmed
-          if (!txn_list[i].hasOwnProperty('block_num')) {
+          if (!db_entry.hasOwnProperty('block_num')) {
             continue;
           }
 
+          console.log("db entry : ", db_entry.key, " vs ", id_key);
           // if the type == 0, then it must have its key and value stored
           if (db_entry.key == id_key) {
             resolve(db_entry);

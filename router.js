@@ -81,7 +81,7 @@ module.exports = function (dependencies) {
       if (answer == "Yes") {
         let data = {
           K: 20,
-          identity: name,
+          identity: create_sha256_hash(name),
           rsa_key_size: 2048,
           dh_key_size: 1024,
           token: token,
@@ -119,10 +119,12 @@ module.exports = function (dependencies) {
           connect_node.send_txn(data_txn.serialize_data_txn);
           console.log("Serialized :: ", data_txn.serialize_data_txn);
 
+          //
           // Save created user's data txn
           db.save_user_txn(email, JSON.stringify({
             "serial": data_txn.serialize_data_txn,
             "sig": data_txn.signature,
+
             "state": "Pending",
             "secret" : {
 
@@ -166,6 +168,7 @@ module.exports = function (dependencies) {
     //
     // it must notify it to the chain
     console.log("POST REQUEST RECEIVED :: ", req.body.block);
+    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
     chain.receive_good_block(req.body.block);
 
     res.setHeader('Content-Type', 'application/json');
@@ -212,7 +215,7 @@ module.exports = function (dependencies) {
 
         // Req TXN
       case 1:
-
+        console.log("TXN RECEVED !! ");
         let target_email = req.body.target_email;
         data_key = req.body.key;
         data_val = req.body.value;
@@ -244,21 +247,38 @@ module.exports = function (dependencies) {
   });
 
   app.get('/pending_txns', auth.is_logged_in(), function (req, res) {
-    let username = req.user; // the login stanford email
+    let email = req.user; // the login stanford email
 
+    /*
     let dummy_list = [];
     dummy_list.push({
       email : "jbb@stanford.edu",
       key : "name",
+      value; "xx",
     });
 
     dummy_list.push({
       email : "abcd@stanford.edu",
       key : "email",
+      value: "yy"
     });
+    */
 
-    res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify(dummy_list));
+
+    db.get_req_txns_for_user(email).then(function(txns) {
+        if (txns == undefined || txns == null) {
+            txns = [];
+        } 
+
+        txns.push({
+            email: "abcd234@stanford.edu",
+            key : "email",
+        });
+
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify(txns));
+    }); 
+
 
   });
 
@@ -296,8 +316,6 @@ module.exports = function (dependencies) {
           block_num = 'Pending'
         }
 
-        console.log("txn :: ", txn);
-
         let entry = {
           'key' : txn.key,
           'value': txn.value,
@@ -333,6 +351,43 @@ module.exports = function (dependencies) {
       console.log("Current Directory", __dirname + "/user_info_page.html");
       res.sendFile(__dirname + "/views/index.html");
   });
+
+  app.get('/history', auth.is_logged_in(), function (req, res) {
+    // shoot a list of this user's history (requests, answers)
+
+    let email = req.user;
+
+    // define query parameters
+    let sig = null;
+    let types = [1,2]; // we only want req and ans txns issued by me
+    let committed = null; // can be either committed or not committed
+    let block_num = null;
+
+    let filter = txn_handler.build_query_filter(sig, types, committed, block_num, null);
+
+    // Query my txns (issued by me) by the filter
+    txn_handler.query_txns(email, filter).then(function(txns) {
+
+        let displayables = [];
+
+        for (let i = 0; i < txns.length; i++) {
+            let txn = txns[i];
+            let displayable = null;
+
+            if (txn.type == 1) {
+                displayable = util.format_req_txn_for_display(txn);
+            } else if (txn.type == 2) {
+                displayable = util.format_ans_txn_for_display(txn);
+            }
+
+            displayables.push(displayable);
+        }
+
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify(displayables));
+    });
+
+
 
   return {
     app

@@ -1,7 +1,7 @@
 const request = require('request');
 module.exports = function (dependencies) {
   let peer_list = [
-    "http://localhost:3000"
+    "http://10.31.148.22:3000"
   ]
   /**
    * Send the newly generated transaction to the nodes
