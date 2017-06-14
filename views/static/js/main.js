@@ -137,11 +137,11 @@ const reload_pending_txns = function(ul_id) {
 	    		for (let i = 0; i < txn_list.length; i++) {
 	    			let req = txn_list[i];
 
-	    			let req_txn_item_id = "'"+req.sig+"'";
+	    			let req_txn_item_id = "\'"+req.sig+"\'";
 
 	    			let container_start = "<div class='container style='padding:0px;'>";
 	    			let container_end = "</div>";
-	    			let a_start = "<a href='#' onclick='accept_request(" + req_txn_item_id + ");'>"
+	    			let a_start = "<a href='#' onclick=\"accept_request(" + req_txn_item_id + ");\">"
 	    			let a_end = "</a>"
 	    			let row_start = "<div class='row'>"
 	    			let row_end = "</div>"
