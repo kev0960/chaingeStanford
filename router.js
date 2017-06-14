@@ -297,8 +297,6 @@ module.exports = function (dependencies) {
           block_num = 'Pending'
         }
 
-        console.log("txn :: ", txn);
-
         let entry = {
           'key' : txn.key,
           'value': txn.value,

@@ -42,9 +42,9 @@ module.exports = function(dependencies) {
           data["pub_key_pkcs8"] = pub_key;
           data["prv_key_pkcs8"] = prv_key;
 
-          console.log(data);
-
           let data_txn = util.create_data_txn_from_obj(data);
+
+	  console.log(data_txn);
 
           // Save the newly created data
           db.save_user_txn(email, JSON.stringify({
