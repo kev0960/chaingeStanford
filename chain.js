@@ -91,22 +91,27 @@ module.exports = function (dependencies) {
                 // Found
                 if (data.sig == current_txn.get_data_txn_sig()) {
 
-                  // save the request transaction to the requested user
-                  let db_txn_entry = {
-                    "serial" : curr_txn.serialize(),
-                    "sig" : curr_txn.get_signature(),
-                    "state" : "ACCEPTED",
-                    "type": 1, 
-                    "block_num" : block_num,
-                    "target" : username,
-                    "answered" : false, // a new good block can't have an answered txn
-                    "key" : data.key,
-                  };
-
-                  db.save_req_txn_for_user(username, db_txn_entry);
-
                   // turn the block_num for the creator, if in Stanford community
                   db.get_username_from_txn(current_txn.get_signature()).then(function(email) {
+
+                    let requester = email;
+
+                    if (email == undefined || email == null) 
+                        requester = "unidentified"
+
+                    let db_txn_entry = {
+                        "serial" : current_txn.serialize(),
+                        "sig" : current_txn.get_signature(),
+                        "state" : "ACCEPTED",
+                        "type": 1, 
+                        "block_num" : block_num,
+                        "target" : username,
+                        "answered" : false, // a new good block can't have an answered txn
+                        "key" : data.key,
+                        "requester" : requester,
+                    };
+
+                    db.save_req_txn_for_user(username, db_txn_entry);
 
                     // The user who issued this req txn is in the stanford community
                     if (email != undefined && email != null) {

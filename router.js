@@ -248,34 +248,29 @@ module.exports = function (dependencies) {
   app.get('/pending_txns', auth.is_logged_in(), function (req, res) {
     let email = req.user; // the login stanford email
 
-    /*
-    let dummy_list = [];
-    dummy_list.push({
-      email : "jbb@stanford.edu",
-      key : "name",
-      value; "xx",
-    });
-
-    dummy_list.push({
-      email : "abcd@stanford.edu",
-      key : "email",
-      value: "yy"
-    });
-    */
-
 
     db.get_req_txns_for_user(email).then(function(txns) {
         if (txns == undefined || txns == null) {
             txns = [];
         }
 
-        txns.push({
-            email: "abcd234@stanford.edu",
-            key : "email",
-        });
+        let result = [];
+
+        for (let i = 0; i < txns.length; i++) {
+
+            // only deal with the unanswered requests
+            if (txns[i].answered == false) {
+
+                result.push({
+                    'sig' : txns[i].sig,
+                    'key' : txns[i].key,
+                    'requester' : txns[i].requester,
+                });
+            }
+        }
 
         res.setHeader('Content-Type', 'application/json');
-        res.send(JSON.stringify(txns));
+        res.send(result);
     });
 
 

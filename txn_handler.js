@@ -166,6 +166,7 @@ module.exports = function(dependencies) {
                 "target" : target_email, // req txn specific info,
                 "answered" : false,
                 "key" : id_key, // the key that I'm requesting
+                "requester": email,
               };
 
               // Save this request txn to the issuer
