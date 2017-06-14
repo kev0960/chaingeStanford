@@ -388,7 +388,7 @@ module.exports = function (dependencies) {
       });
   });
 
-  app.post('accept_request', auth.is_logged_in(), function(req, res) {
+  app.post('/accept_request', auth.is_logged_in(), function(req, res) {
     let email = req.user;
 
     let sig = req.body.sig;
