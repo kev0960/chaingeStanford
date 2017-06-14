@@ -31,6 +31,7 @@ for (let i = 0; i <  txn_types.length; i++) {
 	           	    		alert("Error while saving your data. Please try again.");
 	           	    	}
 	           	    }
+	           	   $('#progress_data')[0].style.width = 0 + "%";
 	               toggle_progress(txn_type);
 
 	           }
@@ -209,7 +210,7 @@ const get_history = function() {
 				let elem = tr_start;
 
 				for (let j = 0; j < req_txn_keys.length; j++) {
-					let key = req_txn_keys[j];
+					let key = ans_txn_keys[j];
 
 					elem += td_start
 					elem += txn[key];
