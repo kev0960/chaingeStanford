@@ -1,6 +1,8 @@
 # chaingeStanford
 Onboard Stanford students to Chainge
 
+![alt text](https://goo.gl/photos/i6iPZiux3WpHfiZc9)
+
 
 ## Step by step guide for running chaingeStanford on Docker
 
