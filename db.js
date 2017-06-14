@@ -99,7 +99,9 @@ module.exports = function (dependencies) {
   const REQ_TXN_FOR_USER = 'REQ_TXN_FOR_USER_'; // user email to req txn
   const REQ_TXN_TO_ANS_TXN = "REQ_TXN_TO_ANS_TXN_"; // use for txn_sig to txn storage
   const ANS_TXN_TO_REQ_TXN = "ANS_TXN_TO_REQ_TXN_";
-  const LINK_GEN_PREFIX = 'LINK_GEN_';
+  const LINK_GEN_INFO_PREFIX = 'LINK_GEN_INFO_';
+  const LINK_GEN_TEMP_REQ_TXN_PREFIX = 'LINK_GEN_REQ_';
+  const LINK_GEN_STAT_PREFIX = 'LINK_GEN_STAT_';
 
   const save_email_validation_token = function (email) {
     let p1 = new Promise(function (resolve, reject) {
@@ -366,18 +368,42 @@ module.exports = function (dependencies) {
     });
   };
 
+  const save_pending_req_txn_for_link_generator = function(email, id_key, id_val, txn_sig){
+      let p1 = new Promise(function(resolve, reject){
+          redis.hset(LINK_GEN_TEMP_REQ_TXN_PREFIX + txn_sig, id_key, id_val, function(err, reply){
+              resolve(reply);
+          });
+      });
+
+      let p2 = new Promise(function(resolve, reject){
+          redis.hset(LINK_GEN_TEMP_REQ_TXN_PREFIX + txn_sig, 'email', id_val, function(err, reply){
+              resolve(reply);
+          });
+      });
+
+      return Promise.all([p1, p2]);
+  };
+
+  const get_pending_req_txn_for_link_generator = function(txn_sig){
+      return new Promise(function(resolve, reject){
+          redis.hgetall(LINK_GEN_TEMP_REQ_TXN_PREFIX + txn_sig, function(err, reply){
+              resolve(reply);
+          });
+      });
+  };
+
   const save_user_data_for_link_generator = function(email, id_key, id_val) {
       return new Promise(function(resolve, reject){
-          redis.hset(LINK_GEN_PREFIX + email, id_key, id_val, function(err, reply){
+          redis.hset(LINK_GEN_INFO_PREFIX + email, id_key, id_val, function(err, reply){
               resolve(reply);
           });
       });
   };
 
   const get_user_data_for_link_generator = function(email){
-      console.log(LINK_GEN_PREFIX + email);
+      console.log(LINK_GEN_INFO_PREFIX + email);
       return new Promise(function(resolve, reject){
-          redis.hgetall(LINK_GEN_PREFIX + email, function(err,reply){
+          redis.hgetall(LINK_GEN_INFO_PREFIX + email, function(err,reply){
               resolve(reply);
           });
       });
@@ -385,14 +411,14 @@ module.exports = function (dependencies) {
 
   const link_created_for_user = function(email) {
       return new Promise(function(resolve, reject){
-          redis.hget(LINK_GEN_PREFIX + email, 'link_generated', function(err, reply){
+          redis.hget(LINK_GEN_STAT_PREFIX + email, 'link_generated', function(err, reply){
               var count = reply;
               if (count === null){
                   count = 1;
               } else {
                   count++;
               }
-              redis.hset(pub_key, 'link_generated', count, function(err, reply){
+              redis.hset(LINK_GEN_STAT_PREFIX, 'link_generated', count, function(err, reply){
                   resolve(reply);
               });
           });
@@ -401,7 +427,7 @@ module.exports = function (dependencies) {
 
   const get_num_links_per_user = function(email) {
       return new Promise(function(resolve, reject){
-          redis.hget(LINK_GEN_PREFIX + email, 'link_generated', function(err, reply){
+          redis.hget(LINK_GEN_STAT_PREFIX + email, 'link_generated', function(err, reply){
               var count = reply;
               if (count === null){
                   count = 0;
@@ -413,14 +439,14 @@ module.exports = function (dependencies) {
 
   const link_viewed = function(email) {
       return new Promise(function(resolve, reject){
-          redis.hget(LINK_GEN_PREFIX + email, 'link_viewed', function(err, reply){
+          redis.hget(LINK_GEN_STAT_PREFIX + email, 'link_viewed', function(err, reply){
               var count = reply;
               if (count === null){
                   count = 1;
               } else {
                   count++;
               }
-              redis.hset(LINK_GEN_PREFIX + email, 'link_viewed', count, function(err, reply){
+              redis.hset(LINK_GEN_STAT_PREFIX + email, 'link_viewed', count, function(err, reply){
                   resolve(reply);
               });
           });
@@ -429,7 +455,7 @@ module.exports = function (dependencies) {
 
   const get_num_links_viewed_per_user = function(email) {
       return new Promise(function(resolve, reject){
-          redis.hget(LINK_GEN_PREFIX + email, 'link_viewed', function(err, reply){
+          redis.hget(LINK_GEN_STAT_PREFIX + email, 'link_viewed', function(err, reply){
               var count = reply;
               if (count === null){
                   count = 0;
@@ -466,5 +492,7 @@ module.exports = function (dependencies) {
     get_num_links_per_user,
     link_viewed,
     get_num_links_viewed_per_user,
+    save_pending_req_txn_for_link_generator,
+    get_pending_req_txn_for_link_generator,
   }
 }

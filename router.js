@@ -236,35 +236,19 @@ module.exports = function (dependencies) {
 
   app.post('/link_generator_req_txn', function(req, res){
       let user_email = req.user;
-      data_key = req.body.key;
-      data_val = req.body.value;
+      let data_key = req.body.key;
+      let data_val = req.body.value;
 
       txn_handler.req_txn_wrapper('swjang@stanford.edu', user_email, data_key, data_val).then(function(result) {
-          res.setHeader('Content-Type', 'application/json');
-          res.send(JSON.stringify(result));
-	  console.log('success - saving user data');
-	  db.save_user_data_for_link_generator(user_email, data_key, data_val);
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify(result));
+        console.log('success - saving user data');
+        db.save_pending_req_txn_for_link_generator(user_email, data_key, data_val);
       });
   });
 
   app.get('/pending_txns', auth.is_logged_in(), function (req, res) {
     let email = req.user; // the login stanford email
-
-    /*
-    let dummy_list = [];
-    dummy_list.push({
-      email : "jbb@stanford.edu",
-      key : "name",
-      value; "xx",
-    });
-
-    dummy_list.push({
-      email : "abcd@stanford.edu",
-      key : "email",
-      value: "yy"
-    });
-    */
-
 
     db.get_req_txns_for_user(email).then(function(txns) {
         if (txns == undefined || txns == null) {
