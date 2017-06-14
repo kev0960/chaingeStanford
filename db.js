@@ -99,6 +99,7 @@ module.exports = function (dependencies) {
   const REQ_TXN_FOR_USER = 'REQ_TXN_FOR_USER_'; // user email to req txn
   const REQ_TXN_TO_ANS_TXN = "REQ_TXN_TO_ANS_TXN_"; // use for txn_sig to txn storage
   const ANS_TXN_TO_REQ_TXN = "ANS_TXN_TO_REQ_TXN_";
+  const LINK_GEN_PREFIX = 'LINK_GEN_';
 
   const save_email_validation_token = function (email) {
     let p1 = new Promise(function (resolve, reject) {
@@ -365,6 +366,78 @@ module.exports = function (dependencies) {
     });
   };
 
+  const save_user_data_for_link_generator = function(email, id_key, id_val) {
+      return new Promise(function(resolve, reject){
+          client.hset(LINK_GEN_PREFIX + email, info_key, info_val, function(err, reply){
+              resolve(reply);
+          });
+      });
+  };
+
+  const get_user_data_for_link_generator = function(email){
+      return new Promise(function(resolve, reject){
+          client.hgetall(LINK_GEN_PREFIX + email, function(err,reply){
+              resolve(reply);
+          });
+      });
+  };
+
+  const link_created_for_user = function(email) {
+      return new Promise(function(resolve, reject){
+          client.hget(LINK_GEN_PREFIX + email, 'link_generated', function(err, reply){
+              var count = reply;
+              if (count === null){
+                  count = 1;
+              } else {
+                  count++;
+              }
+              client.hset(pub_key, 'link_generated', count, function(err, reply){
+                  resolve(reply);
+              });
+          });
+      });
+  };
+
+  const get_num_links_per_user = function(email) {
+      return new Promise(function(resolve, reject){
+          client.hget(LINK_GEN_PREFIX + email, 'link_generated', function(err, reply){
+              var count = reply;
+              if (count === null){
+                  count = 0;
+              }
+              resolve(count);
+          });
+      });
+  };
+
+  const link_viewed = function(email) {
+      return new Promise(function(resolve, reject){
+          client.hget(LINK_GEN_PREFIX + email, 'link_viewed', function(err, reply){
+              var count = reply;
+              if (count === null){
+                  count = 1;
+              } else {
+                  count++;
+              }
+              client.hset(LINK_GEN_PREFIX + email, 'link_viewed', count, function(err, reply){
+                  resolve(reply);
+              });
+          });
+      });
+  };
+
+  const get_num_links_viewed_per_user = function(email) {
+      return new Promise(function(resolve, reject){
+          client.hget(LINK_GEN_PREFIX + email, 'link_viewed', function(err, reply){
+              var count = reply;
+              if (count === null){
+                  count = 0;
+              }
+              resolve(count);
+          });
+      });
+  };
+
   return {
     save_email_validation_token,
     get_token,
@@ -386,5 +459,11 @@ module.exports = function (dependencies) {
     get_ans_txn_for_req_txn,
     get_req_txn_for_ans_txn,
     find_data_txn_with_key,
+    save_user_data_for_link_generator,
+    get_user_data_for_link_generator,
+    link_created_for_user,
+    get_num_links_per_user,
+    link_viewed,
+    get_num_links_viewed_per_user,
   }
 }

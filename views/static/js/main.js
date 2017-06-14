@@ -50,7 +50,7 @@ $(form_id).submit(function(e) {
         data: $(form_id).serialize(), // serializes the form's elements.
         success: function(data)
         {
-            if (data != undefined && data['success'] == true) {
+        	if (data != undefined && data['success'] == true) {
                 alert("Nice! We saved your data successfully. Please checkout your dashboard.");
             } else {
                 alert("Error while saving your data. Please try again.");
