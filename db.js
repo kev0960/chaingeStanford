@@ -432,18 +432,6 @@ module.exports = function (dependencies) {
       });
   };
 
-  const get_num_links_per_user = function(email) {
-      return new Promise(function(resolve, reject){
-          redis.hget(LINK_GEN_STAT_PREFIX + email, 'link_generated', function(err, reply){
-              var count = reply;
-              if (count === null){
-                  count = 0;
-              }
-              resolve(count);
-          });
-      });
-  };
-
   const link_viewed = function(email) {
       return new Promise(function(resolve, reject){
           redis.hget(LINK_GEN_STAT_PREFIX + email, 'link_viewed', function(err, reply){
@@ -456,18 +444,6 @@ module.exports = function (dependencies) {
               redis.hset(LINK_GEN_STAT_PREFIX + email, 'link_viewed', count, function(err, reply){
                   resolve(reply);
               });
-          });
-      });
-  };
-
-  const get_num_links_viewed_per_user = function(email) {
-      return new Promise(function(resolve, reject){
-          redis.hget(LINK_GEN_STAT_PREFIX + email, 'link_viewed', function(err, reply){
-              var count = reply;
-              if (count === null){
-                  count = 0;
-              }
-              resolve(count);
           });
       });
   };
@@ -496,9 +472,7 @@ module.exports = function (dependencies) {
     save_user_data_for_link_generator,
     get_user_data_for_link_generator,
     link_created_for_user,
-    get_num_links_per_user,
     link_viewed,
-    get_num_links_viewed_per_user,
     save_pending_req_txn_for_link_generator,
     get_pending_req_txn_for_link_generator,
     change_req_txn_at,
