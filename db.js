@@ -268,6 +268,11 @@ module.exports = function (dependencies) {
     });
   }
 
+  const change_req_txn_at = function(email, txn, at) {
+    redis.lset(REQ_TXN_FOR_USER + email, at, txn, function (err) {
+    if (err) console.log("Error :: ", err);
+  };
+
   const save_req_txn_for_user = function(email, txn) {
     // txn must be a req txn json object
     if (txn.type != 1) {
@@ -495,5 +500,6 @@ module.exports = function (dependencies) {
     get_num_links_viewed_per_user,
     save_pending_req_txn_for_link_generator,
     get_pending_req_txn_for_link_generator,
+    change_req_txn_at,
   }
 }
