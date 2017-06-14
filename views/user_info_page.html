@@ -79,6 +79,7 @@
     setInterval(move, 25000);
 
     var email = decodeURIComponent(document.URL.split('/').pop());
+    console.log(email);
     $.ajax({
         type: 'GET',
         contentType: "application/json; charset=utf-8",
@@ -90,7 +91,6 @@
         success: function(result, status, xhr){
             console.log('Got user data');
             console.log(result);
-	    result = {'name': 'mark', 'email':'swjang92@stanford.edu'};
 	    if (result) {
 		console.log('print');
     		setTimeout(function(){

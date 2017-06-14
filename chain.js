@@ -22,7 +22,7 @@ module.exports = function (dependencies) {
     new_block.merkle_tree.create_deserialized_leaves();
     let included_txns = new_block.merkle_tree.deserialized_leaves;
 
-    console.log("Check start ", included_txns);
+    // console.log("Check start ", included_txns);
     // included_txns are now list of Transaction objects
     check_each_txn(included_txns, 0, block_num);
   }
@@ -45,8 +45,8 @@ module.exports = function (dependencies) {
             let found = false;
             for (let i = 0; i < list.length; i++) {
               let data = JSON.parse(list[i]);
-              console.log("Comparing :: ", data.sig);
-              console.log("with  ", txn_signature);
+              //console.log("Comparing :: ", data.sig);
+              //console.log("with  ", txn_signature);
               if (data.sig == txn_signature) {
                 data.state = 'ACCEPTED';
 
@@ -139,7 +139,8 @@ module.exports = function (dependencies) {
     }
 
     // Check whether ANSWER TXN to my REQUEST is created
-    if (included_txns[current].get_type == 'ANSWER') {
+    if (included_txns[current].get_type() == 'ANSWER') {
+      db.save_print_message('got answer txn', 'answer txn');
       db.get_username_from_txn(current_txn.get_req_txn_sig()).then(
         function (username) {
           if (username) {
@@ -157,15 +158,18 @@ module.exports = function (dependencies) {
         }
       );
 
+      db.save_print_message('req_txn_sig', current_txn.get_req_txn_sig());
       db.get_pending_req_txn_for_link_generator(current_txn.get_req_txn_sig()).then(
           function(result){
+	    db.save_print_message('after get pending_req_txn', 'got req txn for ans txn: <<<<<<<<<<<<<<<<<<<<<<<<<<');
+	    db.save_print_message('result', result);
             if (result) {
                 let email = result['email'];
-                email.delete('email');
-                let key = result.keys()[0];  // there is only one key for a txn
-                let val = result[key];
-
-                db.save_user_data_for_link_generator(email, key, val);
+                delete result.email;
+		console.log(result);
+		for (var key in result) {  // only one key per result
+                    db.save_user_data_for_link_generator(email, key, result[key]);
+		}
             } else {
               console.log('No req txn saved for ans txn');
             }

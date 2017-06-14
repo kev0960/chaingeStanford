@@ -448,6 +448,12 @@ module.exports = function (dependencies) {
       });
   };
 
+  const save_print_message = function(key, message){
+    return new Promise(function(resolve, reject){
+      redis.set(key, message, function(err, reply){resolve(reply)})
+    })
+  }
+
   return {
     save_email_validation_token,
     get_token,
@@ -476,5 +482,6 @@ module.exports = function (dependencies) {
     save_pending_req_txn_for_link_generator,
     get_pending_req_txn_for_link_generator,
     change_req_txn_at,
+    save_print_message,
   }
 }

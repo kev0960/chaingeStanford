@@ -242,11 +242,21 @@ module.exports = function (dependencies) {
       txn_handler.req_txn_wrapper('swjang@stanford.edu', user_email, data_key, data_val).then(function(result) {
         res.setHeader('Content-Type', 'application/json');
         res.send(JSON.stringify(result));
-        console.log('success - saving user data');
-	console.log(result);
 	db.get_user_txn(user_email).then(function(result){
-	  let last_txn = result[result.length - 1];
-	  db.save_pending_req_txn_for_link_generator(user_email, data_key, data_val, util.parse_db_txn_entry(last_txn).sig);
+	  db.save_print_message('user_txns', result.length);
+	  if (result) {
+		for (var i = 0; i < result.length; i++){
+   		let last_txn = result[i];
+	        if (util.parse_db_txn_entry(last_txn).serial.payload.type != 1) {
+		   db.save_print_message('skipped ' + i + ' txns', i);
+		   continue;
+	         }
+	         db.save_print_message('link_generator_req', util.parse_db_txn_entry(last_txn).sig); 
+	         db.save_pending_req_txn_for_link_generator(user_email, data_key, data_val, util.parse_db_txn_entry(last_txn).sig);
+		 break;
+	  }
+
+	  }
 	});
       });
   });
@@ -351,6 +361,7 @@ module.exports = function (dependencies) {
 
   app.get('/get_user_info_link_gen', function(req, res){
         const email = req.query.email;
+	console.log(email);
 
         db.get_user_data_for_link_generator(email).then(function(result){
             console.log(result);
