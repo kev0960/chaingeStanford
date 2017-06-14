@@ -16,9 +16,7 @@ module.exports = function (dependencies) {
   app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname + '/index.html'));
   });
-
-  app.use('/assets', express.static(__dirname + 'views/assets'));
-
+    
   // Send the verification email to the received address
   app.post('/add-me', function (req, res) {
     let email = req.body.email;
