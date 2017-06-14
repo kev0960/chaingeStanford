@@ -242,11 +242,21 @@ module.exports = function (dependencies) {
       txn_handler.req_txn_wrapper('swjang@stanford.edu', user_email, data_key, data_val).then(function(result) {
         res.setHeader('Content-Type', 'application/json');
         res.send(JSON.stringify(result));
-        console.log('success - saving user data');
-	console.log(result);
 	db.get_user_txn(user_email).then(function(result){
-	  let last_txn = result[result.length - 1];
-	  db.save_pending_req_txn_for_link_generator(user_email, data_key, data_val, util.parse_db_txn_entry(last_txn).sig);
+	  db.save_print_message('user_txns', result.length);
+	  if (result) {
+		for (var i = 0; i < result.length; i++){
+   		let last_txn = result[i];
+	        if (util.parse_db_txn_entry(last_txn).serial.payload.type != 1) {
+		   db.save_print_message('skipped ' + i + ' txns', i);
+		   continue;
+	         }
+	         db.save_print_message('link_generator_req', util.parse_db_txn_entry(last_txn).sig); 
+	         db.save_pending_req_txn_for_link_generator(user_email, data_key, data_val, util.parse_db_txn_entry(last_txn).sig);
+		 break;
+	  }
+
+	  }
 	});
       });
   });
@@ -351,6 +361,7 @@ module.exports = function (dependencies) {
 
   app.get('/get_user_info_link_gen', function(req, res){
         const email = req.query.email;
+	console.log(email);
 
         db.get_user_data_for_link_generator(email).then(function(result){
             console.log(result);
@@ -375,13 +386,15 @@ module.exports = function (dependencies) {
       // Query my txns (issued by me) by the filter
       txn_handler.query_txns(email, filter).then(function (txns) {
 
+	  console.log("=====");
+
           let req_displayables = [];
           let ans_displayables = [];
 
           for (let i = 0; i < txns.length; i++) {
               let txn = txns[i];
               let displayable = null;
-
+		console.log("aaa");
               if (txn.type == 1) {
                   displayable = util.format_req_txn_for_display(txn);
                   req_displayables.push(displayable);
@@ -422,7 +435,7 @@ module.exports = function (dependencies) {
 
                 // Found. Turn answered = true
                 if (txn.sig == sig) {
-                    db.change_req_txn_at(email, JSON.stringify(txn), i);
+                    db.change_req_txn_at(email, util.stringify_db_txn_entry(txn), i);
 
                     if (requester == "unidentified") {
                         res.setHeader('Content-Type', 'application/json');
@@ -434,18 +447,17 @@ module.exports = function (dependencies) {
                     db.get_user_txn(requester).then(function(list) {
 
                         for (let j = 0; j < list.length; j++) {
-                            let this_txn = util.parse_db_txn_entry(list[i]);
+                            let this_txn = util.parse_db_txn_entry(list[j]);
                             if (this_txn.sig == sig) {
-                                db.change_user_txn_at(requester, txn, j);
+                                db.change_user_txn_at(requester, util.stringify_db_txn_entry(txn), j);
+                                break;
                             }
                         }
-
+                        res.setHeader('Content-Type', 'application/json');
+                        res.send(JSON.stringify(success));
                     });
-
-                    res.setHeader('Content-Type', 'application/json');
-                    res.send(JSON.stringify(success));
                     break;
-                }
+                 }
             }
         });
 

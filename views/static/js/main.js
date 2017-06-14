@@ -211,8 +211,8 @@ const get_history = function() {
         let txn = ans_txns[i];
         let elem = tr_start;
 
-        for (let j = 0; j < req_txn_keys.length; j++) {
-          let key = ans_txn_keys[j];
+				for (let j = 0; j < ans_txn_keys.length; j++) {
+					let key = ans_txn_keys[j];
 
           elem += td_start
           elem += txn[key];

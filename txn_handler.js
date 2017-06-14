@@ -319,7 +319,7 @@ module.exports = function(dependencies) {
     // filters behave by exact match except for the type
 
     let filter = {};
-    if (kwarg != undefined || kwarg != null) {
+    if (kwarg != undefined && kwarg != null) {
       filter = kwarg;
     }
 
@@ -365,15 +365,18 @@ module.exports = function(dependencies) {
           return;
         }
 
-        for (let i = 0; i < list.length; i++) {
-          let txn = util.parse_db_txn_entry(list[i]);
+	console.log(list.length);
 
+        for (let i = 0; i < list.length; i++) {
+	  console.log(list[i]);
+          let txn = util.parse_db_txn_entry(list[i]);
+	  console.log("got here");
           // compare txn with the filter
           if (txn_matches_filter(txn, filter)) {
             txns.push(txn);
           }
         }
-
+	console.log("oome");
         resolve(txns);
       });
     });
