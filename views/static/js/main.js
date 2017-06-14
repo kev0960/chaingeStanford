@@ -24,7 +24,11 @@ for (let i = 0; i <  txn_types.length; i++) {
 	           	    if (data != undefined && data['success'] == true) {
 	           	    	alert("Nice! We saved your data successfully. Please checkout your dashboard.");
 	           	    } else {
-	           	    	alert("Error while saving your data. Please try again.");
+	           	    	if ('message' in data) {
+	           	    		alert(data['message']);
+	           	    	} else {
+	           	    		alert("Error while saving your data. Please try again.");
+	           	    	}
 	           	    }
 	               toggle_progress(txn_type);
 	           }
