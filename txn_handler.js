@@ -278,7 +278,7 @@ module.exports = function(dependencies) {
     // filters behave by exact match except for the type
 
     let filter = {};
-    if (kwarg != undefined || kward != null) {
+    if (kwarg != undefined || kwarg != null) {
         filter = kwarg;
     }
 

@@ -128,6 +128,7 @@ const get_history = function() {
 		url: url,
 		success: function(txn_list) {
 
+			console.log(txn_list);
 			alert(txn_list);
 
 		}
