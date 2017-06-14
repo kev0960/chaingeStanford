@@ -170,6 +170,8 @@ const reload_pending_txns = function(ul_id) {
 const get_history = function() {
   let url = "/history";
 
+  $('.table_row').remove();
+
   $.ajax({
     type: "GET",
     url: url,
@@ -182,7 +184,7 @@ const get_history = function() {
 
       let req_table = $('#req_table');
       let ans_table = $('#ans_table');
-      let tr_start = "<tr>"
+      let tr_start = "<tr class=\'table_row\'>"
       let tr_end = "</tr>"
       let td_start = "<td>"
       let td_end = "</td>"
