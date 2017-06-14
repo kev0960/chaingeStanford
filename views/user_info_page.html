@@ -57,10 +57,10 @@
     $.ajax({
         type: 'GET',
         contentType: "application/json; charset=utf-8",
-        url: '/get_user_info',
+        url: '/get_user_info_link_gen',
         dataType: "json",
         data: {
-            pub_key
+            email
         },
         success: function(result, status, xhr){
             console.log('Got user data');

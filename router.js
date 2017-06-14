@@ -350,6 +350,22 @@ module.exports = function (dependencies) {
       res.sendFile(__dirname + "/views/user_info_page.html");
   });
 
+  app.get('/get_user_info_link_gen', function(req, res){
+      const pub_key = req.query.email;
+      console.log('<server.js>:' + email);
+
+      db.get_user_info(email).then(function(result){
+          // let verified_info = new Map();
+          // if (result) {
+          //     verified_info = result;
+          // }
+          console.log(result);
+          res.send(stable_stringify(result));
+          res.end();
+      });
+
+  });
+
   app.get('/history', auth.is_logged_in(), function (req, res) {
       // shoot a list of this user's history (requests, answers)
 
