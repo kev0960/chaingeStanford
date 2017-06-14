@@ -375,13 +375,15 @@ module.exports = function (dependencies) {
       // Query my txns (issued by me) by the filter
       txn_handler.query_txns(email, filter).then(function (txns) {
 
+	  console.log("=====");
+
           let req_displayables = [];
           let ans_displayables = [];
 
           for (let i = 0; i < txns.length; i++) {
               let txn = txns[i];
               let displayable = null;
-
+		console.log("aaa");
               if (txn.type == 1) {
                   displayable = util.format_req_txn_for_display(txn);
                   req_displayables.push(displayable);
