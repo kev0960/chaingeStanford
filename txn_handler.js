@@ -201,22 +201,31 @@ module.exports = function(dependencies) {
           return ;
         }
 
+        console.log("recved sig :: ", request_txn_sig);
+
         for (let i = 0; i < req_list.length; i ++) {
           let saved_req = JSON.parse(req_list[i]);
 
+          console.log("Saved req sig :: ", saved_req.sig);
           if (saved_req.sig == request_txn_sig) {
+
             // Make the answer transaction for this request.
             // Hence we have to find what data transaction this
             // req has asked.
 
+            console.log("SAVED REQ :: ", saved_req);
             let request_txn = transaction.create_transaction(saved_req.serial);
             let data_txn_sig = request_txn.get_data_txn_sig();
+
+            console.log("DATA transaction sig :: ", data_txn_sig);
 
             db.get_user_txn(email).then(function (txn_list) {
               for (let i = 0; i < txn_list.length; i ++) {
                 let saved_txn = JSON.parse(txn_list[i]);
 
-                if (data_txn_sig == txn_list[i].sig) {
+                console.log("SIGS :: ", saved_txn.sig);
+
+                if (data_txn_sig == saved_txn.sig) {
                   let data_txn = transaction.create_transaction(saved_txn.serial);
 
                   // Create the answer transaction with
@@ -224,6 +233,7 @@ module.exports = function(dependencies) {
 
                   console.log("ANSWER DATA TXN :: ", saved_txn);
                   console.log("ANSWER REQU TXN :: ", saved_req);
+
                   let token = uuid();
                   let data = {
                     type : 2,
@@ -233,10 +243,12 @@ module.exports = function(dependencies) {
                     r_i : saved_txn.secret.r_i,
                     r : saved_txn.secret.r,
                     a : saved_txn.secret.a,
-                    req : request_txn.req,
+                    req : request_txn.get_req(),
+                    token : token
                   };
 
 
+                  console.log("token :: ", token);
                   zmq.add_callback_for_token(token, function(txn_payload) {
                     // txn_payload = {response}
 
@@ -254,30 +266,42 @@ module.exports = function(dependencies) {
                     ans_txn_payload['type'] = 2;
 
                     const txn_payload_str = stable_stringify(ans_txn_payload);
-                    const txn_sig = protocol.create_sign(txn_payload_str);
 
-                    const ans_txn_obj = {
-                      public_key : pub_key,
-                      signature : txn_sig,
-                      payload : txn_payload_str,
-                    }
+                    db.get_keys(email).then(function(rsa_keys) {
+                      let pub_key = rsa_keys[0];
+                      let prv_key = rsa_keys[1];
 
-                    const serialized_txn = stable_stringify(ans_txn_obj);
+                      const txn_sig = protocol.create_sign(txn_payload_str, prv_key);
 
-                    const db_txn_entry = {
-                      "serial": serialized_txn,
-                      "sig" : txn_sig,
-                      "state" : "Pending",
-                      "type" : 2,
-                    };
+                      const ans_txn_obj = {
+                        public_key : pub_key,
+                        signature : txn_sig,
+                        payload : txn_payload_str,
+                      }
 
-                    db.save_txn_to_username(db_txn_entry);
-                    zmq.remove_token_callback(token);
-                    resolve(true);
+                      const serialized_txn = stable_stringify(ans_txn_obj);
+
+                      const db_txn_entry = {
+                        "serial": serialized_txn,
+                        "sig" : txn_sig,
+                        "state" : "Pending",
+                        "type" : 2,
+                      };
+
+                      db.save_txn_to_username(txn_sig, email);
+                      db.save_user_txn(email, JSON.stringify(db_txn_entry));
+
+                      zmq.remove_token_callback(token);
+
+                      connect_node.send_txn(serialized_txn);
+                      resolve({success: true, message: "successfully created answer txn"});
+                      return ;
+                    });
                   });
 
                   console.log(JSON.stringify(data));
                   zmq.send_data(JSON.stringify(data));
+                  break;
                 }
               }
 

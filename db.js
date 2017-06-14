@@ -383,7 +383,7 @@ module.exports = function (dependencies) {
       });
 
       let p2 = new Promise(function(resolve, reject){
-          redis.hset(LINK_GEN_TEMP_REQ_TXN_PREFIX + txn_sig, 'email', id_val, function(err, reply){
+          redis.hset(LINK_GEN_TEMP_REQ_TXN_PREFIX + txn_sig, 'email', email, function(err, reply){
               resolve(reply);
           });
       });
