@@ -413,7 +413,7 @@ module.exports = function (dependencies) {
         // duplicates r saved in 2 diff places
 
         // First, find the one stored under the requested user
-        db.get_req_txns_for_user.then(function(txn_list) {
+        db.get_req_txns_for_user(email).then(function(txn_list) {
             for (let i = 0 ; i < txn_list.length; i++) {
                 let txn = util.parse_db_txn_entry(txn_list[i]);
                 let requester = txn.requester;
