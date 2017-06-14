@@ -78,22 +78,24 @@
 
     var email = decodeURIComponent(document.URL.split('/').pop());
     var returnedUser = {};
-    $.ajax({
-        type: 'GET',
-        contentType: "application/json; charset=utf-8",
-        url: '/get_user_info_link_gen',
-        dataType: "json",
-        data: {
-            email
-        },
-        success: function(result, status, xhr){
-            console.log('Got user data');
-            console.log(result);
-            document.getElementById("loadBar").innerHTML = '<div>' + JSON.stringify(result) + '</div>';
-            returnedUser = result;
-        }
-     });
-     console.log(returnedUser);
+    setTimeout(function(){
+        $.ajax({
+            type: 'GET',
+            contentType: "application/json; charset=utf-8",
+            url: '/get_user_info_link_gen',
+            dataType: "json",
+            data: {
+                email
+            },
+            success: function(result, status, xhr){
+                console.log('Got user data');
+                console.log(result);
+                document.getElementById("loadBar").innerHTML = '<div>' + JSON.stringify(result) + '</div>';
+                returnedUser = result;
+            }
+        });
+        console.log(returnedUser);
+    }, 10000);
 </script>
 </body>
 </html>
