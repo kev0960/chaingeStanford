@@ -341,7 +341,6 @@ module.exports = function (dependencies) {
         // Loop through all txns in the good block
         for (let i = 0; i < txn_list.length; i++) {
           let db_entry = util.parse_db_txn_entry(txn_list[i]);
-          console.log("Db entry :: ", db_entry);
           let txn_payload = db_entry.serial.payload;
 
           if (txn_payload.type != 0) {
@@ -349,10 +348,11 @@ module.exports = function (dependencies) {
           }
 
           // If the txn is not confirmed
-          if (!txn_list[i].hasOwnProperty('block_num')) {
+          if (!db_entry.hasOwnProperty('block_num')) {
             continue;
           }
 
+          console.log("db entry : ", db_entry.key, " vs ", id_key);
           // if the type == 0, then it must have its key and value stored
           if (db_entry.key == id_key) {
             resolve(db_entry);
