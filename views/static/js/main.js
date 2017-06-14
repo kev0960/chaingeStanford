@@ -192,7 +192,7 @@ const toggle_progress = function(txn_type) {
 
 		setTimeout(function() {
 			percentage++;
-			console.log(precentage);
+			console.log(percentage);
 			$('#progress_data')[0].style.width = percentage + "%";
 		}, 200);
 	}
