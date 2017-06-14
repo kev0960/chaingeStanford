@@ -32,6 +32,7 @@ for (let i = 0; i <  txn_types.length; i++) {
 	           	    	}
 	           	    }
 	               toggle_progress(txn_type);
+
 	           }
 	    });
 
@@ -171,7 +172,8 @@ const get_history = function() {
 		url: url,
 		success: function(result) {
 
-			console.log(txn_list);
+			console.log(result);
+
 			let req_txns = result.req_displayables;
 			let ans_txns = result.ans_displayables;
 
@@ -185,7 +187,7 @@ const get_history = function() {
 			let req_txn_keys = ['target', 'key', 'state', 'answered'];
 			let ans_txn_keys = ['requester', 'key', 'state'];
 
-			for (let i = 0; i < req_table.length; i++) {
+			for (let i = 0; i < req_txns.length; i++) {
 				let txn = req_table[i];
 				let elem = tr_start;
 
@@ -202,7 +204,7 @@ const get_history = function() {
 				req_table.append(elem);
 			}
 
-			for (let i = 0; i < ans_table.length; i++) {
+			for (let i = 0; i < ans_txns.length; i++) {
 				let txn = ans_table[i];
 				let elem = tr_start;
 
@@ -231,6 +233,8 @@ const toggle_progress = function(txn_type) {
 	if ($(modal_id).hasClass('hidden')) {
 		$(modal_id).removeClass('hidden');
 		$(progress_id).addClass('hidden');
+		$('#progress_data')[0].style.width = 0 + "%";
+
 	} else {
 		$(modal_id).addClass('hidden');
 		$(progress_id).removeClass('hidden');
