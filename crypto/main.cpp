@@ -389,7 +389,7 @@ int main()
     std::cout << "Request :: " << (char *)request.data() << std::endl;
     cout << std::endl << std::endl << std::endl;
     string data_str = string((char*)request.data());
-    string sub_str = data_str.substr(0, data_str.rfind('}') + 1);
+    string sub_str = data_str.substr(0, data_str.rfind("END{}OF"));
     std::cout << sub_str << std::endl;
 
     auto json_data = json::parse(sub_str);
