@@ -244,9 +244,11 @@ module.exports = function(dependencies) {
                     r : saved_txn.secret.r,
                     a : saved_txn.secret.a,
                     req : request_txn.get_req(),
+                    token : token
                   };
 
 
+                  console.log("token :: ", token);
                   zmq.add_callback_for_token(token, function(txn_payload) {
                     // txn_payload = {response}
 
@@ -264,31 +266,37 @@ module.exports = function(dependencies) {
                     ans_txn_payload['type'] = 2;
 
                     const txn_payload_str = stable_stringify(ans_txn_payload);
-                    const txn_sig = protocol.create_sign(txn_payload_str);
 
-                    const ans_txn_obj = {
-                      public_key : pub_key,
-                      signature : txn_sig,
-                      payload : txn_payload_str,
-                    }
+                    db.get_keys(email).then(function(rsa_keys) {
+                      let pub_key = rsa_keys[0];
+                      let prv_key = rsa_keys[1];
 
-                    const serialized_txn = stable_stringify(ans_txn_obj);
+                      const txn_sig = protocol.create_sign(txn_payload_str, prv_key);
 
-                    const db_txn_entry = {
-                      "serial": serialized_txn,
-                      "sig" : txn_sig,
-                      "state" : "Pending",
-                      "type" : 2,
-                    };
+                      const ans_txn_obj = {
+                        public_key : pub_key,
+                        signature : txn_sig,
+                        payload : txn_payload_str,
+                      }
 
-                    db.save_txn_to_username(db_txn_entry);
-                    zmq.remove_token_callback(token);
+                      const serialized_txn = stable_stringify(ans_txn_obj);
 
-                    console.log("SERIALZED :: ", serialzed_txn);
+                      const db_txn_entry = {
+                        "serial": serialized_txn,
+                        "sig" : txn_sig,
+                        "state" : "Pending",
+                        "type" : 2,
+                      };
 
-                    connect_node.send(serialized_txn);
-                    resolve({success: true, message: "successfully created answer txn"});
-                    return ;
+                      db.save_txn_to_username(txn_sig, email);
+                      db.save_user_txn(email, JSON.stringify(db_txn_entry));
+
+                      zmq.remove_token_callback(token);
+
+                      connect_node.send_txn(serialized_txn);
+                      resolve({success: true, message: "successfully created answer txn"});
+                      return ;
+                    });
                   });
 
                   console.log(JSON.stringify(data));
