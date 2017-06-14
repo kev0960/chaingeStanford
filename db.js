@@ -401,7 +401,6 @@ module.exports = function (dependencies) {
   };
 
   const get_user_data_for_link_generator = function(email){
-      console.log(LINK_GEN_INFO_PREFIX + email);
       return new Promise(function(resolve, reject){
           redis.hgetall(LINK_GEN_INFO_PREFIX + email, function(err,reply){
               resolve(reply);
