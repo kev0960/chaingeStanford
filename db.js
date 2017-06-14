@@ -18,7 +18,7 @@ module.exports = function (dependencies) {
 
       let email = "swjang@stanford.edu";
       save_email_validation_token(email).then(function(token) {
-        let name = "swjang";
+        let name = "Se Won Jang";
         let pw = "123";
 
         token = "1234";
@@ -273,6 +273,8 @@ module.exports = function (dependencies) {
     if (txn.type != 1) {
       console.log("trying to save a different txn as a req txn");
     }
+
+    txn = JSON.stringify(txn);
 
     redis.lpush(REQ_TXN_FOR_USER + email, txn, function (err, reply) {
       if (err) {

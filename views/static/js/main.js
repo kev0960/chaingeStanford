@@ -89,6 +89,27 @@ $( document ).ready(function() {
 	reload_pending_txns('#pending_txns');
 });
 
+const accept_request = function(req_txn_sig) {
+
+	let url = '/accept_request';
+
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: {"sig" : req_txn_sig}, // serializes the form's elements.
+        success: function(data)
+        {
+        	if (data != undefined && data['success'] == true) {
+                alert("Answered the Id verification request");
+            } else {
+                alert("Error while accepting the verification request");
+            }
+
+            reload_pending_txns("#pending_txns");
+        }
+    });
+};
+
 /* For refreshing the pending (the ones that I'm being requested for) txns list */
 const reload_pending_txns = function(ul_id) {
 
@@ -101,7 +122,11 @@ const reload_pending_txns = function(ul_id) {
 	    url: url,
 	    success: function(txn_list) {
 
-	    	let li_start = "<li>";
+	    	// First remove all list elements
+	    	$('.req_txn_item').remove();
+
+
+	    	let li_start = "<li class='req_txn_item'>";
 	    	let li_end = "</li>";
 	    	let ul = $(ul_id);
 
@@ -111,8 +136,20 @@ const reload_pending_txns = function(ul_id) {
 	    	} else {
 	    		for (let i = 0; i < txn_list.length; i++) {
 	    			let req = txn_list[i];
-	    			let ok_button = "<a href='#' onclick='accept_request()'>Verify</a>";
-	    			let li_elem = li_start + req.email + " | "+ req.key + " | "+ ok_button + li_end;
+
+	    			let req_txn_item_id = "'"+req.sig+"'";
+
+	    			let container_start = "<div class='container style='padding:0px;'>";
+	    			let container_end = "</div>";
+	    			let a_start = "<a href='#' onclick='accept_request(" + req_txn_item_id + ");'>"
+	    			let a_end = "</a>"
+	    			let row_start = "<div class='row'>"
+	    			let row_end = "</div>"
+	    			let col_start = "<div class='col-md-12' style='height:30px'>"
+	    			let col_end = "</div>"
+
+	    			let li_elem = li_start + container_start + a_start + row_start + col_start + req.requester + col_end + row_end + row_start + col_start + "requests your " + req.key + col_end + row_end + a_end + container_end + li_end;
+
 	    			ul.append(li_elem);
 	    		}
 	    	}

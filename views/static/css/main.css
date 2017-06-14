@@ -43,6 +43,10 @@
     transition: all 0.5s ease;
 }
 
+#sidebar-wrapper-right .sidebar-nav {
+    width: 100%; 
+}
+
 #wrapper.toggled #sidebar-wrapper {
     width: 160px;
 }

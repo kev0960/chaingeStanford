@@ -255,13 +255,23 @@ module.exports = function (dependencies) {
             txns = [];
         }
 
-        txns.push({
-            email: "abcd234@stanford.edu",
-            key : "email",
-        });
+        let result = [];
+
+        for (let i = 0; i < txns.length; i++) {
+            let txn = JSON.parse(txns[i]);
+            // only deal with the unanswered requests
+            if (txn.answered == false) {
+
+                result.push({
+                    'sig' : txn.sig,
+                    'key' : txn.key,
+                    'requester' : txn.requester,
+                });
+            }
+        }
 
         res.setHeader('Content-Type', 'application/json');
-        res.send(JSON.stringify(txns));
+        res.send(result);
     });
 
 
@@ -274,7 +284,8 @@ module.exports = function (dependencies) {
       let txn_list = [];
       for (let i = 0; i < list.length; i++) {
         let txn = JSON.parse(list[i]);
-        txn_list.push(txn);
+        if (txn.type == 0)
+            txn_list.push(txn);
       }
 
       let num_rows = Math.ceil(txn_list.length / 4.0);
@@ -300,8 +311,6 @@ module.exports = function (dependencies) {
         } else {
           block_num = 'Pending'
         }
-
-
 
         let entry = {
           'key' : txn.key,
