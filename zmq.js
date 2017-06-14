@@ -33,6 +33,7 @@ module.exports = function (dependencies) {
   });
 
   const send_data = function (data) {
+    data += "END{}OF{}JSON{}DATA";
     sock.send(data);
   }
   return {
