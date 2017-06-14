@@ -93,12 +93,13 @@ const auth = require('./auth.js')({
 });
 
 const txn_handler = require('./txn_handler.js')( {
-    db,
-    zmq,
-    connect_node,
-    util,
-    uuid,
-    protocol,
+  db,
+  zmq,
+  connect_node,
+  util,
+  uuid,
+  protocol,
+  transaction
 });
 
 const router = require('./router.js')({
