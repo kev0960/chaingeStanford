@@ -437,15 +437,15 @@ module.exports = function (dependencies) {
                             let this_txn = util.parse_db_txn_entry(list[j]);
                             if (this_txn.sig == sig) {
                                 db.change_user_txn_at(requester, JSON.stringify(txn), j);
+                                break;
                             }
                         }
-
+                        res.setHeader('Content-Type', 'application/json');
+                        res.send(JSON.stringify(success));
+                        break;
                     });
 
-                    res.setHeader('Content-Type', 'application/json');
-                    res.send(JSON.stringify(success));
-                    break;
-                }
+                 }
             }
         });
 
