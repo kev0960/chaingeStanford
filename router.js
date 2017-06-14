@@ -386,23 +386,26 @@ module.exports = function (dependencies) {
       // Query my txns (issued by me) by the filter
       txn_handler.query_txns(email, filter).then(function (txns) {
 
-          let displayables = [];
+	  console.log("=====");
+
+          let req_displayables = [];
+          let ans_displayables = [];
 
           for (let i = 0; i < txns.length; i++) {
               let txn = txns[i];
               let displayable = null;
-
+		console.log("aaa");
               if (txn.type == 1) {
                   displayable = util.format_req_txn_for_display(txn);
+                  req_displayables.push(displayable);
               } else if (txn.type == 2) {
                   displayable = util.format_ans_txn_for_display(txn);
+                  ans_displayables.push(displayable);
               }
-
-              displayables.push(displayable);
           }
 
           res.setHeader('Content-Type', 'application/json');
-          res.send(JSON.stringify(displayables));
+          res.send(JSON.stringify({req_displayables, ans_displayables}));
       });
   });
 
@@ -432,7 +435,7 @@ module.exports = function (dependencies) {
 
                 // Found. Turn answered = true
                 if (txn.sig == sig) {
-                    db.change_req_txn_at(email, JSON.stringify(txn), i);
+                    db.change_req_txn_at(email, util.stringify_db_txn_entry(txn), i);
 
                     if (requester == "unidentified") {
                         res.setHeader('Content-Type', 'application/json');
@@ -444,18 +447,17 @@ module.exports = function (dependencies) {
                     db.get_user_txn(requester).then(function(list) {
 
                         for (let j = 0; j < list.length; j++) {
-                            let this_txn = util.parse_db_txn_entry(list[i]);
+                            let this_txn = util.parse_db_txn_entry(list[j]);
                             if (this_txn.sig == sig) {
-                                db.change_user_txn_at(requester, txn, j);
+                                db.change_user_txn_at(requester, util.stringify_db_txn_entry(txn), j);
+                                break;
                             }
                         }
-
+                        res.setHeader('Content-Type', 'application/json');
+                        res.send(JSON.stringify(success));
                     });
-
-                    res.setHeader('Content-Type', 'application/json');
-                    res.send(JSON.stringify(success));
                     break;
-                }
+                 }
             }
         });
 

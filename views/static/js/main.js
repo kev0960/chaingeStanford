@@ -31,7 +31,9 @@ for (let i = 0; i <  txn_types.length; i++) {
 	           	    		alert("Error while saving your data. Please try again.");
 	           	    	}
 	           	    }
+	           	   $('#progress_data')[0].style.width = 0 + "%";
 	               toggle_progress(txn_type);
+
 	           }
 	    });
 
@@ -169,11 +171,57 @@ const get_history = function() {
 	$.ajax({
 		type: "GET",
 		url: url,
-		success: function(txn_list) {
+		success: function(result) {
 
-			console.log(txn_list);
-			alert(txn_list);
+			console.log(result);
 
+			let req_txns = result.req_displayables;
+			let ans_txns = result.ans_displayables;
+
+			let req_table = $('#req_table');
+			let ans_table = $('#ans_table');
+			let tr_start = "<tr>"
+			let tr_end = "</tr>"
+			let td_start = "<td>"
+			let td_end = "</td>"
+
+			let req_txn_keys = ['target', 'key', 'state', 'answered'];
+			let ans_txn_keys = ['requester', 'key', 'state'];
+
+			for (let i = 0; i < req_txns.length; i++) {
+				let txn = req_txns[i];
+				let elem = tr_start;
+
+				for (let j = 0; j < req_txn_keys.length; j++) {
+					let key = req_txn_keys[j];
+
+					elem += td_start
+					elem += txn[key];
+					elem += td_end;
+				}
+
+				elem += tr_end;
+
+				req_table.append(elem);
+			}
+
+			for (let i = 0; i < ans_txns.length; i++) {
+				let txn = ans_txns[i];
+				let elem = tr_start;
+
+				for (let j = 0; j < ans_txn_keys.length; j++) {
+					let key = ans_txn_keys[j];
+
+					elem += td_start
+					elem += txn[key];
+					elem += td_end;
+				}
+
+				elem += tr_end;
+
+				ans_table.append(elem);
+
+			}
 		}
 	});
 }
@@ -186,6 +234,8 @@ const toggle_progress = function(txn_type) {
 	if ($(modal_id).hasClass('hidden')) {
 		$(modal_id).removeClass('hidden');
 		$(progress_id).addClass('hidden');
+		$('#progress_data')[0].style.width = 0 + "%";
+
 	} else {
 		$(modal_id).addClass('hidden');
 		$(progress_id).removeClass('hidden');

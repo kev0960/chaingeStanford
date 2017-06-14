@@ -40,9 +40,6 @@
                     <a href="#" data-toggle="modal" data-target="#verifyModal">Request Verification</a>
                 </li>
                 <li>
-                    <a href="#" data-toggle="modal" data-target="#answerModal">Answer Request</a>
-                </li>
-                <li>
                     <a href="#" data-toggle="modal" data-target="#txnsModal" onclick="get_history()">My History</a>
                 </li>
                 <li>
@@ -59,7 +56,7 @@
             <ul class="sidebar-nav" style="color:white;" id="pending_txns">
                 <li class="sidebar-brand">
                     <a href="#" onclick="reload_pending_txns('#pending_txns');">
-                      Load Pending Requests
+                      Reload Requests
                     </a>
                 </li>
             </ul>
@@ -197,7 +194,7 @@
             </div>
 
             <div class="progress hidden" id="data_txn_progress">
-  			<div class="progress-bar" id = "progress_data" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+  			<div class="progress-bar" id = "progress_data" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
   				Please wait while we save your data...
   			</div>
 			</div>
@@ -240,49 +237,10 @@
 
             </div>
             <div class="progress hidden" id="req_txn_progress">
-  			<div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+  			<div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
   				Please wait while we save your data...
   			</div>
 			</div>
-		</div>
-		<div class="modal-footer">
-		</div>
-	</div>
-  </div>
-</div>
-
-<div class="modal fade" id="answerModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-	<div class="modal-content">
-		<div class="modal-header">
-			<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
-			<h3 class="modal-title" id="lineModalLabel">Answer a Request</h3>
-		</div>
-		<div class="modal-body">
-			<div id="ans_txn">
-
-            <!-- content goes here -->
-			<form action="/new_txn" method="post" id ="ans_txn_form">
-			<input type="hidden" name="txn_type" value="2">
-              <div class="form-group">
-                <label for="exampleInputEmail1">Email address</label>
-                <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
-              </div>
-              <div class="form-group">
-                <label for="exampleInputPassword1">Password</label>
-                <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-              </div>
-
-              <button type="submit" class="btn btn-default">Submit</button>
-            </form>
-
-            </div>
-            <div class="progress hidden" id="ans_txn_progress">
-  			<div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
-  				Please wait while we save your data...
-  			</div>
-			</div>
-
 		</div>
 		<div class="modal-footer">
 		</div>
@@ -300,7 +258,42 @@
 		</div>
 		<div class="modal-body">
 
-			PUT ALL PENDING(Unanswered) TXNS HERE, both that I requested and I am being requested for...
+      <table class="table table-hover" id="req_table">
+        <caption>All request transactions you created</caption>
+        <thead>
+          <tr>
+            <th>
+              Target
+            </th>
+            <th>
+              Key
+            </th>
+            <th>
+              State
+            </th>
+            <th>
+              Answered
+            </th>
+          </tr>
+        </thead>
+      </table>
+
+      <table class="table table-hover" id="ans_table">
+        <caption>All answer transactions you created</caption>
+        <thead>
+          <tr>
+            <th>
+              Requester
+            </th>
+            <th>
+              Key
+            </th>
+            <th>
+              State
+            </th>
+          </tr>
+        </thead>
+      </table>
 
 		</div>
 		<div class="modal-footer">

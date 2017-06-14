@@ -118,11 +118,11 @@ module.exports = function (dependencies) {
                       db.get_user_txn(email).then(function(list) {
 
                         // Find the req txn from the user's txn list and set blcoknum
-                        for (let i = 0; i < list.length; i++) {
-                            let data = util.parse_db_txn_entry(list[i]);
+                        for (let j = 0; j < list.length; j++) {
+                            let data = util.parse_db_txn_entry(list[j]);
 
                             if (data.sig == current_txn.get_signature()) {
-                                db.change_user_txn_at(email, JSON.stringify(db_txn_entry), i);
+                                db.change_user_txn_at(email, JSON.stringify(db_txn_entry), j);
                                 break;
                             }
                         }
