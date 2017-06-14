@@ -55,11 +55,11 @@ $(form_id).submit(function(e) {
             } else {
                 alert("Error while saving your data. Please try again.");
             }
-            toggle_progress(txn_types[1]);
+            toggle_progress('link_generator');
         }
     });
 
-    toggle_progress(txn_types[1])
+    toggle_progress('link_generator');
 });
 
 /* Register modal related callbacks */
