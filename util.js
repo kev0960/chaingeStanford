@@ -40,11 +40,6 @@ module.exports = function (dependencies) {
             continue;
           }
 
-          // If the txn is not confirmed
-          if (!(block_num in txn_list[i])) {
-            continue;
-          }
-
           // if the type == 0, then it must have its key and value stored
           if (db_entry.key == id_key) {
             resolve(db_entry);
