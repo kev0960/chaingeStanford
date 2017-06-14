@@ -323,17 +323,16 @@
                     <div class="modal-body">
 
                         <!-- content goes here -->
-
                         <div id="link_generator">
 
-                            <p>Add information you wish to add to link generated
+                            <p>
                             <ul id="addList">
                                 <li> Key: "Phone Number"</li>
                                 <li> Value: "000-0000"</li>
                             </ul>
                             </p>
                             <br>
-                            <form action="/new_txn" method="post" id ="link_generator_form">
+                            <form action='http://localhost:4000/test_endpoint', id ="link_generator_form">
                                 <input type="hidden" name="txn_type" value="0">
                                 <div class="form-group">
                                     <label for="Name">Data Key</label>
