@@ -353,41 +353,40 @@ module.exports = function (dependencies) {
   });
 
   app.get('/history', auth.is_logged_in(), function (req, res) {
-    // shoot a list of this user's history (requests, answers)
+      // shoot a list of this user's history (requests, answers)
 
-    let email = req.user;
+      let email = req.user;
 
-    // define query parameters
-    let sig = null;
-    let types = [1,2]; // we only want req and ans txns issued by me
-    let committed = null; // can be either committed or not committed
-    let block_num = null;
+      // define query parameters
+      let sig = null;
+      let types = [1, 2]; // we only want req and ans txns issued by me
+      let committed = null; // can be either committed or not committed
+      let block_num = null;
 
-    let filter = txn_handler.build_query_filter(sig, types, committed, block_num, null);
+      let filter = txn_handler.build_query_filter(sig, types, committed, block_num, null);
 
-    // Query my txns (issued by me) by the filter
-    txn_handler.query_txns(email, filter).then(function(txns) {
+      // Query my txns (issued by me) by the filter
+      txn_handler.query_txns(email, filter).then(function (txns) {
 
-        let displayables = [];
+          let displayables = [];
 
-        for (let i = 0; i < txns.length; i++) {
-            let txn = txns[i];
-            let displayable = null;
+          for (let i = 0; i < txns.length; i++) {
+              let txn = txns[i];
+              let displayable = null;
 
-            if (txn.type == 1) {
-                displayable = util.format_req_txn_for_display(txn);
-            } else if (txn.type == 2) {
-                displayable = util.format_ans_txn_for_display(txn);
-            }
+              if (txn.type == 1) {
+                  displayable = util.format_req_txn_for_display(txn);
+              } else if (txn.type == 2) {
+                  displayable = util.format_ans_txn_for_display(txn);
+              }
 
-            displayables.push(displayable);
-        }
+              displayables.push(displayable);
+          }
 
-        res.setHeader('Content-Type', 'application/json');
-        res.send(JSON.stringify(displayables));
-    });
-
-
+          res.setHeader('Content-Type', 'application/json');
+          res.send(JSON.stringify(displayables));
+      });
+  });
 
   return {
     app
