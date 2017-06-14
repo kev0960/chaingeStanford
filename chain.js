@@ -152,8 +152,7 @@ module.exports = function (dependencies) {
               for (let i = 0; i < list.length; i++) {
                 let data = JSON.parse(list[i]);
                 if (data.sig == current_txn.get_req_txn_sig()) {
-                  data.state += '|ANSWERED' + txn_signature;
-                  data['block_num'] = block_num;
+                  data['answered'] = true;
                   db.save_user_txn(username, JSON.stringify(data));
                 }
               }

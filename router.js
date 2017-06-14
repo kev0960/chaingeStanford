@@ -235,57 +235,63 @@ module.exports = function (dependencies) {
   });
 
   app.post('/link_generator_req_txn', function(req, res){
-      let user_email = req.user;
-      let data_key = req.body.key;
-      let data_val = req.body.value;
+    let user_email = req.user;
+    let data_key = req.body.key;
+    let data_val = req.body.value;
 
-      txn_handler.req_txn_wrapper('swjang@stanford.edu', user_email, data_key, data_val).then(function(result) {
-        res.setHeader('Content-Type', 'application/json');
-        res.send(JSON.stringify(result));
-	db.get_user_txn(user_email).then(function(result){
-	  db.save_print_message('user_txns', result.length);
-	  if (result) {
-		for (var i = 0; i < result.length; i++){
-   		let last_txn = result[i];
-	        if (util.parse_db_txn_entry(last_txn).serial.payload.type != 1) {
-		   db.save_print_message('skipped ' + i + ' txns', i);
-		   continue;
-	         }
-	         db.save_print_message('link_generator_req', util.parse_db_txn_entry(last_txn).sig); 
-	         db.save_pending_req_txn_for_link_generator(user_email, data_key, data_val, util.parse_db_txn_entry(last_txn).sig);
-		 break;
-	  }
+    txn_handler.req_txn_wrapper('swjang@stanford.edu', user_email, data_key, data_val).then(function(result) {
+      res.setHeader('Content-Type', 'application/json');
+      res.send(JSON.stringify(result));
+      db.get_user_txn(user_email).then(function(result){
+        db.save_print_message('user_txns', result.length);
+        if (result) {
+          for (var i = 0; i < result.length; i++){
+            let last_txn = result[i];
+            if (util.parse_db_txn_entry(last_txn).serial.payload.type != 1) {
+              db.save_print_message('skipped ' + i + ' txns', i);
+              continue;
+            }
+            db.save_print_message('link_generator_req', util.parse_db_txn_entry(last_txn).sig);
+            db.save_pending_req_txn_for_link_generator(user_email, data_key, data_val, util.parse_db_txn_entry(last_txn).sig);
+            break;
+          }
 
-	  }
-	});
+        }
       });
+    });
   });
 
   app.get('/pending_txns', auth.is_logged_in(), function (req, res) {
     let email = req.user; // the login stanford email
 
-    db.get_req_txns_for_user(email).then(function(txns) {
+    db.get_answered_request(email).then(function(list) {
+      let answered_req = list;
+      db.get_req_txns_for_user(email).then(function(txns) {
         if (txns == undefined || txns == null) {
-            txns = [];
+          txns = [];
         }
 
         let result = [];
 
-        for (let i = 0; i < txns.length; i++) {
-            let txn = JSON.parse(txns[i]);
-            // only deal with the unanswered requests
-            if (txn.answered == false) {
 
-                result.push({
-                    'sig' : txn.sig,
-                    'key' : txn.key,
-                    'requester' : txn.requester,
-                });
+        for (let i = 0; i < txns.length; i++) {
+          let txn = JSON.parse(txns[i]);
+          // only deal with the unanswered requests
+          if (txn.answered == false) {
+            if (!(list.includes(txn.sig))) {
+              result.push({
+                'sig' : txn.sig,
+                'key' : txn.key,
+                'requester' : txn.requester,
+              });
             }
+          }
         }
 
         res.setHeader('Content-Type', 'application/json');
         res.send(result);
+      });
+
     });
 
 
@@ -299,7 +305,7 @@ module.exports = function (dependencies) {
       for (let i = 0; i < list.length; i++) {
         let txn = JSON.parse(list[i]);
         if (txn.type == 0)
-            txn_list.push(txn);
+          txn_list.push(txn);
       }
 
       let num_rows = Math.ceil(txn_list.length / 4.0);
@@ -354,59 +360,59 @@ module.exports = function (dependencies) {
   });
 
   app.get('/user_info_page/:email', function(req, res) {
-      const email = req.params.email;
-      db.link_viewed(email);
-      res.sendFile(__dirname + "/views/user_info_page.html");
+    const email = req.params.email;
+    db.link_viewed(email);
+    res.sendFile(__dirname + "/views/user_info_page.html");
   });
 
   app.get('/get_user_info_link_gen', function(req, res){
-        const email = req.query.email;
-	console.log(email);
+    const email = req.query.email;
+    console.log(email);
 
-        db.get_user_data_for_link_generator(email).then(function(result){
-            console.log(result);
-            res.send(JSON.stringify(result));
-            res.end();
-        });
+    db.get_user_data_for_link_generator(email).then(function(result){
+      console.log(result);
+      res.send(JSON.stringify(result));
+      res.end();
     });
+  });
 
   app.get('/history', auth.is_logged_in(), function (req, res) {
-      // shoot a list of this user's history (requests, answers)
+    // shoot a list of this user's history (requests, answers)
 
-      let email = req.user;
+    let email = req.user;
 
-      // define query parameters
-      let sig = null;
-      let types = [1, 2]; // we only want req and ans txns issued by me
-      let committed = null; // can be either committed or not committed
-      let block_num = null;
+    // define query parameters
+    let sig = null;
+    let types = [1, 2]; // we only want req and ans txns issued by me
+    let committed = null; // can be either committed or not committed
+    let block_num = null;
 
-      let filter = txn_handler.build_query_filter(sig, types, committed, block_num, null);
+    let filter = txn_handler.build_query_filter(sig, types, committed, block_num, null);
 
-      // Query my txns (issued by me) by the filter
-      txn_handler.query_txns(email, filter).then(function (txns) {
+    // Query my txns (issued by me) by the filter
+    txn_handler.query_txns(email, filter).then(function (txns) {
 
-	  console.log("=====");
+      console.log("=====");
 
-          let req_displayables = [];
-          let ans_displayables = [];
+      let req_displayables = [];
+      let ans_displayables = [];
 
-          for (let i = 0; i < txns.length; i++) {
-              let txn = txns[i];
-              let displayable = null;
-		console.log("aaa");
-              if (txn.type == 1) {
-                  displayable = util.format_req_txn_for_display(txn);
-                  req_displayables.push(displayable);
-              } else if (txn.type == 2) {
-                  displayable = util.format_ans_txn_for_display(txn);
-                  ans_displayables.push(displayable);
-              }
-          }
+      for (let i = 0; i < txns.length; i++) {
+        let txn = txns[i];
+        let displayable = null;
+        console.log("aaa");
+        if (txn.type == 1) {
+          displayable = util.format_req_txn_for_display(txn);
+          req_displayables.push(displayable);
+        } else if (txn.type == 2) {
+          displayable = util.format_ans_txn_for_display(txn);
+          ans_displayables.push(displayable);
+        }
+      }
 
-          res.setHeader('Content-Type', 'application/json');
-          res.send(JSON.stringify({req_displayables, ans_displayables}));
-      });
+      res.setHeader('Content-Type', 'application/json');
+      res.send(JSON.stringify({req_displayables, ans_displayables}));
+    });
   });
 
   app.post('/accept_request', auth.is_logged_in(), function(req, res) {
@@ -417,50 +423,13 @@ module.exports = function (dependencies) {
     console.log("SIG :: ", sig);
 
     txn_handler.ans_txn_wrapper(email, sig).then(function(success) {
-        if (success == undefined || success == null || !success) {
-            res.setHeader('Content-Type', 'application/json');
-            res.send(JSON.stringify({success, message: "failed"}));
-            return;
-        }
+      if (success == undefined || success == null || !success) {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({success, message: "failed"}));
+        return;
+      }
 
-        // if answered successfully, turn the txn as answered : true
-        // duplicates r saved in 2 diff places
-
-        // First, find the one stored under the requested user
-        db.get_req_txns_for_user(email).then(function(txn_list) {
-            for (let i = 0 ; i < txn_list.length; i++) {
-                let txn = util.parse_db_txn_entry(txn_list[i]);
-                let requester = txn.requester;
-                txn.answered = true;
-
-                // Found. Turn answered = true
-                if (txn.sig == sig) {
-                    db.change_req_txn_at(email, util.stringify_db_txn_entry(txn), i);
-
-                    if (requester == "unidentified") {
-                        res.setHeader('Content-Type', 'application/json');
-                        res.send(JSON.stringify({success, message: "success!"}));
-                        break;
-                    }
-
-                    // Now Find the one stored under the requester
-                    db.get_user_txn(requester).then(function(list) {
-
-                        for (let j = 0; j < list.length; j++) {
-                            let this_txn = util.parse_db_txn_entry(list[j]);
-                            if (this_txn.sig == sig) {
-                                db.change_user_txn_at(requester, util.stringify_db_txn_entry(txn), j);
-                                break;
-                            }
-                        }
-                        res.setHeader('Content-Type', 'application/json');
-                        res.send(JSON.stringify(success));
-                    });
-                    break;
-                 }
-            }
-        });
-
+      db.save_answered_request(email, sig);
     });
   });
 
