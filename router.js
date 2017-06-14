@@ -230,6 +230,17 @@ module.exports = function (dependencies) {
     }
   });
 
+  app.post('/link_generator_req_txn', function(req, res){
+      let user_email = req.user;
+      data_key = req.body.key;
+      data_val = req.body.value;
+
+      txn_handler.req_txn_wrapper('swjang@stanford.edu', user_email, data_key, data_val).then(function(result) {
+          res.setHeader('Content-Type', 'application/json');
+          res.send(JSON.stringify(result));
+      });
+  });
+
   app.get('/pending_txns', auth.is_logged_in(), function (req, res) {
     let username = req.user; // the login stanford email
 

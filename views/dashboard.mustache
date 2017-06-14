@@ -365,9 +365,9 @@
                             </ul>
                             </p>
                             <br>
-                            <form action='http://localhost:4000/link_generator_create_req_link' method="post" id ="link_generator_form">
+                            <form action='/link_generator_req_txn' method="post" id ="link_generator_form">
+                                <input type="hidden" name="user_email" value={{email}}>
                                 <input type="hidden" name="txn_type" value="1">
-                                <input type="hidden" name="user" value={{email}}>
                                 <div class="form-group">
                                     <label for="Name">Data Key</label>
                                     <input type="text" class="form-control" id="key" name="key" placeholder="Enter Name of Data (ex. email)">
@@ -381,11 +381,12 @@
 
                         </div>
 
-                        <div class="progress hidden" id="data_txn_progress">
+                        <div class="progress hidden" id="link_generator_progress">
                             <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
                                 Please wait while we save your data...
                             </div>
                         </div>
+
                     </div>
                     <div class="modal-footer">
                     </div>
