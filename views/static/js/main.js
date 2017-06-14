@@ -91,6 +91,10 @@ $( document ).ready(function() {
 
 const accept_request = function(req_txn_sig) {
 
+	if (!confirm("Do you want to accept this request?")) {
+		return;
+	}
+
 	let url = '/accept_request';
 
     $.ajax({
