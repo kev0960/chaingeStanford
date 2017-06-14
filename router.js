@@ -388,6 +388,23 @@ module.exports = function (dependencies) {
       });
   });
 
+  app.post('accept_request', auth.is_logged_in(), function(req, res) {
+    let email = req.user;
+
+    let sig = req.body.sig;
+
+    txn_handler.ans_txn_wrapper(email, sig).then(function(success) {
+        if (success == undefined || success == null || !success) {
+            res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify({success, message: "failed"}));
+            return;
+        }
+
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({success, message: "success!"}));
+    });
+  });
+
   return {
     app
   }
